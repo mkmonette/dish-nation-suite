@@ -12,6 +12,7 @@ import VendorDashboard from "./pages/VendorDashboard";
 import CustomerAuth from "./pages/CustomerAuth";
 import Storefront from "./pages/Storefront";
 import NotFound from "./pages/NotFound";
+import CustomerOrders from "./pages/CustomerOrders";
 
 const queryClient = new QueryClient();
 
@@ -30,6 +31,7 @@ const App = () => (
                 <Route path="/vendor/dashboard" element={<VendorDashboard />} />
                 <Route path="/store/:vendorSlug" element={<Storefront />} />
                 <Route path="/store/:vendorSlug/auth" element={<CustomerAuth />} />
+                <Route path="/store/:vendorSlug/orders" element={<CustomerOrders />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </BrowserRouter>

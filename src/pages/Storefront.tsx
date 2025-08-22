@@ -10,6 +10,8 @@ import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { toast } from '@/hooks/use-toast';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
+import { Textarea } from '@/components/ui/textarea';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { vendorStorage, menuStorage, orderStorage, MenuItem } from '@/lib/storage';
 import { ShoppingCart, Plus, Minus, Store, User, LogOut, MapPin, Phone } from 'lucide-react';
 
@@ -127,11 +129,14 @@ const Storefront = () => {
       })),
       total: cartTotal,
       status: 'pending',
+      orderType: formData.get('orderType') as 'delivery' | 'pickup',
+      paymentMethod: formData.get('paymentMethod') as 'pay_on_delivery' | 'proof_of_payment',
       customerInfo: {
         name: formData.get('name') as string,
         phone: formData.get('phone') as string,
         address: formData.get('address') as string,
       },
+      notes: formData.get('notes') as string,
     });
 
     setCart([]);
@@ -168,8 +173,15 @@ const Storefront = () => {
             <div className="flex items-center space-x-2">
               {customer ? (
                 <div className="flex items-center space-x-2">
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => navigate(`/store/${vendor.slug}/orders`)}
+                  >
+                    My Orders
+                  </Button>
                   <span className="text-sm text-muted-foreground hidden sm:block">
-                    Welcome, {customer.name}
+                    {customer.name}
                   </span>
                   <Button variant="outline" size="sm" onClick={handleLogout}>
                     <LogOut className="h-4 w-4" />
@@ -277,13 +289,44 @@ const Storefront = () => {
                                   required 
                                 />
                               </div>
-                              <div className="space-y-2">
-                                <Label htmlFor="checkout-address">Delivery Address</Label>
-                                <Input 
-                                  id="checkout-address" 
-                                  name="address" 
-                                  placeholder="123 Main St, City, State"
-                                />
+                              <div className="space-y-4">
+                                <div className="space-y-2">
+                                  <Label>Order Type</Label>
+                                  <RadioGroup name="orderType" defaultValue="delivery" className="flex space-x-4">
+                                    <div className="flex items-center space-x-2">
+                                      <RadioGroupItem value="delivery" id="delivery" />
+                                      <Label htmlFor="delivery">Delivery</Label>
+                                    </div>
+                                    <div className="flex items-center space-x-2">
+                                      <RadioGroupItem value="pickup" id="pickup" />
+                                      <Label htmlFor="pickup">Pickup</Label>
+                                    </div>
+                                  </RadioGroup>
+                                </div>
+
+                                <div className="space-y-2">
+                                  <Label>Payment Method</Label>
+                                  <RadioGroup name="paymentMethod" defaultValue="pay_on_delivery" className="space-y-2">
+                                    <div className="flex items-center space-x-2">
+                                      <RadioGroupItem value="pay_on_delivery" id="pay_on_delivery" />
+                                      <Label htmlFor="pay_on_delivery">Pay on Delivery/Pickup</Label>
+                                    </div>
+                                    <div className="flex items-center space-x-2">
+                                      <RadioGroupItem value="proof_of_payment" id="proof_of_payment" />
+                                      <Label htmlFor="proof_of_payment">Upload Proof of Payment</Label>
+                                    </div>
+                                  </RadioGroup>
+                                </div>
+
+                                <div className="space-y-2">
+                                  <Label htmlFor="checkout-notes">Special Instructions (Optional)</Label>
+                                  <Textarea 
+                                    id="checkout-notes" 
+                                    name="notes" 
+                                    placeholder="Any special requests or instructions..."
+                                    className="min-h-20"
+                                  />
+                                </div>
                               </div>
                               
                               <div className="border-t pt-4">

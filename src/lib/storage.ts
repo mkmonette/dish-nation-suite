@@ -1,5 +1,18 @@
 // Multi-tenant localStorage utilities for the food ordering SaaS
 
+export interface StorefrontSettings {
+  template: 'modern' | 'classic' | 'minimal';
+  colors: {
+    primary: string;
+    secondary: string;
+    accent: string;
+  };
+  logo?: string;
+  banner?: string;
+  heroText?: string;
+  heroSubtext?: string;
+}
+
 export interface Vendor {
   id: string;
   email: string;
@@ -8,6 +21,7 @@ export interface Vendor {
   slug: string; // for subdomain simulation
   description?: string;
   logo?: string;
+  storefront: StorefrontSettings;
   createdAt: string;
 }
 
@@ -20,6 +34,19 @@ export interface Customer {
   createdAt: string;
 }
 
+export interface MenuVariation {
+  id: string;
+  name: string;
+  price: number;
+}
+
+export interface MenuAddOn {
+  id: string;
+  name: string;
+  price: number;
+  required?: boolean;
+}
+
 export interface MenuItem {
   id: string;
   name: string;
@@ -28,6 +55,8 @@ export interface MenuItem {
   category: string;
   image?: string;
   available: boolean;
+  variations?: MenuVariation[];
+  addOns?: MenuAddOn[];
   vendorId: string;
   createdAt: string;
 }
@@ -38,12 +67,16 @@ export interface Order {
   vendorId: string;
   items: OrderItem[];
   total: number;
-  status: 'pending' | 'confirmed' | 'preparing' | 'ready' | 'delivered' | 'cancelled';
+  status: 'pending' | 'confirmed' | 'preparing' | 'ready' | 'out_for_delivery' | 'delivered' | 'cancelled';
+  orderType: 'delivery' | 'pickup';
+  paymentMethod: 'pay_on_delivery' | 'proof_of_payment';
+  paymentProof?: string; // base64 image data
   customerInfo: {
     name: string;
     phone: string;
     address?: string;
   };
+  notes?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -53,6 +86,8 @@ export interface OrderItem {
   name: string;
   price: number;
   quantity: number;
+  selectedVariation?: MenuVariation;
+  selectedAddOns?: MenuAddOn[];
 }
 
 // Storage keys
@@ -85,11 +120,21 @@ export const vendorStorage = {
     return vendors.find(v => v.email === email) || null;
   },
 
-  create(vendor: Omit<Vendor, 'id' | 'createdAt'>): Vendor {
+  create(vendor: Omit<Vendor, 'id' | 'createdAt' | 'storefront'>): Vendor {
     const vendors = this.getAll();
     const newVendor: Vendor = {
       ...vendor,
       id: Date.now().toString(),
+      storefront: {
+        template: 'modern',
+        colors: {
+          primary: '#FF6B35',
+          secondary: '#2ECC71',
+          accent: '#F39C12'
+        },
+        heroText: `Welcome to ${vendor.storeName}`,
+        heroSubtext: 'Delicious food delivered to your door'
+      },
       createdAt: new Date().toISOString(),
     };
     vendors.push(newVendor);

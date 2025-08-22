@@ -12,10 +12,13 @@ import { Badge } from '@/components/ui/badge';
 import { toast } from '@/hooks/use-toast';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { menuStorage, orderStorage, MenuItem, Order } from '@/lib/storage';
+import StorefrontCustomizer from '@/components/StorefrontCustomizer';
+import EnhancedMenuManager from '@/components/EnhancedMenuManager';
 import { Plus, Store, Package, Settings, LogOut, ExternalLink, Eye, Trash2 } from 'lucide-react';
 
 const VendorDashboard = () => {
-  const { vendor, logout } = useVendor();
+  const { logout } = useVendor();
+  const [vendor, setVendor] = useState(useVendor().vendor);
   const navigate = useNavigate();
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
@@ -167,89 +170,20 @@ const VendorDashboard = () => {
         </Card>
 
         <Tabs defaultValue="menu" className="space-y-4">
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="menu">Menu Items</TabsTrigger>
             <TabsTrigger value="orders">Orders</TabsTrigger>
+            <TabsTrigger value="storefront">Storefront</TabsTrigger>
             <TabsTrigger value="settings">Settings</TabsTrigger>
           </TabsList>
 
           {/* Menu Items Tab */}
           <TabsContent value="menu" className="space-y-4">
-            <div className="flex justify-between items-center">
-              <h2 className="text-xl font-semibold">Menu Items ({menuItems.length})</h2>
-              <Dialog open={isMenuModalOpen} onOpenChange={setIsMenuModalOpen}>
-                <DialogTrigger asChild>
-                  <Button variant="hero">
-                    <Plus className="h-4 w-4 mr-2" />
-                    Add Item
-                  </Button>
-                </DialogTrigger>
-                <DialogContent>
-                  <DialogHeader>
-                    <DialogTitle>Add New Menu Item</DialogTitle>
-                  </DialogHeader>
-                  <form onSubmit={handleAddMenuItem} className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="name">Item Name</Label>
-                      <Input id="name" name="name" required />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="description">Description</Label>
-                      <Textarea id="description" name="description" required />
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="price">Price ($)</Label>
-                        <Input id="price" name="price" type="number" step="0.01" required />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="category">Category</Label>
-                        <Input id="category" name="category" required />
-                      </div>
-                    </div>
-                    <Button type="submit" variant="hero" className="w-full" disabled={isLoading}>
-                      {isLoading ? <LoadingSpinner size="sm" /> : 'Add Item'}
-                    </Button>
-                  </form>
-                </DialogContent>
-              </Dialog>
-            </div>
-
-            {menuItems.length === 0 ? (
-              <Card>
-                <CardContent className="py-8 text-center">
-                  <Package className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                  <p className="text-muted-foreground">No menu items yet. Add your first item to get started!</p>
-                </CardContent>
-              </Card>
-            ) : (
-              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {menuItems.map((item) => (
-                  <Card key={item.id}>
-                    <CardHeader>
-                      <div className="flex justify-between items-start">
-                        <CardTitle className="text-lg">{item.name}</CardTitle>
-                        <Button
-                          variant="outline"
-                          size="icon"
-                          onClick={() => handleDeleteMenuItem(item.id)}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                      <Badge variant={item.available ? 'default' : 'secondary'}>
-                        {item.available ? 'Available' : 'Unavailable'}
-                      </Badge>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-sm text-muted-foreground mb-2">{item.description}</p>
-                      <p className="text-lg font-semibold text-primary">${item.price.toFixed(2)}</p>
-                      <p className="text-xs text-muted-foreground mt-1">{item.category}</p>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            )}
+            <EnhancedMenuManager 
+              vendorId={vendor.id}
+              menuItems={menuItems}
+              onMenuUpdate={loadMenuItems}
+            />
           </TabsContent>
 
           {/* Orders Tab */}
@@ -322,7 +256,16 @@ const VendorDashboard = () => {
                             Mark Ready
                           </Button>
                         )}
-                        {order.status === 'ready' && (
+                        {order.status === 'ready' && order.orderType === 'delivery' && (
+                          <Button 
+                            size="sm" 
+                            variant="order"
+                            onClick={() => handleUpdateOrderStatus(order.id, 'out_for_delivery')}
+                          >
+                            Out for Delivery
+                          </Button>
+                        )}
+                        {order.status === 'out_for_delivery' && (
                           <Button 
                             size="sm" 
                             variant="success"
@@ -331,12 +274,32 @@ const VendorDashboard = () => {
                             Mark Delivered
                           </Button>
                         )}
+                        {order.status === 'ready' && order.orderType === 'pickup' && (
+                          <Button 
+                            size="sm" 
+                            variant="success"
+                            onClick={() => handleUpdateOrderStatus(order.id, 'delivered')}
+                          >
+                            Mark Picked Up
+                          </Button>
+                        )}
                       </div>
                     </CardContent>
                   </Card>
                 ))}
               </div>
             )}
+          </TabsContent>
+
+          {/* Storefront Customization Tab */}
+          <TabsContent value="storefront" className="space-y-4">
+            <StorefrontCustomizer 
+              vendor={vendor}
+              onUpdate={(updatedVendor) => {
+                // This would normally trigger a context update, but for localStorage demo this is sufficient
+                window.location.reload();
+              }}
+            />
           </TabsContent>
 
           {/* Settings Tab */}
