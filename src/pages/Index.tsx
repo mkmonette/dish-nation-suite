@@ -126,6 +126,14 @@ const Index = () => {
           >
             Browse Stores
           </Button>
+          <Button 
+            variant="outline" 
+            size="xl" 
+            className="bg-white/10 text-primary-foreground border-white/30 hover:bg-white/20 min-w-48"
+            onClick={() => navigate('/admin/auth')}
+          >
+            Admin Portal
+          </Button>
         </div>
       </section>
 

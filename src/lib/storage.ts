@@ -13,6 +13,39 @@ export interface StorefrontSettings {
   heroSubtext?: string;
 }
 
+export interface SubscriptionPlan {
+  id: string;
+  name: string;
+  price: number;
+  billingCycle: 'monthly' | 'yearly';
+  trialPeriod: number; // days
+  features: string[];
+  maxMenuItems?: number;
+  maxOrders?: number;
+  createdAt: string;
+}
+
+export interface VendorSubscription {
+  id: string;
+  vendorId: string;
+  planId: string;
+  status: 'active' | 'cancelled' | 'expired' | 'trial';
+  startDate: string;
+  endDate: string;
+  paymentMethod: 'paypal' | 'proof_of_payment';
+  paymentProof?: string;
+  autoRenew: boolean;
+  createdAt: string;
+}
+
+export interface Admin {
+  id: string;
+  email: string;
+  name: string;
+  role: 'super_admin' | 'admin';
+  createdAt: string;
+}
+
 export interface Vendor {
   id: string;
   email: string;
@@ -21,6 +54,8 @@ export interface Vendor {
   slug: string; // for subdomain simulation
   description?: string;
   logo?: string;
+  status: 'pending' | 'approved' | 'suspended' | 'rejected';
+  subscriptionId?: string;
   storefront: StorefrontSettings;
   createdAt: string;
 }
@@ -95,8 +130,12 @@ const VENDORS_KEY = 'foodapp_vendors';
 const CUSTOMERS_KEY = 'foodapp_customers';
 const MENU_ITEMS_KEY = 'foodapp_menu_items';
 const ORDERS_KEY = 'foodapp_orders';
+const SUBSCRIPTION_PLANS_KEY = 'foodapp_subscription_plans';
+const VENDOR_SUBSCRIPTIONS_KEY = 'foodapp_vendor_subscriptions';
+const ADMINS_KEY = 'foodapp_admins';
 const CURRENT_VENDOR_KEY = 'foodapp_current_vendor';
 const CURRENT_CUSTOMER_KEY = 'foodapp_current_customer';
+const CURRENT_ADMIN_KEY = 'foodapp_current_admin';
 
 // Vendor operations
 export const vendorStorage = {
@@ -120,11 +159,12 @@ export const vendorStorage = {
     return vendors.find(v => v.email === email) || null;
   },
 
-  create(vendor: Omit<Vendor, 'id' | 'createdAt' | 'storefront'>): Vendor {
+  create(vendor: Omit<Vendor, 'id' | 'createdAt' | 'storefront' | 'status'>): Vendor {
     const vendors = this.getAll();
     const newVendor: Vendor = {
       ...vendor,
       id: Date.now().toString(),
+      status: 'pending',
       storefront: {
         template: 'modern',
         colors: {
@@ -268,6 +308,111 @@ export const orderStorage = {
   }
 };
 
+// Subscription plan operations
+export const subscriptionPlanStorage = {
+  getAll(): SubscriptionPlan[] {
+    const plans = localStorage.getItem(SUBSCRIPTION_PLANS_KEY);
+    return plans ? JSON.parse(plans) : [];
+  },
+
+  getById(id: string): SubscriptionPlan | null {
+    const plans = this.getAll();
+    return plans.find(p => p.id === id) || null;
+  },
+
+  create(plan: Omit<SubscriptionPlan, 'id' | 'createdAt'>): SubscriptionPlan {
+    const plans = this.getAll();
+    const newPlan: SubscriptionPlan = {
+      ...plan,
+      id: Date.now().toString(),
+      createdAt: new Date().toISOString(),
+    };
+    plans.push(newPlan);
+    localStorage.setItem(SUBSCRIPTION_PLANS_KEY, JSON.stringify(plans));
+    return newPlan;
+  },
+
+  update(id: string, updates: Partial<SubscriptionPlan>): SubscriptionPlan | null {
+    const plans = this.getAll();
+    const index = plans.findIndex(p => p.id === id);
+    if (index === -1) return null;
+    
+    plans[index] = { ...plans[index], ...updates };
+    localStorage.setItem(SUBSCRIPTION_PLANS_KEY, JSON.stringify(plans));
+    return plans[index];
+  },
+
+  delete(id: string): boolean {
+    const plans = this.getAll();
+    const index = plans.findIndex(p => p.id === id);
+    if (index === -1) return false;
+    
+    plans.splice(index, 1);
+    localStorage.setItem(SUBSCRIPTION_PLANS_KEY, JSON.stringify(plans));
+    return true;
+  }
+};
+
+// Vendor subscription operations
+export const vendorSubscriptionStorage = {
+  getAll(): VendorSubscription[] {
+    const subscriptions = localStorage.getItem(VENDOR_SUBSCRIPTIONS_KEY);
+    return subscriptions ? JSON.parse(subscriptions) : [];
+  },
+
+  getByVendorId(vendorId: string): VendorSubscription | null {
+    const subscriptions = this.getAll();
+    return subscriptions.find(s => s.vendorId === vendorId) || null;
+  },
+
+  create(subscription: Omit<VendorSubscription, 'id' | 'createdAt'>): VendorSubscription {
+    const subscriptions = this.getAll();
+    const newSubscription: VendorSubscription = {
+      ...subscription,
+      id: Date.now().toString(),
+      createdAt: new Date().toISOString(),
+    };
+    subscriptions.push(newSubscription);
+    localStorage.setItem(VENDOR_SUBSCRIPTIONS_KEY, JSON.stringify(subscriptions));
+    return newSubscription;
+  },
+
+  update(id: string, updates: Partial<VendorSubscription>): VendorSubscription | null {
+    const subscriptions = this.getAll();
+    const index = subscriptions.findIndex(s => s.id === id);
+    if (index === -1) return null;
+    
+    subscriptions[index] = { ...subscriptions[index], ...updates };
+    localStorage.setItem(VENDOR_SUBSCRIPTIONS_KEY, JSON.stringify(subscriptions));
+    return subscriptions[index];
+  }
+};
+
+// Admin operations
+export const adminStorage = {
+  getAll(): Admin[] {
+    const admins = localStorage.getItem(ADMINS_KEY);
+    return admins ? JSON.parse(admins) : [];
+  },
+
+  getByEmail(email: string): Admin | null {
+    const admins = this.getAll();
+    return admins.find(a => a.email === email) || null;
+  },
+
+  create(admin: Omit<Admin, 'id' | 'createdAt'>): Admin {
+    const admins = this.getAll();
+    const newAdmin: Admin = {
+      ...admin,
+      id: Date.now().toString(),
+      createdAt: new Date().toISOString(),
+    };
+    admins.push(newAdmin);
+    localStorage.setItem(ADMINS_KEY, JSON.stringify(admins));
+    return newAdmin;
+  }
+};
+
 // Current session management
 export const sessionStorage = {
   setCurrentVendor(vendor: Vendor): void {
@@ -294,5 +439,18 @@ export const sessionStorage = {
 
   clearCurrentCustomer(): void {
     localStorage.removeItem(CURRENT_CUSTOMER_KEY);
+  },
+
+  setCurrentAdmin(admin: Admin): void {
+    localStorage.setItem(CURRENT_ADMIN_KEY, JSON.stringify(admin));
+  },
+
+  getCurrentAdmin(): Admin | null {
+    const admin = localStorage.getItem(CURRENT_ADMIN_KEY);
+    return admin ? JSON.parse(admin) : null;
+  },
+
+  clearCurrentAdmin(): void {
+    localStorage.removeItem(CURRENT_ADMIN_KEY);
   }
 };
