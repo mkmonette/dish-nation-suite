@@ -4,7 +4,8 @@ import { Button } from '@/components/ui/enhanced-button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { vendorStorage } from '@/lib/storage';
-import { Search, Store, Users, ShoppingBag } from 'lucide-react';
+import { initializeSampleData } from '@/lib/sampleData';
+import { Search, Store, Users, ShoppingBag, Database } from 'lucide-react';
 
 const Index = () => {
   const [searchSlug, setSearchSlug] = useState('');
@@ -28,13 +29,24 @@ const Index = () => {
             <ShoppingBag className="h-8 w-8 text-primary-foreground" />
             <span className="text-2xl font-bold text-primary-foreground">FoodSaaS</span>
           </div>
-          <Button 
-            variant="secondary" 
-            onClick={() => navigate('/vendor/auth')}
-            className="bg-white/20 text-primary-foreground border-white/30 hover:bg-white/30"
-          >
-            Vendor Login
-          </Button>
+          <div className="flex items-center space-x-4">
+            <Button 
+              variant="ghost" 
+              size="sm"
+              onClick={() => initializeSampleData()}
+              className="bg-white/10 text-primary-foreground border-white/20 hover:bg-white/20"
+            >
+              <Database className="w-4 h-4 mr-2" />
+              Load Sample Data
+            </Button>
+            <Button 
+              variant="secondary" 
+              onClick={() => navigate('/vendor/auth')}
+              className="bg-white/20 text-primary-foreground border-white/30 hover:bg-white/30"
+            >
+              Vendor Login
+            </Button>
+          </div>
         </div>
       </header>
 
