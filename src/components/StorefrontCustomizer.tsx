@@ -16,7 +16,17 @@ interface StorefrontCustomizerProps {
 }
 
 const StorefrontCustomizer: React.FC<StorefrontCustomizerProps> = ({ vendor, onUpdate }) => {
-  const [settings, setSettings] = useState(vendor.storefront);
+  const [settings, setSettings] = useState({
+    template: 'modern' as 'modern' | 'classic' | 'minimal',
+    colors: {
+      primary: '#3b82f6',
+      secondary: '#10b981',
+      accent: '#f59e0b',
+    },
+    heroText: '',
+    heroSubtext: '',
+    ...vendor.storefront,
+  });
   const [isLoading, setIsLoading] = useState(false);
 
   const templates = [
