@@ -14,6 +14,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { vendorStorage, menuStorage, orderStorage, MenuItem } from '@/lib/storage';
 import { ShoppingCart, Plus, Minus, Store, User, LogOut, MapPin, Phone } from 'lucide-react';
+import ModernTemplate from '@/components/templates/ModernTemplate';
+import ClassicTemplate from '@/components/templates/ClassicTemplate';
+import MinimalTemplate from '@/components/templates/MinimalTemplate';
 
 interface CartItem {
   menuItem: MenuItem;
@@ -154,257 +157,247 @@ const Storefront = () => {
     toast({ title: 'Logged out', description: 'You have been logged out successfully.' });
   };
 
-  return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b bg-card sticky top-0 z-40">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center space-x-4">
-              <Store className="h-8 w-8 text-primary" />
-              <div>
-                <h1 className="text-2xl font-bold">{vendor.storeName}</h1>
-                <p className="text-sm text-muted-foreground">
-                  {vendor.description || 'Delicious food delivered to your door'}
-                </p>
-              </div>
+  // Header component that all templates can use
+  const headerComponent = (
+    <header className="border-b bg-card sticky top-0 z-40">
+      <div className="container mx-auto px-4 py-4">
+        <div className="flex justify-between items-center">
+          <div className="flex items-center space-x-4">
+            <Store className="h-8 w-8 text-primary" />
+            <div>
+              <h1 className="text-2xl font-bold">{vendor.storeName}</h1>
+              <p className="text-sm text-muted-foreground">
+                {vendor.description || 'Delicious food delivered to your door'}
+              </p>
             </div>
+          </div>
+          
+          <div className="flex items-center space-x-2">
+            {customer ? (
+              <div className="flex items-center space-x-2">
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => navigate(`/store/${vendor.slug}/orders`)}
+                >
+                  My Orders
+                </Button>
+                <span className="text-sm text-muted-foreground hidden sm:block">
+                  {customer.name}
+                </span>
+                <Button variant="outline" size="sm" onClick={handleLogout}>
+                  <LogOut className="h-4 w-4" />
+                </Button>
+              </div>
+            ) : (
+              <Button 
+                variant="outline" 
+                onClick={() => navigate(`/store/${vendor.slug}/auth`)}
+              >
+                <User className="h-4 w-4 mr-2" />
+                Login
+              </Button>
+            )}
             
-            <div className="flex items-center space-x-2">
-              {customer ? (
+            <Dialog open={isCartOpen} onOpenChange={setIsCartOpen}>
+              <DialogTrigger asChild>
+                <Button variant="hero" className="relative">
+                  <ShoppingCart className="h-4 w-4 mr-2" />
+                  Cart
+                  {cartItemCount > 0 && (
+                    <Badge 
+                      className="absolute -top-2 -right-2 bg-destructive text-destructive-foreground min-w-5 h-5 flex items-center justify-center p-0 text-xs"
+                    >
+                      {cartItemCount}
+                    </Badge>
+                  )}
+                </Button>
+              </DialogTrigger>
+            </Dialog>
+          </div>
+        </div>
+      </div>
+    </header>
+  );
+
+  // Cart component that all templates can use
+  const cartComponent = (
+    <Dialog open={isCartOpen} onOpenChange={setIsCartOpen}>
+      <DialogContent className="max-w-md">
+        <DialogHeader>
+          <DialogTitle>Your Cart</DialogTitle>
+        </DialogHeader>
+        
+        {cart.length === 0 ? (
+          <div className="py-8 text-center">
+            <ShoppingCart className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+            <p className="text-muted-foreground">Your cart is empty</p>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {cart.map((item) => (
+              <div key={item.menuItem.id} className="flex justify-between items-center">
+                <div className="flex-1">
+                  <h4 className="font-medium">{item.menuItem.name}</h4>
+                  <p className="text-sm text-muted-foreground">
+                    ${item.menuItem.price.toFixed(2)} each
+                  </p>
+                </div>
                 <div className="flex items-center space-x-2">
                   <Button 
                     variant="outline" 
-                    size="sm"
-                    onClick={() => navigate(`/store/${vendor.slug}/orders`)}
+                    size="icon"
+                    className="h-8 w-8"
+                    onClick={() => updateCartItemQuantity(item.menuItem.id, item.quantity - 1)}
                   >
-                    My Orders
+                    <Minus className="h-3 w-3" />
                   </Button>
-                  <span className="text-sm text-muted-foreground hidden sm:block">
-                    {customer.name}
-                  </span>
-                  <Button variant="outline" size="sm" onClick={handleLogout}>
-                    <LogOut className="h-4 w-4" />
+                  <span className="min-w-8 text-center">{item.quantity}</span>
+                  <Button 
+                    variant="outline" 
+                    size="icon"
+                    className="h-8 w-8"
+                    onClick={() => updateCartItemQuantity(item.menuItem.id, item.quantity + 1)}
+                  >
+                    <Plus className="h-3 w-3" />
                   </Button>
                 </div>
-              ) : (
-                <Button 
-                  variant="outline" 
-                  onClick={() => navigate(`/store/${vendor.slug}/auth`)}
-                >
-                  <User className="h-4 w-4 mr-2" />
-                  Login
-                </Button>
-              )}
+              </div>
+            ))}
+            
+            <div className="border-t pt-4">
+              <div className="flex justify-between text-lg font-semibold">
+                <span>Total</span>
+                <span>${cartTotal.toFixed(2)}</span>
+              </div>
               
-              <Dialog open={isCartOpen} onOpenChange={setIsCartOpen}>
+              <Dialog open={isCheckoutOpen} onOpenChange={setIsCheckoutOpen}>
                 <DialogTrigger asChild>
-                  <Button variant="hero" className="relative">
-                    <ShoppingCart className="h-4 w-4 mr-2" />
-                    Cart
-                    {cartItemCount > 0 && (
-                      <Badge 
-                        className="absolute -top-2 -right-2 bg-destructive text-destructive-foreground min-w-5 h-5 flex items-center justify-center p-0 text-xs"
-                      >
-                        {cartItemCount}
-                      </Badge>
-                    )}
+                  <Button variant="order" size="lg" className="w-full mt-4">
+                    Checkout
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="max-w-md">
+                <DialogContent>
                   <DialogHeader>
-                    <DialogTitle>Your Cart</DialogTitle>
+                    <DialogTitle>Checkout</DialogTitle>
                   </DialogHeader>
-                  
-                  {cart.length === 0 ? (
-                    <div className="py-8 text-center">
-                      <ShoppingCart className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                      <p className="text-muted-foreground">Your cart is empty</p>
+                  <form onSubmit={handleCheckout} className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="checkout-name">Full Name</Label>
+                      <Input 
+                        id="checkout-name" 
+                        name="name" 
+                        defaultValue={customer?.name || ''}
+                        required 
+                      />
                     </div>
-                  ) : (
+                    <div className="space-y-2">
+                      <Label htmlFor="checkout-phone">Phone Number</Label>
+                      <Input 
+                        id="checkout-phone" 
+                        name="phone" 
+                        type="tel"
+                        defaultValue={customer?.phone || ''}
+                        required 
+                      />
+                    </div>
                     <div className="space-y-4">
-                      {cart.map((item) => (
-                        <div key={item.menuItem.id} className="flex justify-between items-center">
-                          <div className="flex-1">
-                            <h4 className="font-medium">{item.menuItem.name}</h4>
-                            <p className="text-sm text-muted-foreground">
-                              ${item.menuItem.price.toFixed(2)} each
-                            </p>
+                      <div className="space-y-2">
+                        <Label>Order Type</Label>
+                        <RadioGroup name="orderType" defaultValue="delivery" className="flex space-x-4">
+                          <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="delivery" id="delivery" />
+                            <Label htmlFor="delivery">Delivery</Label>
                           </div>
                           <div className="flex items-center space-x-2">
-                            <Button 
-                              variant="outline" 
-                              size="icon"
-                              className="h-8 w-8"
-                              onClick={() => updateCartItemQuantity(item.menuItem.id, item.quantity - 1)}
-                            >
-                              <Minus className="h-3 w-3" />
-                            </Button>
-                            <span className="min-w-8 text-center">{item.quantity}</span>
-                            <Button 
-                              variant="outline" 
-                              size="icon"
-                              className="h-8 w-8"
-                              onClick={() => updateCartItemQuantity(item.menuItem.id, item.quantity + 1)}
-                            >
-                              <Plus className="h-3 w-3" />
-                            </Button>
+                            <RadioGroupItem value="pickup" id="pickup" />
+                            <Label htmlFor="pickup">Pickup</Label>
                           </div>
-                        </div>
-                      ))}
-                      
-                      <div className="border-t pt-4">
-                        <div className="flex justify-between text-lg font-semibold">
-                          <span>Total</span>
-                          <span>${cartTotal.toFixed(2)}</span>
-                        </div>
-                        
-                        <Dialog open={isCheckoutOpen} onOpenChange={setIsCheckoutOpen}>
-                          <DialogTrigger asChild>
-                            <Button variant="order" size="lg" className="w-full mt-4">
-                              Checkout
-                            </Button>
-                          </DialogTrigger>
-                          <DialogContent>
-                            <DialogHeader>
-                              <DialogTitle>Checkout</DialogTitle>
-                            </DialogHeader>
-                            <form onSubmit={handleCheckout} className="space-y-4">
-                              <div className="space-y-2">
-                                <Label htmlFor="checkout-name">Full Name</Label>
-                                <Input 
-                                  id="checkout-name" 
-                                  name="name" 
-                                  defaultValue={customer?.name || ''}
-                                  required 
-                                />
-                              </div>
-                              <div className="space-y-2">
-                                <Label htmlFor="checkout-phone">Phone Number</Label>
-                                <Input 
-                                  id="checkout-phone" 
-                                  name="phone" 
-                                  type="tel"
-                                  defaultValue={customer?.phone || ''}
-                                  required 
-                                />
-                              </div>
-                              <div className="space-y-4">
-                                <div className="space-y-2">
-                                  <Label>Order Type</Label>
-                                  <RadioGroup name="orderType" defaultValue="delivery" className="flex space-x-4">
-                                    <div className="flex items-center space-x-2">
-                                      <RadioGroupItem value="delivery" id="delivery" />
-                                      <Label htmlFor="delivery">Delivery</Label>
-                                    </div>
-                                    <div className="flex items-center space-x-2">
-                                      <RadioGroupItem value="pickup" id="pickup" />
-                                      <Label htmlFor="pickup">Pickup</Label>
-                                    </div>
-                                  </RadioGroup>
-                                </div>
+                        </RadioGroup>
+                      </div>
 
-                                <div className="space-y-2">
-                                  <Label>Payment Method</Label>
-                                  <RadioGroup name="paymentMethod" defaultValue="pay_on_delivery" className="space-y-2">
-                                    <div className="flex items-center space-x-2">
-                                      <RadioGroupItem value="pay_on_delivery" id="pay_on_delivery" />
-                                      <Label htmlFor="pay_on_delivery">Pay on Delivery/Pickup</Label>
-                                    </div>
-                                    <div className="flex items-center space-x-2">
-                                      <RadioGroupItem value="proof_of_payment" id="proof_of_payment" />
-                                      <Label htmlFor="proof_of_payment">Upload Proof of Payment</Label>
-                                    </div>
-                                  </RadioGroup>
-                                </div>
+                      <div className="space-y-2">
+                        <Label>Payment Method</Label>
+                        <RadioGroup name="paymentMethod" defaultValue="pay_on_delivery" className="space-y-2">
+                          <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="pay_on_delivery" id="pay_on_delivery" />
+                            <Label htmlFor="pay_on_delivery">Pay on Delivery/Pickup</Label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="proof_of_payment" id="proof_of_payment" />
+                            <Label htmlFor="proof_of_payment">Upload Proof of Payment</Label>
+                          </div>
+                        </RadioGroup>
+                      </div>
 
-                                <div className="space-y-2">
-                                  <Label htmlFor="checkout-notes">Special Instructions (Optional)</Label>
-                                  <Textarea 
-                                    id="checkout-notes" 
-                                    name="notes" 
-                                    placeholder="Any special requests or instructions..."
-                                    className="min-h-20"
-                                  />
-                                </div>
-                              </div>
-                              
-                              <div className="border-t pt-4">
-                                <div className="flex justify-between text-lg font-semibold mb-4">
-                                  <span>Total</span>
-                                  <span>${cartTotal.toFixed(2)}</span>
-                                </div>
-                                <Button type="submit" variant="order" size="lg" className="w-full" disabled={isLoading}>
-                                  {isLoading ? <LoadingSpinner size="sm" /> : `Place Order - $${cartTotal.toFixed(2)}`}
-                                </Button>
-                              </div>
-                            </form>
-                          </DialogContent>
-                        </Dialog>
+                      <div className="space-y-2">
+                        <Label htmlFor="checkout-notes">Special Instructions (Optional)</Label>
+                        <Textarea 
+                          id="checkout-notes" 
+                          name="notes" 
+                          placeholder="Any special requests or instructions..."
+                          className="min-h-20"
+                        />
                       </div>
                     </div>
-                  )}
+                    
+                    <div className="border-t pt-4">
+                      <div className="flex justify-between text-lg font-semibold mb-4">
+                        <span>Total</span>
+                        <span>${cartTotal.toFixed(2)}</span>
+                      </div>
+                      <Button type="submit" variant="order" size="lg" className="w-full" disabled={isLoading}>
+                        {isLoading ? <LoadingSpinner size="sm" /> : `Place Order - $${cartTotal.toFixed(2)}`}
+                      </Button>
+                    </div>
+                  </form>
                 </DialogContent>
               </Dialog>
             </div>
           </div>
-        </div>
-      </header>
-
-      {/* Main Content */}
-      <main className="container mx-auto px-4 py-8">
-        {menuItems.length === 0 ? (
-          <Card>
-            <CardContent className="py-12 text-center">
-              <Store className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
-              <h2 className="text-xl font-semibold mb-2">Menu Coming Soon</h2>
-              <p className="text-muted-foreground">
-                This store is setting up their menu. Check back soon!
-              </p>
-            </CardContent>
-          </Card>
-        ) : (
-          <div className="space-y-8">
-            {Object.entries(categorizedItems).map(([category, items]) => (
-              <section key={category}>
-                <h2 className="text-2xl font-bold mb-6">{category}</h2>
-                <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {items.map((item) => (
-                    <Card key={item.id} className="overflow-hidden">
-                      <CardHeader>
-                        <div className="flex justify-between items-start">
-                          <CardTitle className="text-lg">{item.name}</CardTitle>
-                          <Badge variant={item.available ? 'default' : 'secondary'}>
-                            {item.available ? 'Available' : 'Sold Out'}
-                          </Badge>
-                        </div>
-                        <CardDescription>{item.description}</CardDescription>
-                      </CardHeader>
-                      <CardContent>
-                        <div className="flex justify-between items-center">
-                          <span className="text-2xl font-bold text-primary">
-                            ${item.price.toFixed(2)}
-                          </span>
-                          <Button 
-                            variant="order"
-                            onClick={() => addToCart(item)}
-                            disabled={!item.available}
-                          >
-                            <Plus className="h-4 w-4 mr-2" />
-                            Add to Cart
-                          </Button>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              </section>
-            ))}
-          </div>
         )}
-      </main>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
+
+  // Render the appropriate template
+  const template = vendor.storefront?.template || 'modern';
+  
+  switch (template) {
+    case 'classic':
+      return (
+        <ClassicTemplate
+          vendor={vendor}
+          menuItems={menuItems}
+          onAddToCart={addToCart}
+          cartItemCount={cartItemCount}
+          cartComponent={cartComponent}
+          headerComponent={headerComponent}
+        />
+      );
+    case 'minimal':
+      return (
+        <MinimalTemplate
+          vendor={vendor}
+          menuItems={menuItems}
+          onAddToCart={addToCart}
+          cartItemCount={cartItemCount}
+          cartComponent={cartComponent}
+          headerComponent={headerComponent}
+        />
+      );
+    default:
+      return (
+        <ModernTemplate
+          vendor={vendor}
+          menuItems={menuItems}
+          onAddToCart={addToCart}
+          cartItemCount={cartItemCount}
+          cartComponent={cartComponent}
+          headerComponent={headerComponent}
+        />
+      );
+  }
 };
 
 export default Storefront;

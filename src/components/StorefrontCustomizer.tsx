@@ -69,28 +69,36 @@ const StorefrontCustomizer: React.FC<StorefrontCustomizerProps> = ({ vendor, onU
         </CardHeader>
         <CardContent className="space-y-6">
           {/* Template Selection */}
-          <div className="space-y-3">
+          <div className="space-y-4">
             <Label className="text-base font-semibold">Store Template</Label>
-            <Select 
-              value={settings.template} 
-              onValueChange={(value: 'modern' | 'classic' | 'minimal') => 
-                setSettings(prev => ({ ...prev, template: value }))
-              }
-            >
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {templates.map((template) => (
-                  <SelectItem key={template.value} value={template.value}>
-                    <div>
-                      <div className="font-medium">{template.label}</div>
-                      <div className="text-sm text-muted-foreground">{template.description}</div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {templates.map((template) => (
+                <Card 
+                  key={template.value} 
+                  className={`cursor-pointer transition-all duration-200 hover:shadow-lg ${
+                    settings.template === template.value 
+                      ? 'ring-2 ring-primary shadow-lg' 
+                      : 'hover:ring-1 hover:ring-muted-foreground/20'
+                  }`}
+                  onClick={() => setSettings(prev => ({ ...prev, template: template.value as 'modern' | 'classic' | 'minimal' }))}
+                >
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-sm font-semibold">{template.label}</CardTitle>
+                    <CardDescription className="text-xs">{template.description}</CardDescription>
+                  </CardHeader>
+                  <CardContent className="pt-0">
+                    <div className="aspect-[16/10] rounded-md border bg-gradient-to-br from-muted to-muted/50 flex items-center justify-center text-xs text-muted-foreground">
+                      {template.label} Preview
                     </div>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+                    {settings.template === template.value && (
+                      <Badge variant="default" className="mt-2 text-xs">
+                        Currently Active
+                      </Badge>
+                    )}
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
           </div>
 
           {/* Color Scheme */}
