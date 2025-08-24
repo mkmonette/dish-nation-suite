@@ -39,10 +39,28 @@ const MinimalTemplate: React.FC<MinimalTemplateProps> = ({
     <div className="min-h-screen bg-white" style={customStyle}>
       {headerComponent}
       
-      {/* Minimal Hero Section */}
-      <section className="border-b border-border/50">
-        <div className="container mx-auto px-4 py-20">
+      {/* Minimal Hero Section with Banner */}
+      <section className="border-b border-border/50 relative">
+        {vendor.storefront?.banner && (
+          <div className="absolute inset-0 opacity-5">
+            <img 
+              src={vendor.storefront.banner} 
+              alt="Store banner"
+              className="w-full h-full object-cover"
+            />
+          </div>
+        )}
+        <div className="relative container mx-auto px-4 py-20">
           <div className="max-w-2xl mx-auto text-center space-y-6">
+            {vendor.storefront?.logo && (
+              <div className="mb-8">
+                <img 
+                  src={vendor.storefront.logo} 
+                  alt={`${vendor.storeName} logo`}
+                  className="h-12 md:h-16 mx-auto object-contain opacity-90"
+                />
+              </div>
+            )}
             <h1 className="text-5xl md:text-6xl font-light tracking-tight text-foreground">
               {vendor.storefront?.heroText || vendor.storeName}
             </h1>
@@ -53,6 +71,24 @@ const MinimalTemplate: React.FC<MinimalTemplateProps> = ({
           </div>
         </div>
       </section>
+
+      {/* About Us Section */}
+      {vendor.storefront?.aboutUs && (
+        <section className="py-20 border-b border-border/30">
+          <div className="container mx-auto px-4">
+            <div className="max-w-2xl mx-auto text-center space-y-8">
+              <h2 className="text-2xl md:text-3xl font-light tracking-wide text-foreground">
+                About
+              </h2>
+              <div className="prose prose-lg mx-auto">
+                <p className="text-muted-foreground font-light leading-relaxed whitespace-pre-wrap">
+                  {vendor.storefront.aboutUs}
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Menu Section */}
       <main className="container mx-auto px-4 py-16">

@@ -39,11 +39,30 @@ const ModernTemplate: React.FC<ModernTemplateProps> = ({
     <div className="min-h-screen bg-gradient-to-br from-background via-muted/20 to-background" style={customStyle}>
       {headerComponent}
       
-      {/* Hero Section */}
+      {/* Hero Section with Banner */}
       <section className="relative overflow-hidden bg-gradient-to-r from-primary/90 to-secondary/90 text-primary-foreground">
-        <div className="absolute inset-0 bg-black/20"></div>
+        {vendor.storefront?.banner && (
+          <div className="absolute inset-0">
+            <img 
+              src={vendor.storefront.banner} 
+              alt="Store banner"
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 bg-black/60"></div>
+          </div>
+        )}
+        {!vendor.storefront?.banner && <div className="absolute inset-0 bg-black/20"></div>}
         <div className="relative container mx-auto px-4 py-16 md:py-24">
           <div className="max-w-3xl mx-auto text-center">
+            {vendor.storefront?.logo && (
+              <div className="mb-8">
+                <img 
+                  src={vendor.storefront.logo} 
+                  alt={`${vendor.storeName} logo`}
+                  className="h-20 md:h-24 mx-auto object-contain"
+                />
+              </div>
+            )}
             <h1 className="text-4xl md:text-6xl font-bold mb-6 animate-in slide-in-from-bottom-4 duration-1000">
               {vendor.storefront?.heroText || `Welcome to ${vendor.storeName}`}
             </h1>
@@ -67,6 +86,22 @@ const ModernTemplate: React.FC<ModernTemplateProps> = ({
           </div>
         </div>
       </section>
+
+      {/* About Us Section */}
+      {vendor.storefront?.aboutUs && (
+        <section className="bg-muted/30 py-16">
+          <div className="container mx-auto px-4">
+            <div className="max-w-3xl mx-auto text-center">
+              <h2 className="text-3xl font-bold mb-6 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                About Us
+              </h2>
+              <div className="prose prose-lg mx-auto text-muted-foreground">
+                <p className="whitespace-pre-wrap">{vendor.storefront.aboutUs}</p>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Menu Section */}
       <main className="container mx-auto px-4 py-12">

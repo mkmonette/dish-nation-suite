@@ -11,6 +11,7 @@ export interface StorefrontSettings {
   banner?: string;
   heroText?: string;
   heroSubtext?: string;
+  aboutUs?: string;
 }
 
 export interface SubscriptionPlan {

@@ -39,14 +39,33 @@ const ClassicTemplate: React.FC<ClassicTemplateProps> = ({
     <div className="min-h-screen bg-background" style={customStyle}>
       {headerComponent}
       
-      {/* Classic Hero Section */}
+      {/* Classic Hero Section with Banner */}
       <section className="relative bg-card border-b-4 border-primary/20">
-        <div className="container mx-auto px-4 py-16">
+        {vendor.storefront?.banner && (
+          <div className="absolute inset-0 opacity-10">
+            <img 
+              src={vendor.storefront.banner} 
+              alt="Store banner"
+              className="w-full h-full object-cover"
+            />
+          </div>
+        )}
+        <div className="relative container mx-auto px-4 py-16">
           <div className="max-w-4xl mx-auto text-center">
             <div className="mb-8">
-              <div className="w-20 h-20 mx-auto mb-4 bg-primary rounded-full flex items-center justify-center">
-                <Utensils className="h-10 w-10 text-primary-foreground" />
-              </div>
+              {vendor.storefront?.logo ? (
+                <div className="mb-4">
+                  <img 
+                    src={vendor.storefront.logo} 
+                    alt={`${vendor.storeName} logo`}
+                    className="h-16 md:h-20 mx-auto object-contain"
+                  />
+                </div>
+              ) : (
+                <div className="w-20 h-20 mx-auto mb-4 bg-primary rounded-full flex items-center justify-center">
+                  <Utensils className="h-10 w-10 text-primary-foreground" />
+                </div>
+              )}
               <h1 className="text-4xl md:text-5xl font-serif font-bold mb-4 text-foreground">
                 {vendor.storefront?.heroText || vendor.storeName}
               </h1>
@@ -79,6 +98,29 @@ const ClassicTemplate: React.FC<ClassicTemplateProps> = ({
           </div>
         </div>
       </section>
+
+      {/* About Us Section */}
+      {vendor.storefront?.aboutUs && (
+        <section className="py-16 bg-muted/10">
+          <div className="container mx-auto px-4">
+            <div className="max-w-4xl mx-auto text-center">
+              <h2 className="text-3xl md:text-4xl font-serif font-bold mb-6 text-foreground">
+                Our Story
+              </h2>
+              <div className="flex items-center justify-center gap-3 mb-8">
+                <div className="w-12 h-0.5 bg-primary"></div>
+                <div className="w-3 h-3 bg-primary rotate-45"></div>
+                <div className="w-12 h-0.5 bg-primary"></div>
+              </div>
+              <div className="prose prose-lg mx-auto text-muted-foreground">
+                <p className="whitespace-pre-wrap font-light leading-relaxed">
+                  {vendor.storefront.aboutUs}
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Menu Section */}
       <main className="container mx-auto px-4 py-12">

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Button } from '@/components/ui/enhanced-button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge';
 import { toast } from '@/hooks/use-toast';
 import { Vendor, vendorStorage } from '@/lib/storage';
-import { Palette, Save, Eye } from 'lucide-react';
+import { Palette, Save, Eye, Upload, Image, FileText } from 'lucide-react';
 
 interface StorefrontCustomizerProps {
   vendor: Vendor;
@@ -25,9 +25,14 @@ const StorefrontCustomizer: React.FC<StorefrontCustomizerProps> = ({ vendor, onU
     },
     heroText: '',
     heroSubtext: '',
+    logo: '',
+    banner: '',
+    aboutUs: '',
     ...vendor.storefront,
   });
   const [isLoading, setIsLoading] = useState(false);
+  const logoInputRef = useRef<HTMLInputElement>(null);
+  const bannerInputRef = useRef<HTMLInputElement>(null);
 
   const templates = [
     { value: 'modern', label: 'Modern', description: 'Clean and contemporary design' },
@@ -46,7 +51,7 @@ const StorefrontCustomizer: React.FC<StorefrontCustomizerProps> = ({ vendor, onU
       onUpdate(updatedVendor);
       toast({ 
         title: 'Storefront Updated!', 
-        description: 'Your storefront customization has been saved.' 
+        description: 'Your storefront customization has been saved and is now live.' 
       });
     }
     
@@ -54,13 +59,52 @@ const StorefrontCustomizer: React.FC<StorefrontCustomizerProps> = ({ vendor, onU
   };
 
   const handleColorChange = (colorKey: keyof typeof settings.colors, value: string) => {
-    setSettings(prev => ({
-      ...prev,
+    const newSettings = {
+      ...settings,
       colors: {
-        ...prev.colors,
+        ...settings.colors,
         [colorKey]: value
       }
-    }));
+    };
+    setSettings(newSettings);
+    
+    // Auto-save for instant updates
+    vendorStorage.update(vendor.id, { storefront: newSettings });
+    onUpdate({ ...vendor, storefront: newSettings });
+  };
+
+  const handleFileUpload = (type: 'logo' | 'banner', file: File) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const result = e.target?.result as string;
+      const newSettings = {
+        ...settings,
+        [type]: result
+      };
+      setSettings(newSettings);
+      
+      // Auto-save for instant updates
+      vendorStorage.update(vendor.id, { storefront: newSettings });
+      onUpdate({ ...vendor, storefront: newSettings });
+      
+      toast({ 
+        title: `${type === 'logo' ? 'Logo' : 'Banner'} uploaded!`, 
+        description: 'Your image has been updated and is now live.' 
+      });
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleTextChange = (field: 'heroText' | 'heroSubtext' | 'aboutUs', value: string) => {
+    const newSettings = {
+      ...settings,
+      [field]: value
+    };
+    setSettings(newSettings);
+    
+    // Auto-save for instant updates
+    vendorStorage.update(vendor.id, { storefront: newSettings });
+    onUpdate({ ...vendor, storefront: newSettings });
   };
 
   const previewUrl = `${window.location.origin}/store/${vendor.slug}`;
@@ -111,10 +155,116 @@ const StorefrontCustomizer: React.FC<StorefrontCustomizerProps> = ({ vendor, onU
             </div>
           </div>
 
+          {/* Logo & Banner Upload */}
+          <div className="space-y-6">
+            <Label className="text-base font-semibold">Brand Assets</Label>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Logo Upload */}
+              <div className="space-y-3">
+                <Label className="text-sm font-medium">Logo</Label>
+                <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-6 text-center hover:border-muted-foreground/50 transition-colors">
+                  {settings.logo ? (
+                    <div className="space-y-3">
+                      <img 
+                        src={settings.logo} 
+                        alt="Logo preview" 
+                        className="max-h-20 mx-auto object-contain"
+                      />
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => logoInputRef.current?.click()}
+                      >
+                        <Upload className="h-4 w-4 mr-2" />
+                        Change Logo
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      <Image className="h-8 w-8 mx-auto text-muted-foreground" />
+                      <div>
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => logoInputRef.current?.click()}
+                        >
+                          <Upload className="h-4 w-4 mr-2" />
+                          Upload Logo
+                        </Button>
+                      </div>
+                      <p className="text-xs text-muted-foreground">PNG, JPG up to 2MB</p>
+                    </div>
+                  )}
+                  <input
+                    ref={logoInputRef}
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) handleFileUpload('logo', file);
+                    }}
+                  />
+                </div>
+              </div>
+
+              {/* Banner Upload */}
+              <div className="space-y-3">
+                <Label className="text-sm font-medium">Banner Image</Label>
+                <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-6 text-center hover:border-muted-foreground/50 transition-colors">
+                  {settings.banner ? (
+                    <div className="space-y-3">
+                      <img 
+                        src={settings.banner} 
+                        alt="Banner preview" 
+                        className="max-h-20 w-full mx-auto object-cover rounded"
+                      />
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => bannerInputRef.current?.click()}
+                      >
+                        <Upload className="h-4 w-4 mr-2" />
+                        Change Banner
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      <Image className="h-8 w-8 mx-auto text-muted-foreground" />
+                      <div>
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => bannerInputRef.current?.click()}
+                        >
+                          <Upload className="h-4 w-4 mr-2" />
+                          Upload Banner
+                        </Button>
+                      </div>
+                      <p className="text-xs text-muted-foreground">PNG, JPG up to 5MB</p>
+                    </div>
+                  )}
+                  <input
+                    ref={bannerInputRef}
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) handleFileUpload('banner', file);
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
           {/* Color Scheme */}
           <div className="space-y-4">
-            <Label className="text-base font-semibold">Color Scheme</Label>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <Label className="text-base font-semibold">Brand Colors</Label>
+            <p className="text-sm text-muted-foreground">Changes apply instantly across your storefront</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
                 <Label htmlFor="primary-color">Primary Color</Label>
                 <div className="flex items-center space-x-2">
@@ -128,26 +278,7 @@ const StorefrontCustomizer: React.FC<StorefrontCustomizerProps> = ({ vendor, onU
                   <Input
                     value={settings.colors.primary}
                     onChange={(e) => handleColorChange('primary', e.target.value)}
-                    placeholder="#FF6B35"
-                    className="flex-1"
-                  />
-                </div>
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="secondary-color">Secondary Color</Label>
-                <div className="flex items-center space-x-2">
-                  <Input
-                    id="secondary-color"
-                    type="color"
-                    value={settings.colors.secondary}
-                    onChange={(e) => handleColorChange('secondary', e.target.value)}
-                    className="w-12 h-10 p-1 border-2"
-                  />
-                  <Input
-                    value={settings.colors.secondary}
-                    onChange={(e) => handleColorChange('secondary', e.target.value)}
-                    placeholder="#2ECC71"
+                    placeholder="#3b82f6"
                     className="flex-1"
                   />
                 </div>
@@ -166,7 +297,7 @@ const StorefrontCustomizer: React.FC<StorefrontCustomizerProps> = ({ vendor, onU
                   <Input
                     value={settings.colors.accent}
                     onChange={(e) => handleColorChange('accent', e.target.value)}
-                    placeholder="#F39C12"
+                    placeholder="#f59e0b"
                     className="flex-1"
                   />
                 </div>
@@ -183,7 +314,7 @@ const StorefrontCustomizer: React.FC<StorefrontCustomizerProps> = ({ vendor, onU
                 <Input
                   id="hero-text"
                   value={settings.heroText || ''}
-                  onChange={(e) => setSettings(prev => ({ ...prev, heroText: e.target.value }))}
+                  onChange={(e) => handleTextChange('heroText', e.target.value)}
                   placeholder="Welcome to your store"
                 />
               </div>
@@ -193,11 +324,32 @@ const StorefrontCustomizer: React.FC<StorefrontCustomizerProps> = ({ vendor, onU
                 <Textarea
                   id="hero-subtext"
                   value={settings.heroSubtext || ''}
-                  onChange={(e) => setSettings(prev => ({ ...prev, heroSubtext: e.target.value }))}
+                  onChange={(e) => handleTextChange('heroSubtext', e.target.value)}
                   placeholder="Delicious food delivered to your door"
                   className="min-h-20"
                 />
               </div>
+            </div>
+          </div>
+
+          {/* About Us Section */}
+          <div className="space-y-4">
+            <div className="flex items-center gap-2">
+              <FileText className="h-5 w-5 text-primary" />
+              <Label className="text-base font-semibold">About Us</Label>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="about-us">Tell your story</Label>
+              <Textarea
+                id="about-us"
+                value={settings.aboutUs || ''}
+                onChange={(e) => handleTextChange('aboutUs', e.target.value)}
+                placeholder="Share your story, mission, and what makes your food special. This will be displayed on your storefront to help customers connect with your brand."
+                className="min-h-32"
+              />
+              <p className="text-xs text-muted-foreground">
+                This section will appear on your storefront. Updates are saved automatically.
+              </p>
             </div>
           </div>
 
@@ -228,8 +380,11 @@ const StorefrontCustomizer: React.FC<StorefrontCustomizerProps> = ({ vendor, onU
               className="w-full"
             >
               <Save className="h-4 w-4 mr-2" />
-              {isLoading ? 'Saving...' : 'Save Storefront Settings'}
+              {isLoading ? 'Saving...' : 'Save All Changes'}
             </Button>
+            <p className="text-xs text-muted-foreground text-center mt-2">
+              Colors and content update instantly. Click save to ensure all changes are preserved.
+            </p>
           </div>
         </CardContent>
       </Card>
