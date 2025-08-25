@@ -126,6 +126,30 @@ export interface OrderItem {
   selectedAddOns?: MenuAddOn[];
 }
 
+export interface DiscountCode {
+  id: string;
+  code: string;
+  type: 'percentage' | 'fixed';
+  value: number;
+  minOrderValue?: number;
+  maxUses?: number;
+  usedCount: number;
+  expiresAt?: string;
+  isActive: boolean;
+  vendorId: string;
+  createdAt: string;
+}
+
+export interface NotificationTemplate {
+  id: string;
+  name: string;
+  subject: string;
+  content: string;
+  type: 'email' | 'push';
+  vendorId: string;
+  createdAt: string;
+}
+
 // Storage keys
 const VENDORS_KEY = 'foodapp_vendors';
 const CUSTOMERS_KEY = 'foodapp_customers';
@@ -137,6 +161,8 @@ const ADMINS_KEY = 'foodapp_admins';
 const CURRENT_VENDOR_KEY = 'foodapp_current_vendor';
 const CURRENT_CUSTOMER_KEY = 'foodapp_current_customer';
 const CURRENT_ADMIN_KEY = 'foodapp_current_admin';
+const DISCOUNT_CODES_KEY = 'foodapp_discount_codes';
+const NOTIFICATION_TEMPLATES_KEY = 'foodapp_notification_templates';
 
 // Vendor operations
 export const vendorStorage = {
@@ -453,5 +479,105 @@ export const sessionStorage = {
 
   clearCurrentAdmin(): void {
     localStorage.removeItem(CURRENT_ADMIN_KEY);
+  }
+};
+
+// Discount code operations (tenant-isolated)
+export const discountCodeStorage = {
+  getAll(vendorId: string): DiscountCode[] {
+    const codes = localStorage.getItem(DISCOUNT_CODES_KEY);
+    const allCodes: DiscountCode[] = codes ? JSON.parse(codes) : [];
+    return allCodes.filter(code => code.vendorId === vendorId);
+  },
+
+  getByCode(code: string, vendorId: string): DiscountCode | null {
+    const codes = this.getAll(vendorId);
+    return codes.find(c => c.code === code && c.isActive) || null;
+  },
+
+  create(code: Omit<DiscountCode, 'id' | 'createdAt' | 'usedCount'>, vendorId: string): DiscountCode {
+    const allCodes: DiscountCode[] = JSON.parse(localStorage.getItem(DISCOUNT_CODES_KEY) || '[]');
+    const newCode: DiscountCode = {
+      ...code,
+      id: Date.now().toString(),
+      vendorId,
+      usedCount: 0,
+      createdAt: new Date().toISOString(),
+    };
+    allCodes.push(newCode);
+    localStorage.setItem(DISCOUNT_CODES_KEY, JSON.stringify(allCodes));
+    return newCode;
+  },
+
+  update(id: string, updates: Partial<DiscountCode>, vendorId: string): DiscountCode | null {
+    const allCodes: DiscountCode[] = JSON.parse(localStorage.getItem(DISCOUNT_CODES_KEY) || '[]');
+    const index = allCodes.findIndex(code => code.id === id && code.vendorId === vendorId);
+    if (index === -1) return null;
+    
+    allCodes[index] = { ...allCodes[index], ...updates };
+    localStorage.setItem(DISCOUNT_CODES_KEY, JSON.stringify(allCodes));
+    return allCodes[index];
+  },
+
+  delete(id: string, vendorId: string): boolean {
+    const allCodes: DiscountCode[] = JSON.parse(localStorage.getItem(DISCOUNT_CODES_KEY) || '[]');
+    const index = allCodes.findIndex(code => code.id === id && code.vendorId === vendorId);
+    if (index === -1) return false;
+    
+    allCodes.splice(index, 1);
+    localStorage.setItem(DISCOUNT_CODES_KEY, JSON.stringify(allCodes));
+    return true;
+  },
+
+  incrementUsage(id: string, vendorId: string): boolean {
+    const allCodes: DiscountCode[] = JSON.parse(localStorage.getItem(DISCOUNT_CODES_KEY) || '[]');
+    const index = allCodes.findIndex(code => code.id === id && code.vendorId === vendorId);
+    if (index === -1) return false;
+    
+    allCodes[index].usedCount += 1;
+    localStorage.setItem(DISCOUNT_CODES_KEY, JSON.stringify(allCodes));
+    return true;
+  }
+};
+
+// Notification template operations (tenant-isolated)
+export const notificationTemplateStorage = {
+  getAll(vendorId: string): NotificationTemplate[] {
+    const templates = localStorage.getItem(NOTIFICATION_TEMPLATES_KEY);
+    const allTemplates: NotificationTemplate[] = templates ? JSON.parse(templates) : [];
+    return allTemplates.filter(template => template.vendorId === vendorId);
+  },
+
+  create(template: Omit<NotificationTemplate, 'id' | 'createdAt'>, vendorId: string): NotificationTemplate {
+    const allTemplates: NotificationTemplate[] = JSON.parse(localStorage.getItem(NOTIFICATION_TEMPLATES_KEY) || '[]');
+    const newTemplate: NotificationTemplate = {
+      ...template,
+      id: Date.now().toString(),
+      vendorId,
+      createdAt: new Date().toISOString(),
+    };
+    allTemplates.push(newTemplate);
+    localStorage.setItem(NOTIFICATION_TEMPLATES_KEY, JSON.stringify(allTemplates));
+    return newTemplate;
+  },
+
+  update(id: string, updates: Partial<NotificationTemplate>, vendorId: string): NotificationTemplate | null {
+    const allTemplates: NotificationTemplate[] = JSON.parse(localStorage.getItem(NOTIFICATION_TEMPLATES_KEY) || '[]');
+    const index = allTemplates.findIndex(template => template.id === id && template.vendorId === vendorId);
+    if (index === -1) return null;
+    
+    allTemplates[index] = { ...allTemplates[index], ...updates };
+    localStorage.setItem(NOTIFICATION_TEMPLATES_KEY, JSON.stringify(allTemplates));
+    return allTemplates[index];
+  },
+
+  delete(id: string, vendorId: string): boolean {
+    const allTemplates: NotificationTemplate[] = JSON.parse(localStorage.getItem(NOTIFICATION_TEMPLATES_KEY) || '[]');
+    const index = allTemplates.findIndex(template => template.id === id && template.vendorId === vendorId);
+    if (index === -1) return false;
+    
+    allTemplates.splice(index, 1);
+    localStorage.setItem(NOTIFICATION_TEMPLATES_KEY, JSON.stringify(allTemplates));
+    return true;
   }
 };

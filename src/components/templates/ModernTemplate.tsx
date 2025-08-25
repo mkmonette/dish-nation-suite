@@ -8,6 +8,9 @@ import { Plus, MapPin, Clock, Star } from 'lucide-react';
 interface ModernTemplateProps {
   vendor: Vendor;
   menuItems: MenuItem[];
+  categories: string[];
+  selectedCategory: string;
+  onCategoryChange: (category: string) => void;
   onAddToCart: (item: MenuItem) => void;
   cartItemCount: number;
   cartComponent: React.ReactNode;

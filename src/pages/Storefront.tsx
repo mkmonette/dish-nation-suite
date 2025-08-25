@@ -33,6 +33,7 @@ const Storefront = () => {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
   const vendor = React.useMemo(() => {
     if (!vendorSlug) return null;
@@ -51,7 +52,20 @@ const Storefront = () => {
 
     // Load menu items
     setMenuItems(menuStorage.getAll(vendor.id));
+    
+    // Load cart from localStorage
+    const savedCart = localStorage.getItem(`cart_${vendor.id}`);
+    if (savedCart) {
+      setCart(JSON.parse(savedCart));
+    }
   }, [vendor, navigate, currentTenant, setTenant]);
+
+  // Save cart to localStorage whenever it changes
+  useEffect(() => {
+    if (vendor) {
+      localStorage.setItem(`cart_${vendor.id}`, JSON.stringify(cart));
+    }
+  }, [cart, vendor]);
 
   if (!vendor) {
     return (
@@ -81,6 +95,14 @@ const Storefront = () => {
     acc[item.category].push(item);
     return acc;
   }, {} as Record<string, MenuItem[]>);
+
+  // Get filtered menu items based on selected category
+  const filteredMenuItems = selectedCategory === 'all' 
+    ? menuItems 
+    : menuItems.filter(item => item.category === selectedCategory);
+
+  // Get all unique categories for filtering
+  const categories = ['all', ...Object.keys(categorizedItems)];
 
   const addToCart = (menuItem: MenuItem) => {
     setCart(prev => {
@@ -201,12 +223,12 @@ const Storefront = () => {
             
             <Dialog open={isCartOpen} onOpenChange={setIsCartOpen}>
               <DialogTrigger asChild>
-                <Button variant="hero" className="relative">
-                  <ShoppingCart className="h-4 w-4 mr-2" />
-                  Cart
+                <Button variant="hero" className="relative min-h-12 px-6">
+                  <ShoppingCart className="h-5 w-5 mr-2" />
+                  <span className="hidden sm:inline">Cart</span>
                   {cartItemCount > 0 && (
                     <Badge 
-                      className="absolute -top-2 -right-2 bg-destructive text-destructive-foreground min-w-5 h-5 flex items-center justify-center p-0 text-xs"
+                      className="absolute -top-2 -right-2 bg-destructive text-destructive-foreground min-w-6 h-6 flex items-center justify-center p-0 text-xs font-bold"
                     >
                       {cartItemCount}
                     </Badge>
@@ -247,19 +269,19 @@ const Storefront = () => {
                   <Button 
                     variant="outline" 
                     size="icon"
-                    className="h-8 w-8"
+                    className="h-10 w-10 min-h-10"
                     onClick={() => updateCartItemQuantity(item.menuItem.id, item.quantity - 1)}
                   >
-                    <Minus className="h-3 w-3" />
+                    <Minus className="h-4 w-4" />
                   </Button>
-                  <span className="min-w-8 text-center">{item.quantity}</span>
+                  <span className="min-w-12 text-center font-medium">{item.quantity}</span>
                   <Button 
                     variant="outline" 
                     size="icon"
-                    className="h-8 w-8"
+                    className="h-10 w-10 min-h-10"
                     onClick={() => updateCartItemQuantity(item.menuItem.id, item.quantity + 1)}
                   >
-                    <Plus className="h-3 w-3" />
+                    <Plus className="h-4 w-4" />
                   </Button>
                 </div>
               </div>
@@ -273,7 +295,7 @@ const Storefront = () => {
               
               <Dialog open={isCheckoutOpen} onOpenChange={setIsCheckoutOpen}>
                 <DialogTrigger asChild>
-                  <Button variant="order" size="lg" className="w-full mt-4">
+                  <Button variant="order" size="lg" className="w-full mt-4 min-h-12">
                     Checkout
                   </Button>
                 </DialogTrigger>
@@ -368,7 +390,10 @@ const Storefront = () => {
       return (
         <ClassicTemplate
           vendor={vendor}
-          menuItems={menuItems}
+          menuItems={filteredMenuItems}
+          categories={categories}
+          selectedCategory={selectedCategory}
+          onCategoryChange={setSelectedCategory}
           onAddToCart={addToCart}
           cartItemCount={cartItemCount}
           cartComponent={cartComponent}
@@ -379,7 +404,10 @@ const Storefront = () => {
       return (
         <MinimalTemplate
           vendor={vendor}
-          menuItems={menuItems}
+          menuItems={filteredMenuItems}
+          categories={categories}
+          selectedCategory={selectedCategory}
+          onCategoryChange={setSelectedCategory}
           onAddToCart={addToCart}
           cartItemCount={cartItemCount}
           cartComponent={cartComponent}
@@ -390,7 +418,10 @@ const Storefront = () => {
       return (
         <ModernTemplate
           vendor={vendor}
-          menuItems={menuItems}
+          menuItems={filteredMenuItems}
+          categories={categories}
+          selectedCategory={selectedCategory}
+          onCategoryChange={setSelectedCategory}
           onAddToCart={addToCart}
           cartItemCount={cartItemCount}
           cartComponent={cartComponent}

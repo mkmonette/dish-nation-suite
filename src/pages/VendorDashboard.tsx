@@ -15,6 +15,9 @@ import { menuStorage, orderStorage, MenuItem, Order } from '@/lib/storage';
 import StorefrontCustomizer from '@/components/StorefrontCustomizer';
 import EnhancedMenuManager from '@/components/EnhancedMenuManager';
 import { Plus, Store, Package, Settings, LogOut, ExternalLink, Eye, Trash2 } from 'lucide-react';
+import DiscountManager from '@/components/DiscountManager';
+import NotificationManager from '@/components/NotificationManager';
+import CustomerManager from '@/components/CustomerManager';
 
 const VendorDashboard = () => {
   const { logout } = useVendor();
@@ -170,10 +173,13 @@ const VendorDashboard = () => {
         </Card>
 
         <Tabs defaultValue="menu" className="space-y-4">
-          <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="menu">Menu Items</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-7">
+            <TabsTrigger value="menu">Menu</TabsTrigger>
             <TabsTrigger value="orders">Orders</TabsTrigger>
             <TabsTrigger value="storefront">Storefront</TabsTrigger>
+            <TabsTrigger value="discounts">Discounts</TabsTrigger>
+            <TabsTrigger value="notifications">Notifications</TabsTrigger>
+            <TabsTrigger value="customers">Customers</TabsTrigger>
             <TabsTrigger value="settings">Settings</TabsTrigger>
           </TabsList>
 
@@ -300,6 +306,21 @@ const VendorDashboard = () => {
                 window.location.reload();
               }}
             />
+          </TabsContent>
+
+          {/* Discount Codes Tab */}
+          <TabsContent value="discounts" className="space-y-4">
+            <DiscountManager vendorId={vendor.id} />
+          </TabsContent>
+
+          {/* Notifications Tab */}
+          <TabsContent value="notifications" className="space-y-4">
+            <NotificationManager vendorId={vendor.id} />
+          </TabsContent>
+
+          {/* Customers Tab */}
+          <TabsContent value="customers" className="space-y-4">
+            <CustomerManager vendorId={vendor.id} />
           </TabsContent>
 
           {/* Settings Tab */}
