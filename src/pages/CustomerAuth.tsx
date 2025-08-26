@@ -9,6 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from '@/hooks/use-toast';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
+import { Checkbox } from '@/components/ui/checkbox';
 import { vendorStorage } from '@/lib/storage';
 
 const CustomerAuth = () => {
@@ -220,6 +221,34 @@ const CustomerAuth = () => {
                     required
                   />
                 </div>
+
+                {/* Marketing Preferences */}
+                <div className="space-y-3 p-4 bg-muted/50 rounded-lg">
+                  <h4 className="font-medium text-sm">Marketing Preferences</h4>
+                  <div className="space-y-2">
+                    <div className="flex items-center space-x-2">
+                      <Checkbox 
+                        id="email-marketing"
+                        name="emailMarketing"
+                        defaultChecked={true}
+                      />
+                      <Label htmlFor="email-marketing" className="text-sm">
+                        Email me about special offers and promotions
+                      </Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Checkbox 
+                        id="push-notifications"
+                        name="pushNotifications"
+                        defaultChecked={true}
+                      />
+                      <Label htmlFor="push-notifications" className="text-sm">
+                        Send me order updates and notifications
+                      </Label>
+                    </div>
+                  </div>
+                </div>
+
                 <Button 
                   type="submit" 
                   variant="order" 

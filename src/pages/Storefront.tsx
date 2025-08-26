@@ -11,6 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { toast } from '@/hooks/use-toast';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { Textarea } from '@/components/ui/textarea';
+import { Checkbox } from '@/components/ui/checkbox';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { vendorStorage, menuStorage, orderStorage, customerStorage, loyaltyStorage, MenuItem } from '@/lib/storage';
 import { ShoppingCart, Plus, Minus, Store, User, LogOut, MapPin, Phone, Star } from 'lucide-react';
@@ -223,6 +224,14 @@ const Storefront = () => {
                 >
                   My Orders
                 </Button>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => navigate(`/store/${vendor.slug}/profile`)}
+                >
+                  <User className="h-4 w-4 mr-2" />
+                  Profile
+                </Button>
                 {(() => {
                   const loyaltySettings = loyaltyStorage.get(vendor.id);
                   return loyaltySettings?.isActive && (
@@ -389,6 +398,35 @@ const Storefront = () => {
                           className="min-h-20"
                         />
                       </div>
+
+                      {/* Marketing Preferences for Guest Checkout */}
+                      {!customer && (
+                        <div className="space-y-3 p-4 bg-muted/50 rounded-lg">
+                          <h4 className="font-medium text-sm">Stay connected with us</h4>
+                          <div className="space-y-2">
+                            <div className="flex items-center space-x-2">
+                              <Checkbox 
+                                id="email-marketing"
+                                name="emailMarketing"
+                                defaultChecked={true}
+                              />
+                              <Label htmlFor="email-marketing" className="text-sm">
+                                Email me about special offers and promotions
+                              </Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <Checkbox 
+                                id="push-notifications"
+                                name="pushNotifications"
+                                defaultChecked={true}
+                              />
+                              <Label htmlFor="push-notifications" className="text-sm">
+                                Send me order updates and notifications
+                              </Label>
+                            </div>
+                          </div>
+                        </div>
+                      )}
                     </div>
                     
                     <div className="border-t pt-4">

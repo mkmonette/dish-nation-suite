@@ -68,6 +68,11 @@ export interface Customer {
   phone?: string;
   vendorId: string; // tenant isolation
   loyaltyPoints: number;
+  marketingPreferences: {
+    emailMarketing: boolean;
+    pushNotifications: boolean;
+    smsMarketing: boolean;
+  };
   createdAt: string;
 }
 
@@ -164,6 +169,22 @@ export interface LoyaltySettings {
   createdAt: string;
 }
 
+export interface EmailCampaign {
+  id: string;
+  vendorId: string;
+  name: string;
+  subject: string;
+  content: string;
+  targetAudience: 'all' | 'loyal' | 'recent' | 'inactive';
+  scheduledFor?: string;
+  sentAt?: string;
+  status: 'draft' | 'scheduled' | 'sent' | 'cancelled';
+  recipients: string[]; // customer IDs
+  openRate?: number;
+  clickRate?: number;
+  createdAt: string;
+}
+
 // Storage keys
 const VENDORS_KEY = 'foodapp_vendors';
 const CUSTOMERS_KEY = 'foodapp_customers';
@@ -252,13 +273,18 @@ export const customerStorage = {
     return customers.find(c => c.email === email) || null;
   },
 
-  create(customer: Omit<Customer, 'id' | 'createdAt' | 'loyaltyPoints'>, vendorId: string): Customer {
+  create(customer: Omit<Customer, 'id' | 'createdAt' | 'loyaltyPoints' | 'marketingPreferences'>, vendorId: string): Customer {
     const allCustomers: Customer[] = JSON.parse(localStorage.getItem(CUSTOMERS_KEY) || '[]');
     const newCustomer: Customer = {
       ...customer,
       id: Date.now().toString(),
       vendorId,
       loyaltyPoints: 0,
+      marketingPreferences: {
+        emailMarketing: true, // Default opt-in
+        pushNotifications: true,
+        smsMarketing: false,
+      },
       createdAt: new Date().toISOString(),
     };
     allCustomers.push(newCustomer);
@@ -639,6 +665,49 @@ export const loyaltyStorage = {
 
   delete: (vendorId: string): boolean => {
     localStorage.removeItem(loyaltyStorage.getKey(vendorId));
+    return true;
+  },
+};
+
+export const emailCampaignStorage = {
+  getKey: (vendorId: string) => `email_campaigns_${vendorId}`,
+  
+  getAll: (vendorId: string): EmailCampaign[] => {
+    const key = emailCampaignStorage.getKey(vendorId);
+    return JSON.parse(localStorage.getItem(key) || '[]');
+  },
+
+  create: (data: Omit<EmailCampaign, 'id' | 'createdAt'>, vendorId: string): EmailCampaign => {
+    const campaign: EmailCampaign = {
+      id: Date.now().toString(),
+      ...data,
+      createdAt: new Date().toISOString(),
+    };
+
+    const campaigns = emailCampaignStorage.getAll(vendorId);
+    campaigns.push(campaign);
+    localStorage.setItem(emailCampaignStorage.getKey(vendorId), JSON.stringify(campaigns));
+    return campaign;
+  },
+
+  update: (id: string, data: Partial<EmailCampaign>, vendorId: string): EmailCampaign | null => {
+    const campaigns = emailCampaignStorage.getAll(vendorId);
+    const index = campaigns.findIndex(c => c.id === id);
+    
+    if (index === -1) return null;
+
+    campaigns[index] = { ...campaigns[index], ...data };
+    localStorage.setItem(emailCampaignStorage.getKey(vendorId), JSON.stringify(campaigns));
+    return campaigns[index];
+  },
+
+  delete: (id: string, vendorId: string): boolean => {
+    const campaigns = emailCampaignStorage.getAll(vendorId);
+    const filteredCampaigns = campaigns.filter(c => c.id !== id);
+    
+    if (filteredCampaigns.length === campaigns.length) return false;
+
+    localStorage.setItem(emailCampaignStorage.getKey(vendorId), JSON.stringify(filteredCampaigns));
     return true;
   },
 };
