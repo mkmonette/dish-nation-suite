@@ -67,6 +67,7 @@ export interface Customer {
   name: string;
   phone?: string;
   vendorId: string; // tenant isolation
+  loyaltyPoints: number;
   createdAt: string;
 }
 
@@ -147,6 +148,19 @@ export interface NotificationTemplate {
   content: string;
   type: 'email' | 'push';
   vendorId: string;
+  createdAt: string;
+}
+
+export interface LoyaltySettings {
+  id: string;
+  vendorId: string;
+  pointsPerPeso: number; // Points earned per peso spent
+  redemptionRules: {
+    pointsRequired: number;
+    discountAmount: number;
+    maxRedemption?: number; // Maximum discount per order
+  }[];
+  isActive: boolean;
   createdAt: string;
 }
 
@@ -238,17 +252,29 @@ export const customerStorage = {
     return customers.find(c => c.email === email) || null;
   },
 
-  create(customer: Omit<Customer, 'id' | 'createdAt'>, vendorId: string): Customer {
+  create(customer: Omit<Customer, 'id' | 'createdAt' | 'loyaltyPoints'>, vendorId: string): Customer {
     const allCustomers: Customer[] = JSON.parse(localStorage.getItem(CUSTOMERS_KEY) || '[]');
     const newCustomer: Customer = {
       ...customer,
       id: Date.now().toString(),
       vendorId,
+      loyaltyPoints: 0,
       createdAt: new Date().toISOString(),
     };
     allCustomers.push(newCustomer);
     localStorage.setItem(CUSTOMERS_KEY, JSON.stringify(allCustomers));
     return newCustomer;
+  },
+
+  update(id: string, updates: Partial<Customer>, vendorId: string): Customer | null {
+    const allCustomers: Customer[] = JSON.parse(localStorage.getItem(CUSTOMERS_KEY) || '[]');
+    const index = allCustomers.findIndex(c => c.id === id && c.vendorId === vendorId);
+    
+    if (index === -1) return null;
+    
+    allCustomers[index] = { ...allCustomers[index], ...updates };
+    localStorage.setItem(CUSTOMERS_KEY, JSON.stringify(allCustomers));
+    return allCustomers[index];
   }
 };
 
@@ -580,4 +606,39 @@ export const notificationTemplateStorage = {
     localStorage.setItem(NOTIFICATION_TEMPLATES_KEY, JSON.stringify(allTemplates));
     return true;
   }
+};
+
+export const loyaltyStorage = {
+  getKey: (vendorId: string) => `loyalty_${vendorId}`,
+  
+  get: (vendorId: string): LoyaltySettings | null => {
+    const key = loyaltyStorage.getKey(vendorId);
+    const data = localStorage.getItem(key);
+    return data ? JSON.parse(data) : null;
+  },
+
+  create: (data: Omit<LoyaltySettings, 'id' | 'createdAt'>, vendorId: string): LoyaltySettings => {
+    const settings: LoyaltySettings = {
+      id: Date.now().toString(),
+      ...data,
+      createdAt: new Date().toISOString(),
+    };
+
+    localStorage.setItem(loyaltyStorage.getKey(vendorId), JSON.stringify(settings));
+    return settings;
+  },
+
+  update: (data: Partial<LoyaltySettings>, vendorId: string): LoyaltySettings | null => {
+    const existing = loyaltyStorage.get(vendorId);
+    if (!existing) return null;
+
+    const updated = { ...existing, ...data };
+    localStorage.setItem(loyaltyStorage.getKey(vendorId), JSON.stringify(updated));
+    return updated;
+  },
+
+  delete: (vendorId: string): boolean => {
+    localStorage.removeItem(loyaltyStorage.getKey(vendorId));
+    return true;
+  },
 };

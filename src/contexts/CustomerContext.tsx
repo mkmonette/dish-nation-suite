@@ -6,6 +6,7 @@ interface CustomerContextType {
   login: (email: string, password: string, vendorId: string) => Promise<boolean>;
   register: (data: { email: string; password: string; name: string; phone?: string }, vendorId: string) => Promise<boolean>;
   logout: () => void;
+  refreshCustomer: (vendorId: string) => void;
   isLoading: boolean;
 }
 
@@ -111,6 +112,16 @@ export const CustomerProvider: React.FC<CustomerProviderProps> = ({ children }) 
     sessionStorage.clearCurrentCustomer();
   };
 
+  const refreshCustomer = (vendorId: string): void => {
+    if (customer) {
+      const updatedCustomer = customerStorage.getById(customer.id, vendorId);
+      if (updatedCustomer) {
+        setCustomer(updatedCustomer);
+        sessionStorage.setCurrentCustomer(updatedCustomer);
+      }
+    }
+  };
+
   return (
     <CustomerContext.Provider
       value={{
@@ -118,6 +129,7 @@ export const CustomerProvider: React.FC<CustomerProviderProps> = ({ children }) 
         login,
         register,
         logout,
+        refreshCustomer,
         isLoading,
       }}
     >

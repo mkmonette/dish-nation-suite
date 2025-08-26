@@ -12,8 +12,8 @@ import { toast } from '@/hooks/use-toast';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { Textarea } from '@/components/ui/textarea';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { vendorStorage, menuStorage, orderStorage, MenuItem } from '@/lib/storage';
-import { ShoppingCart, Plus, Minus, Store, User, LogOut, MapPin, Phone } from 'lucide-react';
+import { vendorStorage, menuStorage, orderStorage, customerStorage, loyaltyStorage, MenuItem } from '@/lib/storage';
+import { ShoppingCart, Plus, Minus, Store, User, LogOut, MapPin, Phone, Star } from 'lucide-react';
 import ModernTemplate from '@/components/templates/ModernTemplate';
 import ClassicTemplate from '@/components/templates/ClassicTemplate';
 import MinimalTemplate from '@/components/templates/MinimalTemplate';
@@ -25,7 +25,7 @@ interface CartItem {
 
 const Storefront = () => {
   const { vendorSlug } = useParams();
-  const { customer, logout } = useCustomer();
+  const { customer, logout, refreshCustomer } = useCustomer();
   const { currentTenant, setTenant } = useTenant();
   const navigate = useNavigate();
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
@@ -164,6 +164,25 @@ const Storefront = () => {
       notes: formData.get('notes') as string,
     });
 
+    // Award loyalty points if customer is logged in and loyalty is active
+    if (customer) {
+      const loyaltySettings = loyaltyStorage.get(vendor.id);
+      if (loyaltySettings?.isActive) {
+        const pointsEarned = Math.floor(cartTotal * loyaltySettings.pointsPerPeso);
+        const updatedCustomer = customerStorage.update(customer.id, {
+          loyaltyPoints: customer.loyaltyPoints + pointsEarned
+        }, vendor.id);
+        
+        if (updatedCustomer && pointsEarned > 0) {
+          refreshCustomer(vendor.id);
+          toast({
+            title: 'Points earned!',
+            description: `You earned ${pointsEarned} loyalty points from this order.`,
+          });
+        }
+      }
+    }
+
     setCart([]);
     setIsCheckoutOpen(false);
     setIsCartOpen(false);
@@ -204,6 +223,15 @@ const Storefront = () => {
                 >
                   My Orders
                 </Button>
+                {(() => {
+                  const loyaltySettings = loyaltyStorage.get(vendor.id);
+                  return loyaltySettings?.isActive && (
+                    <div className="hidden sm:flex items-center gap-1 text-sm text-muted-foreground">
+                      <Star className="h-4 w-4 text-yellow-500" />
+                      <span className="font-medium">{customer.loyaltyPoints || 0}</span>
+                    </div>
+                  );
+                })()}
                 <span className="text-sm text-muted-foreground hidden sm:block">
                   {customer.name}
                 </span>
@@ -364,6 +392,27 @@ const Storefront = () => {
                     </div>
                     
                     <div className="border-t pt-4">
+                      {customer && (() => {
+                        const loyaltySettings = loyaltyStorage.get(vendor.id);
+                        return loyaltySettings?.isActive && (
+                          <div className="bg-muted/50 p-3 rounded-lg mb-4">
+                            <div className="flex items-center justify-between">
+                              <span className="text-sm font-medium">Available Points</span>
+                              <span className="text-sm font-bold">{customer.loyaltyPoints || 0} points</span>
+                            </div>
+                            <div className="text-xs text-muted-foreground mt-1">
+                              You'll earn {Math.floor(cartTotal * (loyaltySettings?.pointsPerPeso || 1))} points from this order
+                            </div>
+                            {loyaltySettings.redemptionRules.length > 0 && (
+                              <div className="text-xs text-muted-foreground">
+                                Redeem: {loyaltySettings.redemptionRules.map(rule => 
+                                  `${rule.pointsRequired} pts = ₱${rule.discountAmount} off`
+                                ).join(', ')}
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })()}
                       <div className="flex justify-between text-lg font-semibold mb-4">
                         <span>Total</span>
                         <span>${cartTotal.toFixed(2)}</span>
