@@ -21,7 +21,7 @@ export interface SubscriptionPlan {
   billingCycle: 'monthly' | 'yearly';
   trialPeriod: number; // days
   features: string[];
-  limits: {
+  limits?: {
     maxProducts: number;
     maxDiscountCodes: number;
     loyaltyProgramAccess: boolean;

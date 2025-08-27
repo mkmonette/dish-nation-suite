@@ -139,10 +139,11 @@ const VendorSubscriptionManager: React.FC = () => {
 
   const checkPlanLimits = (plan: SubscriptionPlan) => {
     // This would check against actual usage in a real app
+    const limits = plan.limits || { maxProducts: 0, maxDiscountCodes: 0, loyaltyProgramAccess: false };
     return {
       productsUsed: 25, // Example data
       discountCodesUsed: 3,
-      canUseLoyalty: plan.limits.loyaltyProgramAccess
+      canUseLoyalty: limits.loyaltyProgramAccess
     };
   };
 
@@ -195,9 +196,9 @@ const VendorSubscriptionManager: React.FC = () => {
               <div className="space-y-2">
                 <h4 className="font-medium">Plan Limits</h4>
                 <div className="space-y-1 text-sm text-muted-foreground">
-                  <p>Products: {checkPlanLimits(currentPlan).productsUsed}/{currentPlan.limits.maxProducts}</p>
-                  <p>Discount Codes: {checkPlanLimits(currentPlan).discountCodesUsed}/{currentPlan.limits.maxDiscountCodes}</p>
-                  <p>Loyalty Program: {currentPlan.limits.loyaltyProgramAccess ? 'Enabled' : 'Disabled'}</p>
+                  <p>Products: {checkPlanLimits(currentPlan).productsUsed}/{currentPlan.limits?.maxProducts || 'Unlimited'}</p>
+                  <p>Discount Codes: {checkPlanLimits(currentPlan).discountCodesUsed}/{currentPlan.limits?.maxDiscountCodes || 'Unlimited'}</p>
+                  <p>Loyalty Program: {currentPlan.limits?.loyaltyProgramAccess ? 'Enabled' : 'Disabled'}</p>
                 </div>
               </div>
               <div className="space-y-2">
@@ -263,9 +264,9 @@ const VendorSubscriptionManager: React.FC = () => {
                   <div>
                     <p className="text-sm font-medium mb-2">Plan Limits</p>
                     <div className="space-y-1 text-sm text-muted-foreground">
-                      <p>Max Products: {plan.limits.maxProducts}</p>
-                      <p>Max Discount Codes: {plan.limits.maxDiscountCodes}</p>
-                      <p>Loyalty Program: {plan.limits.loyaltyProgramAccess ? 'Yes' : 'No'}</p>
+                      <p>Max Products: {plan.limits?.maxProducts || 'Unlimited'}</p>
+                      <p>Max Discount Codes: {plan.limits?.maxDiscountCodes || 'Unlimited'}</p>
+                      <p>Loyalty Program: {plan.limits?.loyaltyProgramAccess ? 'Yes' : 'No'}</p>
                     </div>
                   </div>
                   <div>
