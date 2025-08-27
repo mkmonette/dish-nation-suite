@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { MenuItem, Vendor } from '@/lib/storage';
 import { Plus, Circle } from 'lucide-react';
+import { getDefaultPlaceholder } from '@/utils/imageUtils';
 
 interface MinimalTemplateProps {
   vendor: Vendor;
@@ -55,15 +56,13 @@ const MinimalTemplate: React.FC<MinimalTemplateProps> = ({
         )}
         <div className="relative container mx-auto px-4 py-20">
           <div className="max-w-2xl mx-auto text-center space-y-6">
-            {vendor.storefront?.logo && (
-              <div className="mb-8">
-                <img 
-                  src={vendor.storefront.logo} 
-                  alt={`${vendor.storeName} logo`}
-                  className="h-12 md:h-16 mx-auto object-contain opacity-90"
-                />
-              </div>
-            )}
+            <div className="mb-8">
+              <img 
+                src={vendor.storefront?.logo || getDefaultPlaceholder('logo')} 
+                alt={`${vendor.storeName} logo`}
+                className="h-12 md:h-16 mx-auto object-contain opacity-90"
+              />
+            </div>
             <h1 className="text-5xl md:text-6xl font-light tracking-tight text-foreground">
               {vendor.storefront?.heroText || vendor.storeName}
             </h1>

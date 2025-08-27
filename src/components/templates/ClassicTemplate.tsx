@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { MenuItem, Vendor } from '@/lib/storage';
 import { Plus, Utensils, Award, Heart } from 'lucide-react';
+import { getDefaultPlaceholder } from '@/utils/imageUtils';
 
 interface ClassicTemplateProps {
   vendor: Vendor;
@@ -56,19 +57,13 @@ const ClassicTemplate: React.FC<ClassicTemplateProps> = ({
         <div className="relative container mx-auto px-4 py-16">
           <div className="max-w-4xl mx-auto text-center">
             <div className="mb-8">
-              {vendor.storefront?.logo ? (
-                <div className="mb-4">
-                  <img 
-                    src={vendor.storefront.logo} 
-                    alt={`${vendor.storeName} logo`}
-                    className="h-16 md:h-20 mx-auto object-contain"
-                  />
-                </div>
-              ) : (
-                <div className="w-20 h-20 mx-auto mb-4 bg-primary rounded-full flex items-center justify-center">
-                  <Utensils className="h-10 w-10 text-primary-foreground" />
-                </div>
-              )}
+              <div className="mb-4">
+                <img 
+                  src={vendor.storefront?.logo || getDefaultPlaceholder('logo')} 
+                  alt={`${vendor.storeName} logo`}
+                  className="h-16 md:h-20 mx-auto object-contain"
+                />
+              </div>
               <h1 className="text-4xl md:text-5xl font-serif font-bold mb-4 text-foreground">
                 {vendor.storefront?.heroText || vendor.storeName}
               </h1>

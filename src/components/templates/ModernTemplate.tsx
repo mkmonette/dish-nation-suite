@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { MenuItem, Vendor } from '@/lib/storage';
 import { Plus, MapPin, Clock, Star } from 'lucide-react';
+import { getDefaultPlaceholder } from '@/utils/imageUtils';
 
 interface ModernTemplateProps {
   vendor: Vendor;
@@ -57,15 +58,13 @@ const ModernTemplate: React.FC<ModernTemplateProps> = ({
         {!vendor.storefront?.banner && <div className="absolute inset-0 bg-black/20"></div>}
         <div className="relative container mx-auto px-4 py-16 md:py-24">
           <div className="max-w-3xl mx-auto text-center">
-            {vendor.storefront?.logo && (
-              <div className="mb-8">
-                <img 
-                  src={vendor.storefront.logo} 
-                  alt={`${vendor.storeName} logo`}
-                  className="h-20 md:h-24 mx-auto object-contain"
-                />
-              </div>
-            )}
+            <div className="mb-8">
+              <img 
+                src={vendor.storefront?.logo || getDefaultPlaceholder('logo')} 
+                alt={`${vendor.storeName} logo`}
+                className="h-20 md:h-24 mx-auto object-contain"
+              />
+            </div>
             <h1 className="text-4xl md:text-6xl font-bold mb-6 animate-in slide-in-from-bottom-4 duration-1000">
               {vendor.storefront?.heroText || `Welcome to ${vendor.storeName}`}
             </h1>

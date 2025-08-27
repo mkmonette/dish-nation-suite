@@ -1,14 +1,15 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/enhanced-button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { toast } from '@/hooks/use-toast';
 import { Vendor, vendorStorage } from '@/lib/storage';
-import { Palette, Save, Eye, Upload, Image, FileText } from 'lucide-react';
+import { Palette, Save, Eye, FileText } from 'lucide-react';
+import ImageUpload from '@/components/ui/image-upload';
+import { getDefaultPlaceholder } from '@/utils/imageUtils';
 
 interface StorefrontCustomizerProps {
   vendor: Vendor;
@@ -31,8 +32,6 @@ const StorefrontCustomizer: React.FC<StorefrontCustomizerProps> = ({ vendor, onU
     ...vendor.storefront,
   });
   const [isLoading, setIsLoading] = useState(false);
-  const logoInputRef = useRef<HTMLInputElement>(null);
-  const bannerInputRef = useRef<HTMLInputElement>(null);
 
   const templates = [
     { value: 'modern', label: 'Modern', description: 'Clean and contemporary design' },
@@ -73,26 +72,16 @@ const StorefrontCustomizer: React.FC<StorefrontCustomizerProps> = ({ vendor, onU
     onUpdate({ ...vendor, storefront: newSettings });
   };
 
-  const handleFileUpload = (type: 'logo' | 'banner', file: File) => {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const result = e.target?.result as string;
-      const newSettings = {
-        ...settings,
-        [type]: result
-      };
-      setSettings(newSettings);
-      
-      // Auto-save for instant updates
-      vendorStorage.update(vendor.id, { storefront: newSettings });
-      onUpdate({ ...vendor, storefront: newSettings });
-      
-      toast({ 
-        title: `${type === 'logo' ? 'Logo' : 'Banner'} uploaded!`, 
-        description: 'Your image has been updated and is now live.' 
-      });
+  const handleImageChange = (type: 'logo' | 'banner', imageData: string | null) => {
+    const newSettings = {
+      ...settings,
+      [type]: imageData || ''
     };
-    reader.readAsDataURL(file);
+    setSettings(newSettings);
+    
+    // Auto-save for instant updates
+    vendorStorage.update(vendor.id, { storefront: newSettings });
+    onUpdate({ ...vendor, storefront: newSettings });
   };
 
   const handleTextChange = (field: 'heroText' | 'heroSubtext' | 'aboutUs', value: string) => {
@@ -159,104 +148,22 @@ const StorefrontCustomizer: React.FC<StorefrontCustomizerProps> = ({ vendor, onU
           <div className="space-y-6">
             <Label className="text-base font-semibold">Brand Assets</Label>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Logo Upload */}
-              <div className="space-y-3">
-                <Label className="text-sm font-medium">Logo</Label>
-                <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-6 text-center hover:border-muted-foreground/50 transition-colors">
-                  {settings.logo ? (
-                    <div className="space-y-3">
-                      <img 
-                        src={settings.logo} 
-                        alt="Logo preview" 
-                        className="max-h-20 mx-auto object-contain"
-                      />
-                      <Button 
-                        variant="outline" 
-                        size="sm"
-                        onClick={() => logoInputRef.current?.click()}
-                      >
-                        <Upload className="h-4 w-4 mr-2" />
-                        Change Logo
-                      </Button>
-                    </div>
-                  ) : (
-                    <div className="space-y-3">
-                      <Image className="h-8 w-8 mx-auto text-muted-foreground" />
-                      <div>
-                        <Button 
-                          variant="outline" 
-                          size="sm"
-                          onClick={() => logoInputRef.current?.click()}
-                        >
-                          <Upload className="h-4 w-4 mr-2" />
-                          Upload Logo
-                        </Button>
-                      </div>
-                      <p className="text-xs text-muted-foreground">PNG, JPG up to 2MB</p>
-                    </div>
-                  )}
-                  <input
-                    ref={logoInputRef}
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={(e) => {
-                      const file = e.target.files?.[0];
-                      if (file) handleFileUpload('logo', file);
-                    }}
-                  />
-                </div>
-              </div>
+              <ImageUpload
+                type="logo"
+                currentImage={settings.logo || undefined}
+                onImageChange={(imageData) => handleImageChange('logo', imageData)}
+                maxSizeMB={2}
+              />
 
               {/* Banner Upload */}
-              <div className="space-y-3">
-                <Label className="text-sm font-medium">Banner Image</Label>
-                <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-6 text-center hover:border-muted-foreground/50 transition-colors">
-                  {settings.banner ? (
-                    <div className="space-y-3">
-                      <img 
-                        src={settings.banner} 
-                        alt="Banner preview" 
-                        className="max-h-20 w-full mx-auto object-cover rounded"
-                      />
-                      <Button 
-                        variant="outline" 
-                        size="sm"
-                        onClick={() => bannerInputRef.current?.click()}
-                      >
-                        <Upload className="h-4 w-4 mr-2" />
-                        Change Banner
-                      </Button>
-                    </div>
-                  ) : (
-                    <div className="space-y-3">
-                      <Image className="h-8 w-8 mx-auto text-muted-foreground" />
-                      <div>
-                        <Button 
-                          variant="outline" 
-                          size="sm"
-                          onClick={() => bannerInputRef.current?.click()}
-                        >
-                          <Upload className="h-4 w-4 mr-2" />
-                          Upload Banner
-                        </Button>
-                      </div>
-                      <p className="text-xs text-muted-foreground">PNG, JPG up to 5MB</p>
-                    </div>
-                  )}
-                  <input
-                    ref={bannerInputRef}
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={(e) => {
-                      const file = e.target.files?.[0];
-                      if (file) handleFileUpload('banner', file);
-                    }}
-                  />
-                </div>
-              </div>
+              <ImageUpload
+                type="banner"
+                currentImage={settings.banner || undefined}
+                onImageChange={(imageData) => handleImageChange('banner', imageData)}
+                maxSizeMB={5}
+              />
             </div>
           </div>
 
