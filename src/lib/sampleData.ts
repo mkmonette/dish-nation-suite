@@ -25,8 +25,12 @@ export const initializeSampleData = () => {
       'Email support',
       'Basic analytics'
     ],
-    maxMenuItems: 50,
-    maxOrders: 100
+    limits: {
+      maxProducts: 50,
+      maxDiscountCodes: 5,
+      loyaltyProgramAccess: true,
+    },
+    
   });
 
   const proPlan = subscriptionPlanStorage.create({
@@ -42,8 +46,12 @@ export const initializeSampleData = () => {
       'Custom branding',
       'Multiple locations'
     ],
-    maxMenuItems: 200,
-    maxOrders: 500
+    limits: {
+      maxProducts: 200,
+      maxDiscountCodes: 20,
+      loyaltyProgramAccess: true,
+    },
+    
   });
 
   const enterprisePlan = subscriptionPlanStorage.create({
@@ -59,7 +67,12 @@ export const initializeSampleData = () => {
       'White-label solution',
       'API access',
       'Advanced reporting'
-    ]
+    ],
+    limits: {
+      maxProducts: 999,
+      maxDiscountCodes: 100,
+      loyaltyProgramAccess: true,
+    },
   });
 
   // Create admin user
@@ -125,7 +138,7 @@ export const initializeSampleData = () => {
     status: 'active',
     startDate: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString(), // 15 days ago
     endDate: new Date(Date.now() + 45 * 24 * 60 * 60 * 1000).toISOString(), // 45 days from now
-    paymentMethod: 'proof_of_payment',
+    paymentMethod: 'manual_payment',
     autoRenew: true
   });
 

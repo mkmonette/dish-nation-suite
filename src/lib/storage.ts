@@ -21,8 +21,11 @@ export interface SubscriptionPlan {
   billingCycle: 'monthly' | 'yearly';
   trialPeriod: number; // days
   features: string[];
-  maxMenuItems?: number;
-  maxOrders?: number;
+  limits: {
+    maxProducts: number;
+    maxDiscountCodes: number;
+    loyaltyProgramAccess: boolean;
+  };
   createdAt: string;
 }
 
@@ -30,11 +33,12 @@ export interface VendorSubscription {
   id: string;
   vendorId: string;
   planId: string;
-  status: 'active' | 'cancelled' | 'expired' | 'trial';
+  status: 'active' | 'cancelled' | 'expired' | 'trial' | 'pending_payment';
   startDate: string;
   endDate: string;
-  paymentMethod: 'paypal' | 'proof_of_payment';
+  paymentMethod: 'paypal' | 'manual_payment';
   paymentProof?: string;
+  paypalTransactionId?: string;
   autoRenew: boolean;
   createdAt: string;
 }

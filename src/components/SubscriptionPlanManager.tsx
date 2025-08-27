@@ -7,7 +7,8 @@ import { Label } from './ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { Textarea } from './ui/textarea';
 import { Badge } from './ui/badge';
-import { Plus, Edit, Trash2, DollarSign } from 'lucide-react';
+import { Switch } from './ui/switch';
+import { Plus, Edit, Trash2, DollarSign, Package, Gift, Star, CreditCard } from 'lucide-react';
 import { subscriptionPlanStorage, vendorSubscriptionStorage, type SubscriptionPlan } from '../lib/storage';
 import { useToast } from '../hooks/use-toast';
 
@@ -21,8 +22,9 @@ const SubscriptionPlanManager: React.FC = () => {
     billingCycle: 'monthly' as 'monthly' | 'yearly',
     trialPeriod: '',
     features: '',
-    maxMenuItems: '',
-    maxOrders: ''
+    maxProducts: '',
+    maxDiscountCodes: '',
+    loyaltyProgramAccess: false
   });
   const { toast } = useToast();
 
@@ -33,13 +35,14 @@ const SubscriptionPlanManager: React.FC = () => {
       billingCycle: 'monthly',
       trialPeriod: '',
       features: '',
-      maxMenuItems: '',
-      maxOrders: ''
+      maxProducts: '',
+      maxDiscountCodes: '',
+      loyaltyProgramAccess: false
     });
   };
 
   const handleCreate = () => {
-    if (!formData.name || !formData.price) return;
+    if (!formData.name || !formData.price || !formData.maxProducts || !formData.maxDiscountCodes) return;
 
     const newPlan = subscriptionPlanStorage.create({
       name: formData.name,
@@ -47,8 +50,11 @@ const SubscriptionPlanManager: React.FC = () => {
       billingCycle: formData.billingCycle,
       trialPeriod: parseInt(formData.trialPeriod) || 0,
       features: formData.features.split('\n').filter(f => f.trim()),
-      maxMenuItems: formData.maxMenuItems ? parseInt(formData.maxMenuItems) : undefined,
-      maxOrders: formData.maxOrders ? parseInt(formData.maxOrders) : undefined,
+      limits: {
+        maxProducts: parseInt(formData.maxProducts),
+        maxDiscountCodes: parseInt(formData.maxDiscountCodes),
+        loyaltyProgramAccess: formData.loyaltyProgramAccess,
+      },
     });
 
     setPlans([...plans, newPlan]);
@@ -68,13 +74,14 @@ const SubscriptionPlanManager: React.FC = () => {
       billingCycle: plan.billingCycle,
       trialPeriod: plan.trialPeriod.toString(),
       features: plan.features.join('\n'),
-      maxMenuItems: plan.maxMenuItems?.toString() || '',
-      maxOrders: plan.maxOrders?.toString() || ''
+      maxProducts: plan.limits.maxProducts.toString(),
+      maxDiscountCodes: plan.limits.maxDiscountCodes.toString(),
+      loyaltyProgramAccess: plan.limits.loyaltyProgramAccess
     });
   };
 
   const handleUpdate = () => {
-    if (!editingPlan || !formData.name || !formData.price) return;
+    if (!editingPlan || !formData.name || !formData.price || !formData.maxProducts || !formData.maxDiscountCodes) return;
 
     const updatedPlan = subscriptionPlanStorage.update(editingPlan.id, {
       name: formData.name,
@@ -82,8 +89,11 @@ const SubscriptionPlanManager: React.FC = () => {
       billingCycle: formData.billingCycle,
       trialPeriod: parseInt(formData.trialPeriod) || 0,
       features: formData.features.split('\n').filter(f => f.trim()),
-      maxMenuItems: formData.maxMenuItems ? parseInt(formData.maxMenuItems) : undefined,
-      maxOrders: formData.maxOrders ? parseInt(formData.maxOrders) : undefined,
+      limits: {
+        maxProducts: parseInt(formData.maxProducts),
+        maxDiscountCodes: parseInt(formData.maxDiscountCodes),
+        loyaltyProgramAccess: formData.loyaltyProgramAccess,
+      },
     });
 
     if (updatedPlan) {
@@ -176,25 +186,36 @@ const SubscriptionPlanManager: React.FC = () => {
 
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label htmlFor="menuItems">Max Menu Items</Label>
+          <Label htmlFor="maxProducts">Max Products</Label>
           <Input
-            id="menuItems"
+            id="maxProducts"
             type="number"
-            value={formData.maxMenuItems}
-            onChange={(e) => setFormData({...formData, maxMenuItems: e.target.value})}
-            placeholder="50 (leave empty for unlimited)"
+            value={formData.maxProducts}
+            onChange={(e) => setFormData({...formData, maxProducts: e.target.value})}
+            placeholder="50"
+            required
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="orders">Max Orders/Month</Label>
+          <Label htmlFor="maxDiscountCodes">Max Discount Codes</Label>
           <Input
-            id="orders"
+            id="maxDiscountCodes"
             type="number"
-            value={formData.maxOrders}
-            onChange={(e) => setFormData({...formData, maxOrders: e.target.value})}
-            placeholder="100 (leave empty for unlimited)"
+            value={formData.maxDiscountCodes}
+            onChange={(e) => setFormData({...formData, maxDiscountCodes: e.target.value})}
+            placeholder="10"
+            required
           />
         </div>
+      </div>
+
+      <div className="flex items-center space-x-2">
+        <Switch
+          id="loyalty"
+          checked={formData.loyaltyProgramAccess}
+          onCheckedChange={(checked) => setFormData({...formData, loyaltyProgramAccess: checked})}
+        />
+        <Label htmlFor="loyalty">Loyalty Program Access</Label>
       </div>
 
       <div className="space-y-2">
@@ -230,7 +251,7 @@ const SubscriptionPlanManager: React.FC = () => {
       <div className="flex justify-between items-center">
         <div>
           <h2 className="text-2xl font-bold">Subscription Plans</h2>
-          <p className="text-muted-foreground">Manage subscription plans and pricing</p>
+          <p className="text-muted-foreground">Manage subscription plans with vendor limits and payment options</p>
         </div>
         <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
           <DialogTrigger asChild>
@@ -243,7 +264,7 @@ const SubscriptionPlanManager: React.FC = () => {
             <DialogHeader>
               <DialogTitle>Create Subscription Plan</DialogTitle>
               <DialogDescription>
-                Create a new subscription plan for vendors
+                Create a new subscription plan with vendor limits and features
               </DialogDescription>
             </DialogHeader>
             <PlanForm />
@@ -296,15 +317,23 @@ const SubscriptionPlanManager: React.FC = () => {
                   <p className="text-sm text-muted-foreground">{plan.trialPeriod} days</p>
                 </div>
                 
-                {(plan.maxMenuItems || plan.maxOrders) && (
-                  <div>
-                    <p className="text-sm font-medium">Limits</p>
-                    <div className="text-sm text-muted-foreground space-y-1">
-                      {plan.maxMenuItems && <p>Max menu items: {plan.maxMenuItems}</p>}
-                      {plan.maxOrders && <p>Max orders/month: {plan.maxOrders}</p>}
+                <div>
+                  <p className="text-sm font-medium mb-2">Plan Limits</p>
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <Package className="w-4 h-4" />
+                      <span>Max Products: {plan.limits.maxProducts}</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <Gift className="w-4 h-4" />
+                      <span>Max Discount Codes: {plan.limits.maxDiscountCodes}</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <Star className="w-4 h-4" />
+                      <span>Loyalty Program: {plan.limits.loyaltyProgramAccess ? 'Yes' : 'No'}</span>
                     </div>
                   </div>
-                )}
+                </div>
 
                 <div>
                   <p className="text-sm font-medium mb-2">Features</p>
@@ -315,6 +344,13 @@ const SubscriptionPlanManager: React.FC = () => {
                         <span className="text-sm text-muted-foreground">{feature}</span>
                       </div>
                     ))}
+                  </div>
+                </div>
+
+                <div className="pt-2 border-t">
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <CreditCard className="w-4 h-4" />
+                    <span>PayPal & Manual Payment</span>
                   </div>
                 </div>
               </div>
@@ -329,7 +365,7 @@ const SubscriptionPlanManager: React.FC = () => {
           <DialogHeader>
             <DialogTitle>Edit Subscription Plan</DialogTitle>
             <DialogDescription>
-              Update the subscription plan details
+              Update the subscription plan details and limits
             </DialogDescription>
           </DialogHeader>
           <PlanForm />

@@ -20,6 +20,7 @@ import NotificationManager from '@/components/NotificationManager';
 import CustomerManager from '@/components/CustomerManager';
 import LoyaltyManager from '@/components/LoyaltyManager';
 import EmailCampaignManager from '@/components/EmailCampaignManager';
+import VendorSubscriptionManager from '@/components/VendorSubscriptionManager';
 
 const VendorDashboard = () => {
   const { logout } = useVendor();
@@ -175,7 +176,7 @@ const VendorDashboard = () => {
         </Card>
 
         <Tabs defaultValue="menu" className="space-y-4">
-          <TabsList className="grid w-full grid-cols-9">
+          <TabsList className="grid w-full grid-cols-10">
             <TabsTrigger value="menu">Menu</TabsTrigger>
             <TabsTrigger value="orders">Orders</TabsTrigger>
             <TabsTrigger value="storefront">Storefront</TabsTrigger>
@@ -184,6 +185,7 @@ const VendorDashboard = () => {
             <TabsTrigger value="campaigns">Campaigns</TabsTrigger>
             <TabsTrigger value="customers">Customers</TabsTrigger>
             <TabsTrigger value="loyalty">Loyalty</TabsTrigger>
+            <TabsTrigger value="subscription">Subscription</TabsTrigger>
             <TabsTrigger value="settings">Settings</TabsTrigger>
           </TabsList>
 
@@ -335,6 +337,11 @@ const VendorDashboard = () => {
           {/* Loyalty Tab */}
           <TabsContent value="loyalty" className="space-y-4">
             <LoyaltyManager vendorId={vendor.id} />
+          </TabsContent>
+
+          {/* Subscription Tab */}
+          <TabsContent value="subscription" className="space-y-4">
+            <VendorSubscriptionManager />
           </TabsContent>
 
           {/* Settings Tab */}

@@ -19,7 +19,7 @@ const VendorManager: React.FC = () => {
   const [isSubscriptionOpen, setIsSubscriptionOpen] = useState(false);
   const [subscriptionForm, setSubscriptionForm] = useState({
     planId: '',
-    paymentMethod: 'paypal' as 'paypal' | 'proof_of_payment',
+    paymentMethod: 'paypal' as 'paypal' | 'manual_payment',
     paymentProof: ''
   });
   const { toast } = useToast();
@@ -329,18 +329,18 @@ const VendorManager: React.FC = () => {
 
             <div className="space-y-2">
               <Label htmlFor="payment">Payment Method</Label>
-              <Select value={subscriptionForm.paymentMethod} onValueChange={(value: 'paypal' | 'proof_of_payment') => setSubscriptionForm({...subscriptionForm, paymentMethod: value})}>
+              <Select value={subscriptionForm.paymentMethod} onValueChange={(value: 'paypal' | 'manual_payment') => setSubscriptionForm({...subscriptionForm, paymentMethod: value})}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="paypal">PayPal</SelectItem>
-                  <SelectItem value="proof_of_payment">Proof of Payment</SelectItem>
+                  <SelectItem value="manual_payment">Manual Payment</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
-            {subscriptionForm.paymentMethod === 'proof_of_payment' && (
+            {subscriptionForm.paymentMethod === 'manual_payment' && (
               <div className="space-y-2">
                 <Label htmlFor="proof">Payment Proof</Label>
                 <Input
