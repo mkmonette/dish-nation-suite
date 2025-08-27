@@ -74,9 +74,9 @@ const SubscriptionPlanManager: React.FC = () => {
       billingCycle: plan.billingCycle,
       trialPeriod: plan.trialPeriod.toString(),
       features: plan.features.join('\n'),
-      maxProducts: plan.limits.maxProducts.toString(),
-      maxDiscountCodes: plan.limits.maxDiscountCodes.toString(),
-      loyaltyProgramAccess: plan.limits.loyaltyProgramAccess
+      maxProducts: plan.limits?.maxProducts?.toString() || '0',
+      maxDiscountCodes: plan.limits?.maxDiscountCodes?.toString() || '0',
+      loyaltyProgramAccess: plan.limits?.loyaltyProgramAccess || false
     });
   };
 
@@ -322,15 +322,15 @@ const SubscriptionPlanManager: React.FC = () => {
                   <div className="space-y-2">
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
                       <Package className="w-4 h-4" />
-                      <span>Max Products: {plan.limits.maxProducts}</span>
+                      <span>Max Products: {plan.limits?.maxProducts || 'Unlimited'}</span>
                     </div>
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
                       <Gift className="w-4 h-4" />
-                      <span>Max Discount Codes: {plan.limits.maxDiscountCodes}</span>
+                      <span>Max Discount Codes: {plan.limits?.maxDiscountCodes || 'Unlimited'}</span>
                     </div>
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
                       <Star className="w-4 h-4" />
-                      <span>Loyalty Program: {plan.limits.loyaltyProgramAccess ? 'Yes' : 'No'}</span>
+                      <span>Loyalty Program: {plan.limits?.loyaltyProgramAccess ? 'Yes' : 'No'}</span>
                     </div>
                   </div>
                 </div>
