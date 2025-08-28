@@ -93,6 +93,15 @@ export interface MenuAddOn {
   required?: boolean;
 }
 
+export interface MenuCategory {
+  id: string;
+  name: string;
+  description?: string;
+  order: number;
+  vendorId: string;
+  createdAt: string;
+}
+
 export interface MenuItem {
   id: string;
   name: string;
@@ -193,6 +202,7 @@ export interface EmailCampaign {
 const VENDORS_KEY = 'foodapp_vendors';
 const CUSTOMERS_KEY = 'foodapp_customers';
 const MENU_ITEMS_KEY = 'foodapp_menu_items';
+const MENU_CATEGORIES_KEY = 'foodapp_menu_categories';
 const ORDERS_KEY = 'foodapp_orders';
 const SUBSCRIPTION_PLANS_KEY = 'foodapp_subscription_plans';
 const VENDOR_SUBSCRIPTIONS_KEY = 'foodapp_vendor_subscriptions';
@@ -714,4 +724,66 @@ export const emailCampaignStorage = {
     localStorage.setItem(emailCampaignStorage.getKey(vendorId), JSON.stringify(filteredCampaigns));
     return true;
   },
+};
+
+// Menu category operations (tenant-isolated)
+export const categoryStorage = {
+  getAll(vendorId: string): MenuCategory[] {
+    const categories = localStorage.getItem(MENU_CATEGORIES_KEY);
+    const allCategories: MenuCategory[] = categories ? JSON.parse(categories) : [];
+    return allCategories.filter(category => category.vendorId === vendorId)
+      .sort((a, b) => a.order - b.order);
+  },
+
+  getById(id: string, vendorId: string): MenuCategory | null {
+    const categories = this.getAll(vendorId);
+    return categories.find(category => category.id === id) || null;
+  },
+
+  create(category: Omit<MenuCategory, 'id' | 'createdAt'>, vendorId: string): MenuCategory {
+    const allCategories: MenuCategory[] = JSON.parse(localStorage.getItem(MENU_CATEGORIES_KEY) || '[]');
+    const newCategory: MenuCategory = {
+      ...category,
+      id: Date.now().toString(),
+      vendorId,
+      createdAt: new Date().toISOString(),
+    };
+    allCategories.push(newCategory);
+    localStorage.setItem(MENU_CATEGORIES_KEY, JSON.stringify(allCategories));
+    return newCategory;
+  },
+
+  update(id: string, updates: Partial<MenuCategory>, vendorId: string): MenuCategory | null {
+    const allCategories: MenuCategory[] = JSON.parse(localStorage.getItem(MENU_CATEGORIES_KEY) || '[]');
+    const index = allCategories.findIndex(category => category.id === id && category.vendorId === vendorId);
+    if (index === -1) return null;
+    
+    allCategories[index] = { ...allCategories[index], ...updates };
+    localStorage.setItem(MENU_CATEGORIES_KEY, JSON.stringify(allCategories));
+    return allCategories[index];
+  },
+
+  delete(id: string, vendorId: string): boolean {
+    const allCategories: MenuCategory[] = JSON.parse(localStorage.getItem(MENU_CATEGORIES_KEY) || '[]');
+    const index = allCategories.findIndex(category => category.id === id && category.vendorId === vendorId);
+    if (index === -1) return false;
+    
+    allCategories.splice(index, 1);
+    localStorage.setItem(MENU_CATEGORIES_KEY, JSON.stringify(allCategories));
+    return true;
+  },
+
+  reorder(vendorId: string, categoryIds: string[]): boolean {
+    const allCategories: MenuCategory[] = JSON.parse(localStorage.getItem(MENU_CATEGORIES_KEY) || '[]');
+    
+    categoryIds.forEach((id, index) => {
+      const categoryIndex = allCategories.findIndex(category => category.id === id && category.vendorId === vendorId);
+      if (categoryIndex !== -1) {
+        allCategories[categoryIndex].order = index;
+      }
+    });
+    
+    localStorage.setItem(MENU_CATEGORIES_KEY, JSON.stringify(allCategories));
+    return true;
+  }
 };

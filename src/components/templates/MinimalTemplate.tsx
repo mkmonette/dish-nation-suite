@@ -2,14 +2,15 @@ import React from 'react';
 import { Button } from '@/components/ui/enhanced-button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { MenuItem, Vendor } from '@/lib/storage';
-import { Plus, Circle } from 'lucide-react';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { MenuItem, Vendor, MenuCategory } from '@/lib/storage';
+import { Plus, Utensils, ImageIcon } from 'lucide-react';
 import { getDefaultPlaceholder } from '@/utils/imageUtils';
 
 interface MinimalTemplateProps {
   vendor: Vendor;
   menuItems: MenuItem[];
-  categories: string[];
+  categories: MenuCategory[];
   selectedCategory: string;
   onCategoryChange: (category: string) => void;
   onAddToCart: (item: MenuItem) => void;
@@ -18,20 +19,27 @@ interface MinimalTemplateProps {
   headerComponent: React.ReactNode;
 }
 
-const MinimalTemplate: React.FC<MinimalTemplateProps> = ({
-  vendor,
-  menuItems,
-  onAddToCart,
-  cartComponent,
-  headerComponent,
-}) => {
-  const categorizedItems = menuItems.reduce((acc, item) => {
-    if (!acc[item.category]) {
-      acc[item.category] = [];
-    }
-    acc[item.category].push(item);
-    return acc;
-  }, {} as Record<string, MenuItem[]>);
+  const MinimalTemplate: React.FC<MinimalTemplateProps> = ({
+    vendor,
+    menuItems,
+    categories,
+    selectedCategory,
+    onCategoryChange,
+    onAddToCart,
+    cartComponent,
+    headerComponent,
+  }) => {
+    const filteredItems = selectedCategory === 'all' 
+      ? menuItems 
+      : menuItems.filter(item => item.category === selectedCategory);
+
+    const categorizedItems = filteredItems.reduce((acc, item) => {
+      if (!acc[item.category]) {
+        acc[item.category] = [];
+      }
+      acc[item.category].push(item);
+      return acc;
+    }, {} as Record<string, MenuItem[]>);
 
   const customStyle = {
     '--primary-color': vendor.storefront?.colors?.primary || '#000000',
@@ -96,7 +104,7 @@ const MinimalTemplate: React.FC<MinimalTemplateProps> = ({
       <main className="container mx-auto px-4 py-16">
         {menuItems.length === 0 ? (
           <div className="max-w-md mx-auto text-center py-20">
-            <Circle className="h-8 w-8 mx-auto text-muted-foreground mb-6" />
+            <Utensils className="h-8 w-8 mx-auto text-muted-foreground mb-6" />
             <h2 className="text-xl font-light mb-3">Menu in preparation</h2>
             <p className="text-muted-foreground font-light">
               We're curating something special

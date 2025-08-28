@@ -2,14 +2,15 @@ import React from 'react';
 import { Button } from '@/components/ui/enhanced-button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { MenuItem, Vendor } from '@/lib/storage';
-import { Plus, Utensils, Award, Heart } from 'lucide-react';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { MenuItem, Vendor, MenuCategory } from '@/lib/storage';
+import { Plus, Utensils, Award, Heart, ImageIcon } from 'lucide-react';
 import { getDefaultPlaceholder } from '@/utils/imageUtils';
 
 interface ClassicTemplateProps {
   vendor: Vendor;
   menuItems: MenuItem[];
-  categories: string[];
+  categories: MenuCategory[];
   selectedCategory: string;
   onCategoryChange: (category: string) => void;
   onAddToCart: (item: MenuItem) => void;
@@ -21,11 +22,18 @@ interface ClassicTemplateProps {
 const ClassicTemplate: React.FC<ClassicTemplateProps> = ({
   vendor,
   menuItems,
+  categories,
+  selectedCategory,
+  onCategoryChange,
   onAddToCart,
   cartComponent,
   headerComponent,
 }) => {
-  const categorizedItems = menuItems.reduce((acc, item) => {
+  const filteredItems = selectedCategory === 'all' 
+    ? menuItems 
+    : menuItems.filter(item => item.category === selectedCategory);
+
+  const categorizedItems = filteredItems.reduce((acc, item) => {
     if (!acc[item.category]) {
       acc[item.category] = [];
     }
@@ -122,6 +130,41 @@ const ClassicTemplate: React.FC<ClassicTemplateProps> = ({
 
       {/* Menu Section */}
       <main className="container mx-auto px-4 py-12">
+        {/* Category Filter */}
+        {categories.length > 0 && (
+          <div className="mb-8">
+            <div className="text-center mb-6">
+              <h3 className="text-2xl font-serif font-bold">Menu Categories</h3>
+              <div className="flex items-center justify-center gap-3 mt-3">
+                <div className="w-8 h-0.5 bg-primary"></div>
+                <div className="w-2 h-2 bg-primary rotate-45"></div>
+                <div className="w-8 h-0.5 bg-primary"></div>
+              </div>
+            </div>
+            <ScrollArea className="w-full">
+              <div className="flex justify-center space-x-3 pb-2">
+                <Button
+                  variant={selectedCategory === 'all' ? 'default' : 'outline'}
+                  onClick={() => onCategoryChange('all')}
+                  className="whitespace-nowrap border-primary text-primary hover:bg-primary hover:text-primary-foreground"
+                >
+                  All Items
+                </Button>
+                {categories.map((category) => (
+                  <Button
+                    key={category.id}
+                    variant={selectedCategory === category.name ? 'default' : 'outline'}
+                    onClick={() => onCategoryChange(category.name)}
+                    className="whitespace-nowrap border-primary text-primary hover:bg-primary hover:text-primary-foreground"
+                  >
+                    {category.name}
+                  </Button>
+                ))}
+              </div>
+            </ScrollArea>
+          </div>
+        )}
+        
         {menuItems.length === 0 ? (
           <Card className="max-w-md mx-auto border-2 border-dashed border-muted">
             <CardContent className="py-12 text-center">
@@ -152,6 +195,17 @@ const ClassicTemplate: React.FC<ClassicTemplateProps> = ({
                     <Card key={item.id} className="overflow-hidden hover:shadow-lg transition-shadow duration-300 border border-muted">
                       <div className="flex flex-col sm:flex-row">
                         <div className="w-full sm:w-32 h-32 sm:h-24 bg-gradient-to-br from-muted to-muted/50 flex-shrink-0 relative">
+                          {item.image ? (
+                            <img 
+                              src={item.image} 
+                              alt={item.name}
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center bg-muted">
+                              <ImageIcon className="h-8 w-8 text-muted-foreground" />
+                            </div>
+                          )}
                           <div className="absolute inset-0 bg-primary/5"></div>
                           <Badge 
                             variant={item.available ? 'default' : 'secondary'}

@@ -11,9 +11,10 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Badge } from '@/components/ui/badge';
 import { toast } from '@/hooks/use-toast';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
-import { menuStorage, orderStorage, MenuItem, Order } from '@/lib/storage';
+import { menuStorage, orderStorage, categoryStorage, MenuItem, Order, MenuCategory } from '@/lib/storage';
 import StorefrontCustomizer from '@/components/StorefrontCustomizer';
 import EnhancedMenuManager from '@/components/EnhancedMenuManager';
+import CategoryManager from '@/components/CategoryManager';
 import { Plus, Store, Package, Settings, LogOut, ExternalLink, Eye, Trash2 } from 'lucide-react';
 import DiscountManager from '@/components/DiscountManager';
 import NotificationManager from '@/components/NotificationManager';
@@ -27,6 +28,7 @@ const VendorDashboard = () => {
   const [vendor, setVendor] = useState(useVendor().vendor);
   const navigate = useNavigate();
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
+  const [categories, setCategories] = useState<MenuCategory[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
   const [isMenuModalOpen, setIsMenuModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -39,12 +41,19 @@ const VendorDashboard = () => {
     
     // Load vendor data
     loadMenuItems();
+    loadCategories();
     loadOrders();
   }, [vendor, navigate]);
 
   const loadMenuItems = () => {
     if (vendor) {
       setMenuItems(menuStorage.getAll(vendor.id));
+    }
+  };
+
+  const loadCategories = () => {
+    if (vendor) {
+      setCategories(categoryStorage.getAll(vendor.id));
     }
   };
 
@@ -184,7 +193,8 @@ const VendorDashboard = () => {
         </Card>
 
         <Tabs defaultValue="menu" className="space-y-4">
-          <TabsList className="grid w-full grid-cols-10">
+          <TabsList className="grid w-full grid-cols-11">
+            <TabsTrigger value="categories">Categories</TabsTrigger>
             <TabsTrigger value="menu">Menu</TabsTrigger>
             <TabsTrigger value="orders">Orders</TabsTrigger>
             <TabsTrigger value="storefront">Storefront</TabsTrigger>
@@ -197,11 +207,21 @@ const VendorDashboard = () => {
             <TabsTrigger value="settings">Settings</TabsTrigger>
           </TabsList>
 
+          {/* Categories Tab */}
+          <TabsContent value="categories" className="space-y-4">
+            <CategoryManager 
+              vendorId={vendor.id}
+              categories={categories}
+              onCategoriesUpdate={loadCategories}
+            />
+          </TabsContent>
+
           {/* Menu Items Tab */}
           <TabsContent value="menu" className="space-y-4">
             <EnhancedMenuManager 
               vendorId={vendor.id}
               menuItems={menuItems}
+              categories={categories}
               onMenuUpdate={loadMenuItems}
             />
           </TabsContent>

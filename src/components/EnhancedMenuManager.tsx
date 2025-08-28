@@ -7,19 +7,23 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from '@/hooks/use-toast';
-import { menuStorage, MenuItem, MenuVariation, MenuAddOn } from '@/lib/storage';
-import { Plus, Trash2, Package, Edit } from 'lucide-react';
+import { menuStorage, MenuItem, MenuVariation, MenuAddOn, MenuCategory, categoryStorage } from '@/lib/storage';
+import { Plus, Trash2, Package, Edit, ImageIcon } from 'lucide-react';
+import { validateImageFile, compressImage, getImageProcessingOptions } from '@/utils/imageUtils';
 
 interface EnhancedMenuManagerProps {
   vendorId: string;
   menuItems: MenuItem[];
+  categories: MenuCategory[];
   onMenuUpdate: () => void;
 }
 
 const EnhancedMenuManager: React.FC<EnhancedMenuManagerProps> = ({ 
   vendorId, 
   menuItems, 
+  categories,
   onMenuUpdate 
 }) => {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -27,6 +31,23 @@ const EnhancedMenuManager: React.FC<EnhancedMenuManagerProps> = ({
   const [variations, setVariations] = useState<MenuVariation[]>([]);
   const [addOns, setAddOns] = useState<MenuAddOn[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<string>('');
+
+  const handleImageUpload = async (file: File) => {
+    try {
+      const validation = validateImageFile(file, 2);
+      if (!validation.isValid) {
+        toast({ title: 'Invalid image', description: validation.error, variant: 'destructive' });
+        return;
+      }
+
+      const compressedImage = await compressImage(file, getImageProcessingOptions('banner'));
+      setSelectedImage(compressedImage);
+      toast({ title: 'Image uploaded!', description: 'Image has been processed and ready to save.' });
+    } catch (error) {
+      toast({ title: 'Upload failed', description: 'Failed to process image. Please try again.', variant: 'destructive' });
+    }
+  };
 
   const handleAddItem = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -39,6 +60,7 @@ const EnhancedMenuManager: React.FC<EnhancedMenuManagerProps> = ({
       description: formData.get('description') as string,
       price: parseFloat(formData.get('price') as string),
       category: formData.get('category') as string,
+      image: selectedImage || undefined,
       available: true,
       variations: variations.length > 0 ? variations : undefined,
       addOns: addOns.length > 0 ? addOns : undefined,
@@ -64,6 +86,7 @@ const EnhancedMenuManager: React.FC<EnhancedMenuManagerProps> = ({
     setVariations([]);
     setAddOns([]);
     setEditingItem(null);
+    setSelectedImage('');
   };
 
   const addVariation = () => {
@@ -154,7 +177,74 @@ const EnhancedMenuManager: React.FC<EnhancedMenuManagerProps> = ({
                 
                 <div className="space-y-2">
                   <Label htmlFor="category">Category</Label>
-                  <Input id="category" name="category" required />
+                  <Select name="category" required>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {categories.map((category) => (
+                        <SelectItem key={category.id} value={category.name}>
+                          {category.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {categories.length === 0 && (
+                    <p className="text-xs text-muted-foreground">
+                      No categories available. Please create categories first.
+                    </p>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Product Image (Optional)</Label>
+                  <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-4 text-center">
+                    {selectedImage ? (
+                      <div className="space-y-2">
+                        <img src={selectedImage} alt="Product preview" className="h-24 w-24 object-cover rounded-lg mx-auto" />
+                        <div className="flex justify-center space-x-2">
+                          <Button 
+                            type="button" 
+                            variant="outline" 
+                            size="sm" 
+                            onClick={() => document.getElementById('product-image')?.click()}
+                          >
+                            Change Image
+                          </Button>
+                          <Button 
+                            type="button" 
+                            variant="outline" 
+                            size="sm" 
+                            onClick={() => setSelectedImage('')}
+                          >
+                            Remove
+                          </Button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="space-y-2">
+                        <ImageIcon className="h-8 w-8 mx-auto text-muted-foreground" />
+                        <Button 
+                          type="button" 
+                          variant="outline" 
+                          onClick={() => document.getElementById('product-image')?.click()}
+                        >
+                          Upload Image
+                        </Button>
+                      </div>
+                    )}
+                    <input
+                      id="product-image"
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) handleImageUpload(file);
+                      }}
+                    />
+                    <p className="text-xs text-muted-foreground mt-2">PNG/JPG up to 2MB</p>
+                  </div>
                 </div>
               </div>
 
@@ -299,6 +389,20 @@ const EnhancedMenuManager: React.FC<EnhancedMenuManagerProps> = ({
                       </Badge>
                     </CardHeader>
                     <CardContent>
+                      {item.image && (
+                        <div className="mb-3">
+                          <img 
+                            src={item.image} 
+                            alt={item.name}
+                            className="w-full h-32 object-cover rounded-md"
+                          />
+                        </div>
+                      )}
+                      {!item.image && (
+                        <div className="mb-3 w-full h-32 bg-muted rounded-md flex items-center justify-center">
+                          <ImageIcon className="h-8 w-8 text-muted-foreground" />
+                        </div>
+                      )}
                       <p className="text-sm text-muted-foreground mb-2">{item.description}</p>
                       <p className="text-lg font-semibold text-primary">${item.price.toFixed(2)}</p>
                       

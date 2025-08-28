@@ -2,14 +2,15 @@ import React from 'react';
 import { Button } from '@/components/ui/enhanced-button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { MenuItem, Vendor } from '@/lib/storage';
-import { Plus, MapPin, Clock, Star } from 'lucide-react';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { MenuItem, Vendor, MenuCategory } from '@/lib/storage';
+import { Plus, MapPin, Clock, Star, ImageIcon } from 'lucide-react';
 import { getDefaultPlaceholder } from '@/utils/imageUtils';
 
 interface ModernTemplateProps {
   vendor: Vendor;
   menuItems: MenuItem[];
-  categories: string[];
+  categories: MenuCategory[];
   selectedCategory: string;
   onCategoryChange: (category: string) => void;
   onAddToCart: (item: MenuItem) => void;
@@ -21,11 +22,18 @@ interface ModernTemplateProps {
 const ModernTemplate: React.FC<ModernTemplateProps> = ({
   vendor,
   menuItems,
+  categories,
+  selectedCategory,
+  onCategoryChange,
   onAddToCart,
   cartComponent,
   headerComponent,
 }) => {
-  const categorizedItems = menuItems.reduce((acc, item) => {
+  const filteredItems = selectedCategory === 'all' 
+    ? menuItems 
+    : menuItems.filter(item => item.category === selectedCategory);
+
+  const categorizedItems = filteredItems.reduce((acc, item) => {
     if (!acc[item.category]) {
       acc[item.category] = [];
     }
@@ -134,6 +142,17 @@ const ModernTemplate: React.FC<ModernTemplateProps> = ({
                   {items.map((item) => (
                     <Card key={item.id} className="group overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border-0 shadow-lg">
                       <div className="aspect-[4/3] bg-gradient-to-br from-muted to-muted/50 relative overflow-hidden">
+                        {item.image ? (
+                          <img 
+                            src={item.image} 
+                            alt={item.name}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center bg-muted">
+                            <ImageIcon className="h-12 w-12 text-muted-foreground" />
+                          </div>
+                        )}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
                         <div className="absolute bottom-4 left-4 right-4">
                           <Badge 

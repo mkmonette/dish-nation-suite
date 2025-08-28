@@ -13,7 +13,7 @@ import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { vendorStorage, menuStorage, orderStorage, customerStorage, loyaltyStorage, MenuItem } from '@/lib/storage';
+import { vendorStorage, menuStorage, orderStorage, customerStorage, loyaltyStorage, categoryStorage, MenuItem, MenuCategory } from '@/lib/storage';
 import { ShoppingCart, Plus, Minus, Store, User, LogOut, MapPin, Phone, Star } from 'lucide-react';
 import ModernTemplate from '@/components/templates/ModernTemplate';
 import ClassicTemplate from '@/components/templates/ClassicTemplate';
@@ -30,6 +30,7 @@ const Storefront = () => {
   const { currentTenant, setTenant } = useTenant();
   const navigate = useNavigate();
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
+  const [categories, setCategories] = useState<MenuCategory[]>([]);
   const [cart, setCart] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
