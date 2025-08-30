@@ -52,8 +52,9 @@ const Storefront = () => {
       setTenant(vendor.slug);
     }
 
-    // Load menu items
+    // Load menu items and categories
     setMenuItems(menuStorage.getAll(vendor.id));
+    setCategories(categoryStorage.getAll(vendor.id));
     
     // Load cart from localStorage
     const savedCart = localStorage.getItem(`cart_${vendor.id}`);
@@ -103,8 +104,17 @@ const Storefront = () => {
     ? menuItems 
     : menuItems.filter(item => item.category === selectedCategory);
 
-  // Get all unique categories for filtering
-  const categories = ['all', ...Object.keys(categorizedItems)];
+  // Create categories list for display in templates
+  const displayCategories: MenuCategory[] = [
+    { 
+      id: 'all', 
+      name: 'all', 
+      order: 0,
+      vendorId: vendor.id,
+      createdAt: new Date().toISOString()
+    },
+    ...categories
+  ];
 
   const addToCart = (menuItem: MenuItem) => {
     setCart(prev => {
@@ -487,7 +497,7 @@ const Storefront = () => {
         <ClassicTemplate
           vendor={vendor}
           menuItems={filteredMenuItems}
-          categories={categories}
+          categories={displayCategories}
           selectedCategory={selectedCategory}
           onCategoryChange={setSelectedCategory}
           onAddToCart={addToCart}
@@ -501,7 +511,7 @@ const Storefront = () => {
         <MinimalTemplate
           vendor={vendor}
           menuItems={filteredMenuItems}
-          categories={categories}
+          categories={displayCategories}
           selectedCategory={selectedCategory}
           onCategoryChange={setSelectedCategory}
           onAddToCart={addToCart}
@@ -515,7 +525,7 @@ const Storefront = () => {
         <ModernTemplate
           vendor={vendor}
           menuItems={filteredMenuItems}
-          categories={categories}
+          categories={displayCategories}
           selectedCategory={selectedCategory}
           onCategoryChange={setSelectedCategory}
           onAddToCart={addToCart}
