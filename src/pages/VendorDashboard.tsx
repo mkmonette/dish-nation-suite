@@ -4,10 +4,8 @@ import { useVendor } from '@/contexts/VendorContext';
 import { Button } from '@/components/ui/enhanced-button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { Badge } from '@/components/ui/badge';
 import { toast } from '@/hooks/use-toast';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
@@ -15,14 +13,15 @@ import { menuStorage, orderStorage, categoryStorage, MenuItem, Order, MenuCatego
 import StorefrontCustomizer from '@/components/StorefrontCustomizer';
 import EnhancedMenuManager from '@/components/EnhancedMenuManager';
 import CategoryManager from '@/components/CategoryManager';
-import { Plus, Store, Package, Settings, LogOut, ExternalLink, Eye, Trash2 } from 'lucide-react';
-import VendorLogo from '@/components/VendorLogo';
+import VendorSidebar from '@/components/VendorSidebar';
+import { Package, LogOut, ExternalLink, TrendingUp, Users, ShoppingCart, DollarSign } from 'lucide-react';
 import DiscountManager from '@/components/DiscountManager';
 import NotificationManager from '@/components/NotificationManager';
 import CustomerManager from '@/components/CustomerManager';
 import LoyaltyManager from '@/components/LoyaltyManager';
 import EmailCampaignManager from '@/components/EmailCampaignManager';
 import VendorSubscriptionManager from '@/components/VendorSubscriptionManager';
+import VendorLogo from '@/components/VendorLogo';
 
 const VendorDashboard = () => {
   const { logout } = useVendor();
@@ -31,7 +30,7 @@ const VendorDashboard = () => {
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
   const [categories, setCategories] = useState<MenuCategory[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
-  const [isMenuModalOpen, setIsMenuModalOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState('overview');
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -69,38 +68,6 @@ const VendorDashboard = () => {
     navigate('/');
   };
 
-  const handleAddMenuItem = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (!vendor) return;
-
-    setIsLoading(true);
-    const formData = new FormData(e.currentTarget);
-    
-    const newItem = menuStorage.create({
-      name: formData.get('name') as string,
-      description: formData.get('description') as string,
-      price: parseFloat(formData.get('price') as string),
-      category: formData.get('category') as string,
-      available: true,
-      vendorId: vendor.id,
-    }, vendor.id);
-
-    setMenuItems(prev => [...prev, newItem]);
-    setIsMenuModalOpen(false);
-    toast({ title: 'Menu item added!', description: `${newItem.name} has been added to your menu.` });
-    setIsLoading(false);
-  };
-
-  const handleDeleteMenuItem = (itemId: string) => {
-    if (!vendor) return;
-    
-    const success = menuStorage.delete(itemId, vendor.id);
-    if (success) {
-      setMenuItems(prev => prev.filter(item => item.id !== itemId));
-      toast({ title: 'Menu item deleted', description: 'The item has been removed from your menu.' });
-    }
-  };
-
   const handleUpdateOrderStatus = (orderId: string, newStatus: Order['status']) => {
     if (!vendor) return;
 
@@ -121,113 +88,120 @@ const VendorDashboard = () => {
 
   const storeUrl = `${window.location.origin}/store/${vendor.slug}`;
 
-  return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b bg-card">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center space-x-4">
-              <VendorLogo 
-                vendor={vendor} 
-                size="md" 
-                showFallback={true}
-                variant="rounded"
-              />
-              <div>
-                <h1 className="text-2xl font-bold">{vendor.storeName}</h1>
-                <p className="text-sm text-muted-foreground">Vendor Dashboard</p>
-              </div>
-            </div>
-            <div className="flex items-center space-x-2">
-              <Button 
-                variant="outline" 
-                onClick={() => window.open(storeUrl, '_blank')}
-                className="hidden sm:flex"
-              >
-                <ExternalLink className="h-4 w-4 mr-2" />
-                View Store
-              </Button>
-              <Button variant="outline" onClick={handleLogout}>
-                <LogOut className="h-4 w-4 mr-2" />
-                Logout
-              </Button>
-            </div>
-          </div>
-        </div>
-      </header>
+  // Dashboard overview stats
+  const stats = {
+    totalOrders: orders.length,
+    pendingOrders: orders.filter(o => o.status === 'pending').length,
+    totalRevenue: orders.reduce((sum, order) => sum + order.total, 0),
+    totalMenuItems: menuItems.length,
+  };
 
-      {/* Dashboard Content */}
-      <main className="container mx-auto px-4 py-8">
-        {/* Store Info Card */}
-        <Card className="mb-8">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Store className="h-5 w-5" />
-              Store Information
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid md:grid-cols-2 gap-4">
-              <div>
-                <Label className="text-sm font-medium">Store URL</Label>
-                <div className="flex items-center gap-2 mt-1">
-                  <Input value={storeUrl} readOnly className="text-sm" />
-                  <Button 
-                    variant="outline" 
-                    size="icon"
-                    onClick={() => window.open(storeUrl, '_blank')}
-                  >
-                    <ExternalLink className="h-4 w-4" />
-                  </Button>
+  const renderContent = () => {
+    switch (activeSection) {
+      case 'overview':
+        return (
+          <div className="space-y-6">
+            <div>
+              <h1 className="text-3xl font-bold">Dashboard Overview</h1>
+              <p className="text-muted-foreground">Welcome to your vendor dashboard</p>
+            </div>
+
+            {/* Stats Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Total Orders</CardTitle>
+                  <ShoppingCart className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">{stats.totalOrders}</div>
+                  <p className="text-xs text-muted-foreground">
+                    {stats.pendingOrders} pending
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Revenue</CardTitle>
+                  <DollarSign className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">${stats.totalRevenue.toFixed(2)}</div>
+                  <p className="text-xs text-muted-foreground">
+                    All time revenue
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Menu Items</CardTitle>
+                  <Package className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">{stats.totalMenuItems}</div>
+                  <p className="text-xs text-muted-foreground">
+                    Active menu items
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Categories</CardTitle>
+                  <TrendingUp className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">{categories.length}</div>
+                  <p className="text-xs text-muted-foreground">
+                    Menu categories
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Store Info Card */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <VendorLogo vendor={vendor} size="sm" />
+                  Store Information
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <Label className="text-sm font-medium">Store URL</Label>
+                    <div className="flex items-center gap-2 mt-1">
+                      <Input value={storeUrl} readOnly className="text-sm" />
+                      <Button 
+                        variant="outline" 
+                        size="icon"
+                        onClick={() => window.open(storeUrl, '_blank')}
+                      >
+                        <ExternalLink className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                  <div>
+                    <Label className="text-sm font-medium">Store Slug</Label>
+                    <Input value={vendor.slug} readOnly className="mt-1 text-sm" />
+                  </div>
                 </div>
-              </div>
-              <div>
-                <Label className="text-sm font-medium">Store Slug</Label>
-                <Input value={vendor.slug} readOnly className="mt-1 text-sm" />
-              </div>
+              </CardContent>
+            </Card>
+          </div>
+        );
+
+      case 'orders':
+        return (
+          <div className="space-y-6">
+            <div>
+              <h1 className="text-3xl font-bold">Orders</h1>
+              <p className="text-muted-foreground">Manage your incoming orders</p>
             </div>
-          </CardContent>
-        </Card>
 
-        <Tabs defaultValue="menu" className="space-y-4">
-          <TabsList className="grid w-full grid-cols-11">
-            <TabsTrigger value="categories">Categories</TabsTrigger>
-            <TabsTrigger value="menu">Menu</TabsTrigger>
-            <TabsTrigger value="orders">Orders</TabsTrigger>
-            <TabsTrigger value="storefront">Storefront</TabsTrigger>
-            <TabsTrigger value="discounts">Discounts</TabsTrigger>
-            <TabsTrigger value="notifications">Notifications</TabsTrigger>
-            <TabsTrigger value="campaigns">Campaigns</TabsTrigger>
-            <TabsTrigger value="customers">Customers</TabsTrigger>
-            <TabsTrigger value="loyalty">Loyalty</TabsTrigger>
-            <TabsTrigger value="subscription">Subscription</TabsTrigger>
-            <TabsTrigger value="settings">Settings</TabsTrigger>
-          </TabsList>
-
-          {/* Categories Tab */}
-          <TabsContent value="categories" className="space-y-4">
-            <CategoryManager 
-              vendorId={vendor.id}
-              categories={categories}
-              onCategoriesUpdate={loadCategories}
-            />
-          </TabsContent>
-
-          {/* Menu Items Tab */}
-          <TabsContent value="menu" className="space-y-4">
-            <EnhancedMenuManager 
-              vendorId={vendor.id}
-              menuItems={menuItems}
-              categories={categories}
-              onMenuUpdate={loadMenuItems}
-            />
-          </TabsContent>
-
-          {/* Orders Tab */}
-          <TabsContent value="orders" className="space-y-4">
-            <h2 className="text-xl font-semibold">Recent Orders ({orders.length})</h2>
-            
             {orders.length === 0 ? (
               <Card>
                 <CardContent className="py-8 text-center">
@@ -327,65 +301,203 @@ const VendorDashboard = () => {
                 ))}
               </div>
             )}
-          </TabsContent>
+          </div>
+        );
 
-          {/* Storefront Customization Tab */}
-          <TabsContent value="storefront" className="space-y-4">
+      case 'menu':
+        return (
+          <div className="space-y-6">
+            <div>
+              <h1 className="text-3xl font-bold">Menu Management</h1>
+              <p className="text-muted-foreground">Add, edit, and organize your menu items</p>
+            </div>
+            <EnhancedMenuManager 
+              vendorId={vendor.id}
+              menuItems={menuItems}
+              categories={categories}
+              onMenuUpdate={loadMenuItems}
+            />
+          </div>
+        );
+
+      case 'categories':
+        return (
+          <div className="space-y-6">
+            <div>
+              <h1 className="text-3xl font-bold">Categories</h1>
+              <p className="text-muted-foreground">Organize your menu with categories</p>
+            </div>
+            <CategoryManager 
+              vendorId={vendor.id}
+              categories={categories}
+              onCategoriesUpdate={loadCategories}
+            />
+          </div>
+        );
+
+      case 'storefront':
+        return (
+          <div className="space-y-6">
+            <div>
+              <h1 className="text-3xl font-bold">Storefront</h1>
+              <p className="text-muted-foreground">Customize your store's appearance and branding</p>
+            </div>
             <StorefrontCustomizer 
               vendor={vendor}
               onUpdate={(updatedVendor) => {
-                // This would normally trigger a context update, but for localStorage demo this is sufficient
-                window.location.reload();
+                setVendor(updatedVendor);
               }}
             />
-          </TabsContent>
+          </div>
+        );
 
-          {/* Discount Codes Tab */}
-          <TabsContent value="discounts" className="space-y-4">
+      case 'discounts':
+        return (
+          <div className="space-y-6">
+            <div>
+              <h1 className="text-3xl font-bold">Discounts</h1>
+              <p className="text-muted-foreground">Create and manage discount codes</p>
+            </div>
             <DiscountManager vendorId={vendor.id} />
-          </TabsContent>
+          </div>
+        );
 
-          {/* Notifications Tab */}
-          <TabsContent value="notifications" className="space-y-4">
+      case 'notifications':
+        return (
+          <div className="space-y-6">
+            <div>
+              <h1 className="text-3xl font-bold">Notifications</h1>
+              <p className="text-muted-foreground">Send notifications to your customers</p>
+            </div>
             <NotificationManager vendorId={vendor.id} />
-          </TabsContent>
+          </div>
+        );
 
-          {/* Email Campaigns Tab */}
-          <TabsContent value="campaigns" className="space-y-4">
+      case 'campaigns':
+        return (
+          <div className="space-y-6">
+            <div>
+              <h1 className="text-3xl font-bold">Email Campaigns</h1>
+              <p className="text-muted-foreground">Create and send email campaigns</p>
+            </div>
             <EmailCampaignManager vendorId={vendor.id} />
-          </TabsContent>
+          </div>
+        );
 
-          {/* Customers Tab */}
-          <TabsContent value="customers" className="space-y-4">
+      case 'customers':
+        return (
+          <div className="space-y-6">
+            <div>
+              <h1 className="text-3xl font-bold">Customers</h1>
+              <p className="text-muted-foreground">Manage your customer base</p>
+            </div>
             <CustomerManager vendorId={vendor.id} />
-          </TabsContent>
+          </div>
+        );
 
-          {/* Loyalty Tab */}
-          <TabsContent value="loyalty" className="space-y-4">
+      case 'loyalty':
+        return (
+          <div className="space-y-6">
+            <div>
+              <h1 className="text-3xl font-bold">Loyalty Program</h1>
+              <p className="text-muted-foreground">Set up and manage your loyalty rewards</p>
+            </div>
             <LoyaltyManager vendorId={vendor.id} />
-          </TabsContent>
+          </div>
+        );
 
-          {/* Subscription Tab */}
-          <TabsContent value="subscription" className="space-y-4">
+      case 'subscription':
+        return (
+          <div className="space-y-6">
+            <div>
+              <h1 className="text-3xl font-bold">Subscription</h1>
+              <p className="text-muted-foreground">Manage your subscription plan</p>
+            </div>
             <VendorSubscriptionManager />
-          </TabsContent>
+          </div>
+        );
 
-          {/* Settings Tab */}
-          <TabsContent value="settings" className="space-y-4">
-            <h2 className="text-xl font-semibold">Store Settings</h2>
+      case 'settings':
+        return (
+          <div className="space-y-6">
+            <div>
+              <h1 className="text-3xl font-bold">Settings</h1>
+              <p className="text-muted-foreground">Configure your store settings</p>
+            </div>
             <Card>
               <CardHeader>
-                <CardTitle>Store Information</CardTitle>
-                <CardDescription>Update your store details and branding</CardDescription>
+                <CardTitle>Store Settings</CardTitle>
+                <CardDescription>Additional settings will be available here</CardDescription>
               </CardHeader>
               <CardContent>
-                <p className="text-muted-foreground">Store settings coming soon! Currently you can manage your menu and orders.</p>
+                <p className="text-muted-foreground">
+                  Advanced store settings coming soon! Use the storefront section to customize your store appearance.
+                </p>
               </CardContent>
             </Card>
-          </TabsContent>
-        </Tabs>
-      </main>
-    </div>
+          </div>
+        );
+
+      default:
+        return (
+          <div className="text-center py-8">
+            <p className="text-muted-foreground">Section not found</p>
+          </div>
+        );
+    }
+  };
+
+  return (
+    <SidebarProvider>
+      <div className="min-h-screen flex w-full bg-background">
+        {/* Sidebar */}
+        <VendorSidebar 
+          activeSection={activeSection}
+          onSectionChange={setActiveSection}
+        />
+
+        {/* Main Content */}
+        <div className="flex-1 flex flex-col">
+          {/* Header */}
+          <header className="border-b bg-card sticky top-0 z-40">
+            <div className="flex h-16 items-center justify-between px-6">
+              <div className="flex items-center space-x-4">
+                <SidebarTrigger />
+                <VendorLogo 
+                  vendor={vendor} 
+                  size="sm" 
+                  showFallback={true}
+                  variant="rounded"
+                />
+                <div>
+                  <h1 className="font-semibold">{vendor.storeName}</h1>
+                  <p className="text-sm text-muted-foreground">Vendor Dashboard</p>
+                </div>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => window.open(storeUrl, '_blank')}
+                >
+                  <ExternalLink className="h-4 w-4 mr-2" />
+                  View Store
+                </Button>
+                <Button variant="outline" size="sm" onClick={handleLogout}>
+                  <LogOut className="h-4 w-4 mr-2" />
+                  Logout
+                </Button>
+              </div>
+            </div>
+          </header>
+
+          {/* Main Content Area */}
+          <main className="flex-1 p-6">
+            {renderContent()}
+          </main>
+        </div>
+      </div>
+    </SidebarProvider>
   );
 };
 
