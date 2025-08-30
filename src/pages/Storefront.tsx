@@ -18,6 +18,7 @@ import { ShoppingCart, Plus, Minus, Store, User, LogOut, MapPin, Phone, Star } f
 import ModernTemplate from '@/components/templates/ModernTemplate';
 import ClassicTemplate from '@/components/templates/ClassicTemplate';
 import MinimalTemplate from '@/components/templates/MinimalTemplate';
+import VendorLogo from '@/components/VendorLogo';
 
 interface CartItem {
   menuItem: MenuItem;
@@ -216,15 +217,12 @@ const Storefront = () => {
       <div className="container mx-auto px-4 py-4">
         <div className="flex justify-between items-center">
           <div className="flex items-center space-x-4">
-            {vendor.storefront?.logo ? (
-              <img 
-                src={vendor.storefront.logo} 
-                alt={`${vendor.storeName} logo`}
-                className="h-8 w-8 object-contain"
-              />
-            ) : (
-              <Store className="h-8 w-8 text-primary" />
-            )}
+            <VendorLogo 
+              vendor={vendor} 
+              size="md" 
+              showFallback={true}
+              variant="rounded"
+            />
             <div>
               <h1 className="text-2xl font-bold">{vendor.storeName}</h1>
               <p className="text-sm text-muted-foreground">
@@ -303,7 +301,15 @@ const Storefront = () => {
     <Dialog open={isCartOpen} onOpenChange={setIsCartOpen}>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle>Your Cart</DialogTitle>
+          <div className="flex items-center gap-3 pb-2">
+            <VendorLogo 
+              vendor={vendor} 
+              size="sm" 
+              showFallback={true}
+              variant="rounded"
+            />
+            <DialogTitle className="flex-1">{vendor.storeName} - Cart</DialogTitle>
+          </div>
         </DialogHeader>
         
         {cart.length === 0 ? (
@@ -357,7 +363,15 @@ const Storefront = () => {
                 </DialogTrigger>
                 <DialogContent>
                   <DialogHeader>
-                    <DialogTitle>Checkout</DialogTitle>
+                    <div className="flex items-center gap-3 pb-2">
+                      <VendorLogo 
+                        vendor={vendor} 
+                        size="sm" 
+                        showFallback={true}
+                        variant="rounded"
+                      />
+                      <DialogTitle className="flex-1">{vendor.storeName} - Checkout</DialogTitle>
+                    </div>
                   </DialogHeader>
                   <form onSubmit={handleCheckout} className="space-y-4">
                     <div className="space-y-2">

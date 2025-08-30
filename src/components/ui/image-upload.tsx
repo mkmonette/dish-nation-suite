@@ -45,8 +45,8 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
   const isLogo = type === 'logo';
   const title = isLogo ? 'Store Logo' : 'Banner Image';
   const description = isLogo 
-    ? 'Upload your store logo (PNG/JPG, up to 2MB)'
-    : 'Upload a banner image (PNG/JPG, up to 5MB)';
+    ? 'Upload your store logo (PNG/JPG, up to 2MB). Shows in header, storefront, cart & checkout.'
+    : 'Upload a banner image (PNG/JPG, up to 5MB). Displays as hero background on storefronts.';
 
   const handleFile = useCallback(async (file: File) => {
     // Validate file

@@ -16,6 +16,7 @@ import StorefrontCustomizer from '@/components/StorefrontCustomizer';
 import EnhancedMenuManager from '@/components/EnhancedMenuManager';
 import CategoryManager from '@/components/CategoryManager';
 import { Plus, Store, Package, Settings, LogOut, ExternalLink, Eye, Trash2 } from 'lucide-react';
+import VendorLogo from '@/components/VendorLogo';
 import DiscountManager from '@/components/DiscountManager';
 import NotificationManager from '@/components/NotificationManager';
 import CustomerManager from '@/components/CustomerManager';
@@ -127,15 +128,12 @@ const VendorDashboard = () => {
         <div className="container mx-auto px-4 py-4">
           <div className="flex justify-between items-center">
             <div className="flex items-center space-x-4">
-              {vendor.storefront?.logo ? (
-                <img 
-                  src={vendor.storefront.logo} 
-                  alt={`${vendor.storeName} logo`}
-                  className="h-8 w-8 object-contain"
-                />
-              ) : (
-                <Store className="h-8 w-8 text-primary" />
-              )}
+              <VendorLogo 
+                vendor={vendor} 
+                size="md" 
+                showFallback={true}
+                variant="rounded"
+              />
               <div>
                 <h1 className="text-2xl font-bold">{vendor.storeName}</h1>
                 <p className="text-sm text-muted-foreground">Vendor Dashboard</p>

@@ -8,6 +8,7 @@ import { LoadingSpinner } from '@/components/LoadingSpinner';
 import OrderTracker from '@/components/OrderTracker';
 import { vendorStorage, orderStorage, Order } from '@/lib/storage';
 import { ArrowLeft, Package } from 'lucide-react';
+import VendorLogo from '@/components/VendorLogo';
 
 const CustomerOrders = () => {
   const { vendorSlug } = useParams();
@@ -76,8 +77,14 @@ const CustomerOrders = () => {
             >
               <ArrowLeft className="h-4 w-4" />
             </Button>
+            <VendorLogo 
+              vendor={vendor} 
+              size="md" 
+              showFallback={true}
+              variant="rounded"
+            />
             <div>
-              <h1 className="text-2xl font-bold">My Orders</h1>
+              <h1 className="text-2xl font-bold">My Orders - {vendor.storeName}</h1>
               <p className="text-sm text-muted-foreground">
                 Orders from {vendor.storeName}
               </p>

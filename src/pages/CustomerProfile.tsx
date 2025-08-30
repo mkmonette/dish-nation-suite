@@ -12,6 +12,7 @@ import { toast } from '@/hooks/use-toast';
 import { vendorStorage, customerStorage, orderStorage, loyaltyStorage } from '@/lib/storage';
 import { User, Star, ShoppingBag, ArrowLeft, Settings } from 'lucide-react';
 import CustomerPreferences from '@/components/CustomerPreferences';
+import VendorLogo from '@/components/VendorLogo';
 
 const CustomerProfile = () => {
   const { vendorSlug } = useParams();
@@ -105,6 +106,12 @@ const CustomerProfile = () => {
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Back to Store
               </Button>
+              <VendorLogo 
+                vendor={vendor} 
+                size="sm" 
+                showFallback={true}
+                variant="rounded"
+              />
               <div>
                 <h1 className="text-xl font-bold">My Profile</h1>
                 <p className="text-sm text-muted-foreground">{vendor.storeName}</p>

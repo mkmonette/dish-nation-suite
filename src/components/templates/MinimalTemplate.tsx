@@ -6,6 +6,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { MenuItem, Vendor, MenuCategory } from '@/lib/storage';
 import { Plus, Utensils, ImageIcon } from 'lucide-react';
 import { getDefaultPlaceholder } from '@/utils/imageUtils';
+import VendorLogo from '@/components/VendorLogo';
 
 interface MinimalTemplateProps {
   vendor: Vendor;
@@ -52,23 +53,26 @@ interface MinimalTemplateProps {
       {headerComponent}
       
       {/* Minimal Hero Section with Banner */}
-      <section className="border-b border-border/50 relative">
+      <section className="border-b border-border/50 relative min-h-[50vh] md:min-h-[55vh] flex items-center">
         {vendor.storefront?.banner && (
-          <div className="absolute inset-0 opacity-5">
+          <div className="absolute inset-0 opacity-10">
             <img 
               src={vendor.storefront.banner} 
               alt="Store banner"
               className="w-full h-full object-cover"
             />
+            <div className="absolute inset-0 bg-background/70"></div>
           </div>
         )}
         <div className="relative container mx-auto px-4 py-20">
           <div className="max-w-2xl mx-auto text-center space-y-6">
             <div className="mb-8">
-              <img 
-                src={vendor.storefront?.logo || getDefaultPlaceholder('logo')} 
-                alt={`${vendor.storeName} logo`}
-                className="h-12 md:h-16 mx-auto object-contain opacity-90"
+              <VendorLogo 
+                vendor={vendor}
+                size="xl"
+                showFallback={true}
+                variant="rounded"
+                className="mx-auto opacity-90"
               />
             </div>
             <h1 className="text-5xl md:text-6xl font-light tracking-tight text-foreground">

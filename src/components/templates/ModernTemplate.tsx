@@ -6,6 +6,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { MenuItem, Vendor, MenuCategory } from '@/lib/storage';
 import { Plus, MapPin, Clock, Star, ImageIcon } from 'lucide-react';
 import { getDefaultPlaceholder } from '@/utils/imageUtils';
+import VendorLogo from '@/components/VendorLogo';
 
 interface ModernTemplateProps {
   vendor: Vendor;
@@ -52,7 +53,7 @@ const ModernTemplate: React.FC<ModernTemplateProps> = ({
       {headerComponent}
       
       {/* Hero Section with Banner */}
-      <section className="relative overflow-hidden bg-gradient-to-r from-primary/90 to-secondary/90 text-primary-foreground">
+      <section className="relative overflow-hidden bg-gradient-to-r from-primary/90 to-secondary/90 text-primary-foreground min-h-[60vh] md:min-h-[70vh] flex items-center">
         {vendor.storefront?.banner && (
           <div className="absolute inset-0">
             <img 
@@ -60,17 +61,21 @@ const ModernTemplate: React.FC<ModernTemplateProps> = ({
               alt="Store banner"
               className="w-full h-full object-cover"
             />
-            <div className="absolute inset-0 bg-black/60"></div>
+            <div className="absolute inset-0 bg-black/50 backdrop-blur-none"></div>
           </div>
         )}
-        {!vendor.storefront?.banner && <div className="absolute inset-0 bg-black/20"></div>}
+        {!vendor.storefront?.banner && (
+          <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary/80 to-secondary"></div>
+        )}
         <div className="relative container mx-auto px-4 py-16 md:py-24">
           <div className="max-w-3xl mx-auto text-center">
             <div className="mb-8">
-              <img 
-                src={vendor.storefront?.logo || getDefaultPlaceholder('logo')} 
-                alt={`${vendor.storeName} logo`}
-                className="h-20 md:h-24 mx-auto object-contain"
+              <VendorLogo 
+                vendor={vendor}
+                size="2xl"
+                showFallback={true}
+                variant="rounded"
+                className="mx-auto"
               />
             </div>
             <h1 className="text-4xl md:text-6xl font-bold mb-6 animate-in slide-in-from-bottom-4 duration-1000">

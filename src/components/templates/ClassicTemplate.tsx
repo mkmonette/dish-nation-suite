@@ -6,6 +6,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { MenuItem, Vendor, MenuCategory } from '@/lib/storage';
 import { Plus, Utensils, Award, Heart, ImageIcon } from 'lucide-react';
 import { getDefaultPlaceholder } from '@/utils/imageUtils';
+import VendorLogo from '@/components/VendorLogo';
 
 interface ClassicTemplateProps {
   vendor: Vendor;
@@ -52,24 +53,27 @@ const ClassicTemplate: React.FC<ClassicTemplateProps> = ({
       {headerComponent}
       
       {/* Classic Hero Section with Banner */}
-      <section className="relative bg-card border-b-4 border-primary/20">
+      <section className="relative bg-card border-b-4 border-primary/20 min-h-[50vh] md:min-h-[60vh] flex items-center">
         {vendor.storefront?.banner && (
-          <div className="absolute inset-0 opacity-10">
+          <div className="absolute inset-0 opacity-20">
             <img 
               src={vendor.storefront.banner} 
               alt="Store banner"
               className="w-full h-full object-cover"
             />
+            <div className="absolute inset-0 bg-card/80"></div>
           </div>
         )}
         <div className="relative container mx-auto px-4 py-16">
           <div className="max-w-4xl mx-auto text-center">
             <div className="mb-8">
               <div className="mb-4">
-                <img 
-                  src={vendor.storefront?.logo || getDefaultPlaceholder('logo')} 
-                  alt={`${vendor.storeName} logo`}
-                  className="h-16 md:h-20 mx-auto object-contain"
+                <VendorLogo 
+                  vendor={vendor}
+                  size="xl"
+                  showFallback={true}
+                  variant="rounded"
+                  className="mx-auto"
                 />
               </div>
               <h1 className="text-4xl md:text-5xl font-serif font-bold mb-4 text-foreground">
