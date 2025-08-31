@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { MenuItem, Vendor, MenuCategory } from '@/lib/storage';
-import { Plus, MapPin, Clock, Star, ImageIcon } from 'lucide-react';
+import { Plus, MapPin, Clock, Star, ImageIcon, Utensils } from 'lucide-react';
 import { getDefaultPlaceholder } from '@/utils/imageUtils';
 import VendorLogo from '@/components/VendorLogo';
 
@@ -118,79 +118,123 @@ const ModernTemplate: React.FC<ModernTemplateProps> = ({
         </section>
       )}
 
-      {/* Menu Section */}
-      <main className="container mx-auto px-4 py-12">
-        {menuItems.length === 0 ? (
-          <Card className="max-w-md mx-auto">
-            <CardContent className="py-12 text-center">
-              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-muted flex items-center justify-center">
-                <span className="text-2xl">🍽️</span>
+      {/* Features Section */}
+      <section className="py-20 bg-background/60 backdrop-blur-sm">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+              Why Choose Us
+            </h2>
+            <p className="text-lg text-muted-foreground">Excellence in every aspect</p>
+          </div>
+          
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            <Card className="text-center p-8 border-0 bg-card/60 backdrop-blur-sm hover:scale-105 transition-transform duration-300">
+              <div className="w-16 h-16 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center mx-auto mb-6">
+                <Clock className="h-8 w-8 text-white" />
               </div>
-              <h2 className="text-xl font-semibold mb-2">Menu Coming Soon</h2>
-              <p className="text-muted-foreground">
-                This store is setting up their menu. Check back soon!
+              <h3 className="text-xl font-bold mb-3 text-foreground">Fast Delivery</h3>
+              <p className="text-muted-foreground">Quick and reliable service to your doorstep</p>
+            </Card>
+            
+            <Card className="text-center p-8 border-0 bg-card/60 backdrop-blur-sm hover:scale-105 transition-transform duration-300">
+              <div className="w-16 h-16 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center mx-auto mb-6">
+                <Star className="h-8 w-8 text-white fill-current" />
+              </div>
+              <h3 className="text-xl font-bold mb-3 text-foreground">Premium Quality</h3>
+              <p className="text-muted-foreground">Fresh ingredients and exceptional taste</p>
+            </Card>
+            
+            <Card className="text-center p-8 border-0 bg-card/60 backdrop-blur-sm hover:scale-105 transition-transform duration-300">
+              <div className="w-16 h-16 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center mx-auto mb-6">
+                <MapPin className="h-8 w-8 text-white" />
+              </div>
+              <h3 className="text-xl font-bold mb-3 text-foreground">Local Service</h3>
+              <p className="text-muted-foreground">Supporting our community with care</p>
+            </Card>
+          </div>
+        </div>
+      </section>
+
+      {/* Menu Section */}
+      <main className="container mx-auto px-4 py-20">
+        <div className="text-center mb-16">
+          <h2 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+            Our Menu
+          </h2>
+          <p className="text-lg text-muted-foreground">Discover our delicious selection</p>
+          <div className="w-24 h-1 bg-gradient-to-r from-primary to-secondary mx-auto rounded-full mt-4"></div>
+        </div>
+        
+        {menuItems.length === 0 ? (
+          <Card className="max-w-lg mx-auto border-0 bg-card/60 backdrop-blur-sm">
+            <CardContent className="py-20 text-center">
+              <div className="w-20 h-20 mx-auto mb-8 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
+                <Utensils className="h-10 w-10 text-white" />
+              </div>
+              <h3 className="text-2xl font-bold mb-4 text-foreground">Menu Coming Soon</h3>
+              <p className="text-muted-foreground text-lg">
+                We're carefully crafting our selection of amazing dishes
               </p>
             </CardContent>
           </Card>
         ) : (
-          <div className="space-y-12">
+          <div className="space-y-20">
             {Object.entries(categorizedItems).map(([category, items]) => (
-              <section key={category} className="space-y-6">
+              <section key={category} className="space-y-12">
                 <div className="text-center">
-                  <h2 className="text-3xl md:text-4xl font-bold mb-2 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                  <h3 className="text-2xl md:text-3xl font-bold mb-4 text-foreground">
                     {category}
-                  </h2>
-                  <div className="w-24 h-1 bg-gradient-to-r from-primary to-secondary mx-auto rounded-full"></div>
+                  </h3>
+                  <div className="w-16 h-0.5 bg-gradient-to-r from-primary to-secondary mx-auto rounded-full"></div>
                 </div>
                 
-                <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
                   {items.map((item) => (
-                    <Card key={item.id} className="group overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border-0 shadow-lg">
+                    <Card key={item.id} className="group overflow-hidden hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border-0 shadow-lg bg-card/80 backdrop-blur-sm">
                       <div className="aspect-[4/3] bg-gradient-to-br from-muted to-muted/50 relative overflow-hidden">
                         {item.image ? (
                           <img 
                             src={item.image} 
                             alt={item.name}
-                            className="w-full h-full object-cover"
+                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                           />
                         ) : (
-                          <div className="w-full h-full flex items-center justify-center bg-muted">
-                            <ImageIcon className="h-12 w-12 text-muted-foreground" />
+                          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/10 to-secondary/10">
+                            <ImageIcon className="h-12 w-12 text-primary/40" />
                           </div>
                         )}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
                         <div className="absolute bottom-4 left-4 right-4">
                           <Badge 
                             variant={item.available ? 'default' : 'secondary'}
-                            className="mb-2"
+                            className="mb-2 bg-white/90 text-black"
                           >
                             {item.available ? 'Available' : 'Sold Out'}
                           </Badge>
                         </div>
                       </div>
                       
-                      <CardHeader className="pb-3">
+                      <CardHeader className="pb-4">
                         <CardTitle className="text-lg group-hover:text-primary transition-colors">
                           {item.name}
                         </CardTitle>
-                        <CardDescription className="line-clamp-2">
+                        <CardDescription className="line-clamp-2 text-muted-foreground">
                           {item.description}
                         </CardDescription>
                       </CardHeader>
                       
                       <CardContent className="pt-0">
                         <div className="flex items-center justify-between">
-                          <div className="flex flex-col">
-                            <span className="text-2xl font-bold text-primary">
-                              ${item.price.toFixed(2)}
-                            </span>
-                          </div>
+                          <span className="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                            ${item.price.toFixed(2)}
+                          </span>
                           <Button 
                             variant="hero"
                             size="sm"
                             onClick={() => onAddToCart(item)}
                             disabled={!item.available}
-                            className="rounded-full shadow-lg hover:shadow-xl transition-all duration-300"
+                            className="rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
                           >
                             <Plus className="h-4 w-4 mr-1" />
                             Add
@@ -205,6 +249,53 @@ const ModernTemplate: React.FC<ModernTemplateProps> = ({
           </div>
         )}
       </main>
+
+      {/* Footer Section */}
+      <footer className="bg-card/80 backdrop-blur-sm border-t py-16">
+        <div className="container mx-auto px-4">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8 text-center lg:text-left">
+            <div className="lg:col-span-2">
+              <VendorLogo vendor={vendor} size="lg" className="mx-auto lg:mx-0 mb-6" />
+              <p className="text-muted-foreground leading-relaxed mb-6 max-w-md">
+                {vendor.description || "Experience exceptional flavors and outstanding service. We're committed to bringing you the finest dining experience."}
+              </p>
+              <div className="flex justify-center lg:justify-start gap-4">
+                <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center hover:bg-primary hover:text-white cursor-pointer transition-all duration-300">
+                  <Star className="h-5 w-5" />
+                </div>
+                <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center hover:bg-primary hover:text-white cursor-pointer transition-all duration-300">
+                  <MapPin className="h-5 w-5" />
+                </div>
+              </div>
+            </div>
+            
+            <div>
+              <h4 className="font-bold text-foreground mb-6">Quick Links</h4>
+              <div className="space-y-3">
+                <p className="text-muted-foreground hover:text-primary cursor-pointer transition-colors">Menu</p>
+                <p className="text-muted-foreground hover:text-primary cursor-pointer transition-colors">About</p>
+                <p className="text-muted-foreground hover:text-primary cursor-pointer transition-colors">Contact</p>
+                <p className="text-muted-foreground hover:text-primary cursor-pointer transition-colors">Reviews</p>
+              </div>
+            </div>
+            
+            <div>
+              <h4 className="font-bold text-foreground mb-6">Service Hours</h4>
+              <div className="space-y-3 text-muted-foreground">
+                <p>Mon - Fri: 11:00 AM - 10:00 PM</p>
+                <p>Sat - Sun: 12:00 PM - 11:00 PM</p>
+                <p className="text-primary font-medium">Delivery Available</p>
+              </div>
+            </div>
+          </div>
+          
+          <div className="border-t border-border/20 mt-12 pt-8 text-center">
+            <p className="text-muted-foreground">
+              © 2024 {vendor.name}. Crafted with passion and delivered with care.
+            </p>
+          </div>
+        </div>
+      </footer>
 
       {cartComponent}
     </div>

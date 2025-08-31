@@ -104,47 +104,92 @@ interface MinimalTemplateProps {
         </section>
       )}
 
-      {/* Menu Section */}
-      <main className="container mx-auto px-4 py-16">
-        {menuItems.length === 0 ? (
-          <div className="max-w-md mx-auto text-center py-20">
-            <Utensils className="h-8 w-8 mx-auto text-muted-foreground mb-6" />
-            <h2 className="text-xl font-light mb-3">Menu in preparation</h2>
-            <p className="text-muted-foreground font-light">
-              We're curating something special
+      {/* Philosophy Section */}
+      <section className="py-24 border-b border-border/30">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-20">
+            <h2 className="text-3xl font-extralight mb-8 text-foreground tracking-wider">Our Philosophy</h2>
+            <p className="text-lg text-muted-foreground font-light max-w-2xl mx-auto">
+              Simple ingredients, perfect execution, memorable experiences
             </p>
           </div>
+          
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-16 max-w-4xl mx-auto">
+            <div className="text-center">
+              <div className="w-1 h-16 bg-primary mx-auto mb-8"></div>
+              <h3 className="text-xl font-light mb-4 text-foreground tracking-wide">Quality</h3>
+              <p className="text-muted-foreground font-light leading-relaxed">
+                Sourced with care, crafted with precision
+              </p>
+            </div>
+            
+            <div className="text-center">
+              <div className="w-1 h-16 bg-primary mx-auto mb-8"></div>
+              <h3 className="text-xl font-light mb-4 text-foreground tracking-wide">Simplicity</h3>
+              <p className="text-muted-foreground font-light leading-relaxed">
+                Clean flavors, elegant presentation
+              </p>
+            </div>
+            
+            <div className="text-center">
+              <div className="w-1 h-16 bg-primary mx-auto mb-8"></div>
+              <h3 className="text-xl font-light mb-4 text-foreground tracking-wide">Experience</h3>
+              <p className="text-muted-foreground font-light leading-relaxed">
+                Every detail considered, every moment valued
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Menu Section */}
+      <main className="container mx-auto px-4 py-24">
+        <div className="text-center mb-20">
+          <h2 className="text-3xl font-extralight text-primary tracking-wider mb-8">Menu</h2>
+          <div className="w-24 h-0.5 bg-primary mx-auto mb-8"></div>
+          <p className="text-lg text-muted-foreground font-light">Thoughtfully curated selections</p>
+        </div>
+        
+        {menuItems.length === 0 ? (
+          <div className="max-w-lg mx-auto text-center py-24">
+            <div className="w-24 h-24 mx-auto mb-12 border border-primary/20 rounded-full flex items-center justify-center">
+              <Utensils className="h-12 w-12 text-primary" />
+            </div>
+            <h3 className="text-2xl font-extralight mb-6 text-foreground tracking-wider">Menu Coming Soon</h3>
+            <p className="text-muted-foreground font-light text-lg">We're curating our selection with care.</p>
+          </div>
         ) : (
-          <div className="space-y-20">
+          <div className="space-y-24">
             {Object.entries(categorizedItems).map(([category, items]) => (
-              <section key={category} className="space-y-12">
+              <section key={category} className="space-y-16">
                 <div className="text-center">
-                  <h2 className="text-2xl md:text-3xl font-light tracking-wide text-foreground">
+                  <h3 className="text-2xl md:text-3xl font-extralight tracking-wide text-foreground mb-4">
                     {category}
-                  </h2>
+                  </h3>
+                  <div className="w-16 h-0.5 bg-primary mx-auto"></div>
                 </div>
                 
-                <div className="max-w-2xl mx-auto space-y-8">
-                  {items.map((item, index) => (
+                <div className="max-w-3xl mx-auto space-y-12">
+                  {items.map((item) => (
                     <div key={item.id} className="group">
-                      <div className="flex items-start justify-between py-6 border-b border-border/30 hover:border-border transition-colors duration-300">
-                        <div className="flex-1 space-y-2">
-                          <div className="flex items-center gap-3">
-                            <h3 className="text-lg font-medium text-foreground group-hover:text-primary transition-colors">
+                      <div className="flex items-start justify-between py-8 border-b border-border/20 hover:border-border/40 transition-all duration-500">
+                        <div className="flex-1 space-y-3">
+                          <div className="flex items-baseline gap-4">
+                            <h4 className="text-xl font-light text-foreground group-hover:text-primary transition-colors tracking-wide">
                               {item.name}
-                            </h3>
-                            <div className="flex-1 border-b border-dotted border-muted-foreground/30 mx-3 translate-y-[-2px]"></div>
-                            <span className="text-lg font-medium text-foreground">
+                            </h4>
+                            <div className="flex-1 border-b border-dotted border-muted-foreground/20 mx-4 translate-y-[-4px]"></div>
+                            <span className="text-xl font-light text-foreground tracking-wide">
                               ${item.price.toFixed(2)}
                             </span>
                           </div>
-                          <p className="text-sm text-muted-foreground font-light pr-4">
+                          <p className="text-muted-foreground font-light leading-relaxed pr-8 max-w-2xl">
                             {item.description}
                           </p>
-                          <div className="flex items-center justify-between pt-2">
+                          <div className="flex items-center justify-between pt-4">
                             <Badge 
                               variant={item.available ? "outline" : "secondary"}
-                              className="text-xs border-muted-foreground/30"
+                              className="text-xs border-muted-foreground/20 font-light"
                             >
                               {item.available ? 'Available' : 'Unavailable'}
                             </Badge>
@@ -153,9 +198,9 @@ interface MinimalTemplateProps {
                               size="sm"
                               onClick={() => onAddToCart(item)}
                               disabled={!item.available}
-                              className="text-xs font-light h-8 px-3 hover:bg-muted/30 hover:text-foreground"
+                              className="border border-primary/30 hover:bg-primary hover:text-primary-foreground transition-all duration-300 font-light tracking-wider h-9 px-6"
                             >
-                              <Plus className="h-3 w-3 mr-1" />
+                              <Plus className="h-4 w-4 mr-2" />
                               Add
                             </Button>
                           </div>
@@ -169,6 +214,47 @@ interface MinimalTemplateProps {
           </div>
         )}
       </main>
+
+      {/* Footer Section */}
+      <footer className="border-t border-border/30 py-20 bg-muted/5">
+        <div className="container mx-auto px-4 text-center">
+          <VendorLogo vendor={vendor} size="md" className="mx-auto mb-8" />
+          <p className="text-muted-foreground font-light text-lg mb-8 max-w-2xl mx-auto leading-relaxed">
+            {vendor.description || "Crafting exceptional experiences through thoughtful cuisine and dedicated service."}
+          </p>
+          <div className="w-24 h-0.5 bg-primary mx-auto mb-8"></div>
+          
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-12 max-w-2xl mx-auto mb-12">
+            <div>
+              <h4 className="font-light text-foreground mb-4 tracking-wide">Hours</h4>
+              <div className="space-y-2 text-muted-foreground font-light text-sm">
+                <p>Mon - Fri: 11:00 - 22:00</p>
+                <p>Sat - Sun: 12:00 - 23:00</p>
+              </div>
+            </div>
+            
+            <div>
+              <h4 className="font-light text-foreground mb-4 tracking-wide">Contact</h4>
+              <div className="space-y-2 text-muted-foreground font-light text-sm">
+                <p>Reserve or Order</p>
+                <p>Fresh Daily</p>
+              </div>
+            </div>
+            
+            <div>
+              <h4 className="font-light text-foreground mb-4 tracking-wide">Service</h4>
+              <div className="space-y-2 text-muted-foreground font-light text-sm">
+                <p>Dine In</p>
+                <p>Takeaway</p>
+              </div>
+            </div>
+          </div>
+          
+          <p className="text-muted-foreground font-light">
+            © 2024 {vendor.name}. Thoughtfully crafted.
+          </p>
+        </div>
+      </footer>
 
       {cartComponent}
     </div>

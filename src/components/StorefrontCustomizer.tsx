@@ -96,7 +96,7 @@ const StorefrontCustomizer: React.FC<StorefrontCustomizerProps> = ({ vendor, onU
     onUpdate({ ...vendor, storefront: newSettings });
   };
 
-  const previewUrl = `${window.location.origin}/store/${vendor.slug}`;
+  const previewUrl = `/store/${vendor.slug}`;
 
   return (
     <div className="space-y-6">
@@ -270,10 +270,12 @@ const StorefrontCustomizer: React.FC<StorefrontCustomizerProps> = ({ vendor, onU
               <Button 
                 variant="outline" 
                 size="sm"
-                onClick={() => window.open(previewUrl, '_blank')}
+                asChild
               >
-                <Eye className="h-4 w-4 mr-2" />
-                Preview Store
+                <a href={previewUrl} target="_blank" rel="noopener noreferrer">
+                  <Eye className="h-4 w-4 mr-2" />
+                  Preview Store
+                </a>
               </Button>
             </div>
           </div>
