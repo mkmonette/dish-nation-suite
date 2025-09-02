@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/enhanced-button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -270,12 +271,10 @@ const StorefrontCustomizer: React.FC<StorefrontCustomizerProps> = ({ vendor, onU
               <Button 
                 variant="outline" 
                 size="sm"
-                asChild
+                onClick={() => window.open(previewUrl, '_blank')}
               >
-                <a href={previewUrl} target="_blank" rel="noopener noreferrer">
-                  <Eye className="h-4 w-4 mr-2" />
-                  Preview Store
-                </a>
+                <Eye className="h-4 w-4 mr-2" />
+                Preview Store
               </Button>
             </div>
           </div>
