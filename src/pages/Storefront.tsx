@@ -13,16 +13,19 @@ import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { vendorStorage, menuStorage, orderStorage, customerStorage, loyaltyStorage, categoryStorage, MenuItem, MenuCategory } from '@/lib/storage';
+import { vendorStorage, menuStorage, orderStorage, customerStorage, loyaltyStorage, categoryStorage, MenuItem, MenuCategory, MenuVariation, MenuAddOn } from '@/lib/storage';
 import { ShoppingCart, Plus, Minus, Store, User, LogOut, MapPin, Phone, Star } from 'lucide-react';
 import ModernTemplate from '@/components/templates/ModernTemplate';
 import ClassicTemplate from '@/components/templates/ClassicTemplate';
 import MinimalTemplate from '@/components/templates/MinimalTemplate';
 import VendorLogo from '@/components/VendorLogo';
+import MenuItemModal from '@/components/MenuItemModal';
 
 interface CartItem {
   menuItem: MenuItem;
   quantity: number;
+  selectedVariation?: MenuVariation;
+  selectedAddOns?: MenuAddOn[];
 }
 
 const Storefront = () => {
@@ -37,6 +40,8 @@ const Storefront = () => {
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [selectedMenuItem, setSelectedMenuItem] = useState<MenuItem | null>(null);
+  const [isItemModalOpen, setIsItemModalOpen] = useState(false);
 
   const vendor = React.useMemo(() => {
     if (!vendorSlug) return null;
@@ -117,28 +122,41 @@ const Storefront = () => {
     ...categories
   ];
 
-  const addToCart = (menuItem: MenuItem) => {
+  const addToCart = (menuItem: MenuItem, quantity: number = 1, selectedVariation?: MenuVariation, selectedAddOns?: MenuAddOn[]) => {
+    // If item has variations or add-ons and none are selected, open modal
+    if ((menuItem.variations?.length > 0 || menuItem.addOns?.length > 0) && !selectedVariation && !selectedAddOns) {
+      setSelectedMenuItem(menuItem);
+      setIsItemModalOpen(true);
+      return;
+    }
+
     setCart(prev => {
-      const existingItem = prev.find(item => item.menuItem.id === menuItem.id);
+      const cartKey = `${menuItem.id}-${selectedVariation?.id || 'none'}-${selectedAddOns?.map(a => a.id).join(',') || 'none'}`;
+      const existingItem = prev.find(item => 
+        item.menuItem.id === menuItem.id &&
+        item.selectedVariation?.id === selectedVariation?.id &&
+        JSON.stringify(item.selectedAddOns?.map(a => a.id).sort()) === JSON.stringify(selectedAddOns?.map(a => a.id).sort())
+      );
+      
       if (existingItem) {
         return prev.map(item =>
-          item.menuItem.id === menuItem.id
-            ? { ...item, quantity: item.quantity + 1 }
+          item === existingItem
+            ? { ...item, quantity: item.quantity + quantity }
             : item
         );
       }
-      return [...prev, { menuItem, quantity: 1 }];
+      return [...prev, { menuItem, quantity, selectedVariation, selectedAddOns }];
     });
     toast({ title: 'Added to cart', description: `${menuItem.name} added to your cart.` });
   };
 
-  const updateCartItemQuantity = (menuItemId: string, newQuantity: number) => {
+  const updateCartItemQuantity = (cartIndex: number, newQuantity: number) => {
     if (newQuantity === 0) {
-      setCart(prev => prev.filter(item => item.menuItem.id !== menuItemId));
+      setCart(prev => prev.filter((_, index) => index !== cartIndex));
     } else {
       setCart(prev =>
-        prev.map(item =>
-          item.menuItem.id === menuItemId
+        prev.map((item, index) =>
+          index === cartIndex
             ? { ...item, quantity: newQuantity }
             : item
         )
@@ -146,7 +164,11 @@ const Storefront = () => {
     }
   };
 
-  const cartTotal = cart.reduce((sum, item) => sum + (item.menuItem.price * item.quantity), 0);
+  const cartTotal = cart.reduce((sum, item) => {
+    let itemPrice = item.selectedVariation?.price || item.menuItem.price;
+    const addOnsPrice = item.selectedAddOns?.reduce((addOnSum, addOn) => addOnSum + addOn.price, 0) || 0;
+    return sum + ((itemPrice + addOnsPrice) * item.quantity);
+  }, 0);
   const cartItemCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
   const handleCheckout = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -319,35 +341,53 @@ const Storefront = () => {
           </div>
         ) : (
           <div className="space-y-4">
-            {cart.map((item) => (
-              <div key={item.menuItem.id} className="flex justify-between items-center">
-                <div className="flex-1">
-                  <h4 className="font-medium">{item.menuItem.name}</h4>
-                  <p className="text-sm text-muted-foreground">
-                    ${item.menuItem.price.toFixed(2)} each
-                  </p>
+            {cart.map((item, index) => {
+              const itemPrice = item.selectedVariation?.price || item.menuItem.price;
+              const addOnsPrice = item.selectedAddOns?.reduce((sum, addOn) => sum + addOn.price, 0) || 0;
+              const totalItemPrice = itemPrice + addOnsPrice;
+              
+              return (
+                <div key={`${item.menuItem.id}-${index}`} className="space-y-2">
+                  <div className="flex justify-between items-start">
+                    <div className="flex-1">
+                      <h4 className="font-medium">{item.menuItem.name}</h4>
+                      {item.selectedVariation && (
+                        <p className="text-sm text-muted-foreground">
+                          {item.selectedVariation.name} - ${item.selectedVariation.price.toFixed(2)}
+                        </p>
+                      )}
+                      {item.selectedAddOns && item.selectedAddOns.length > 0 && (
+                        <p className="text-sm text-muted-foreground">
+                          Add-ons: {item.selectedAddOns.map(addOn => `${addOn.name} (+$${addOn.price.toFixed(2)})`).join(', ')}
+                        </p>
+                      )}
+                      <p className="text-sm font-medium">
+                        ${totalItemPrice.toFixed(2)} each
+                      </p>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Button 
+                        variant="outline" 
+                        size="icon"
+                        className="h-10 w-10 min-h-10"
+                        onClick={() => updateCartItemQuantity(index, item.quantity - 1)}
+                      >
+                        <Minus className="h-4 w-4" />
+                      </Button>
+                      <span className="min-w-12 text-center font-medium">{item.quantity}</span>
+                      <Button 
+                        variant="outline" 
+                        size="icon"
+                        className="h-10 w-10 min-h-10"
+                        onClick={() => updateCartItemQuantity(index, item.quantity + 1)}
+                      >
+                        <Plus className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
                 </div>
-                <div className="flex items-center space-x-2">
-                  <Button 
-                    variant="outline" 
-                    size="icon"
-                    className="h-10 w-10 min-h-10"
-                    onClick={() => updateCartItemQuantity(item.menuItem.id, item.quantity - 1)}
-                  >
-                    <Minus className="h-4 w-4" />
-                  </Button>
-                  <span className="min-w-12 text-center font-medium">{item.quantity}</span>
-                  <Button 
-                    variant="outline" 
-                    size="icon"
-                    className="h-10 w-10 min-h-10"
-                    onClick={() => updateCartItemQuantity(item.menuItem.id, item.quantity + 1)}
-                  >
-                    <Plus className="h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
-            ))}
+              );
+            })}
             
             <div className="border-t pt-4">
               <div className="flex justify-between text-lg font-semibold">
@@ -392,10 +432,19 @@ const Storefront = () => {
                         defaultValue={customer?.phone || ''}
                         required 
                       />
-                    </div>
-                    <div className="space-y-4">
-                      <div className="space-y-2">
-                        <Label>Order Type</Label>
+                     </div>
+                     <div className="space-y-2">
+                       <Label htmlFor="checkout-address">Address</Label>
+                       <Input 
+                         id="checkout-address" 
+                         name="address" 
+                         placeholder="Enter your delivery address"
+                         required 
+                       />
+                     </div>
+                     <div className="space-y-4">
+                       <div className="space-y-2">
+                         <Label>Order Type</Label>
                         <RadioGroup name="orderType" defaultValue="delivery" className="flex space-x-4">
                           <div className="flex items-center space-x-2">
                             <RadioGroupItem value="delivery" id="delivery" />
@@ -502,53 +551,73 @@ const Storefront = () => {
     </Dialog>
   );
 
-  // Render the appropriate template
-  const template = vendor.storefront?.template || 'modern';
-  
-  switch (template) {
-    case 'classic':
-      return (
-        <ClassicTemplate
-          vendor={vendor}
-          menuItems={filteredMenuItems}
-          categories={displayCategories}
-          selectedCategory={selectedCategory}
-          onCategoryChange={setSelectedCategory}
+  return (
+    <>
+      {/* Render the appropriate template */}
+      {(() => {
+        const template = vendor.storefront?.template || 'modern';
+        
+        switch (template) {
+          case 'classic':
+            return (
+              <ClassicTemplate
+                vendor={vendor}
+                menuItems={filteredMenuItems}
+                categories={displayCategories}
+                selectedCategory={selectedCategory}
+                onCategoryChange={setSelectedCategory}
+                onAddToCart={addToCart}
+                cartItemCount={cartItemCount}
+                cartComponent={cartComponent}
+                headerComponent={headerComponent}
+              />
+            );
+          case 'minimal':
+            return (
+              <MinimalTemplate
+                vendor={vendor}
+                menuItems={filteredMenuItems}
+                categories={displayCategories}
+                selectedCategory={selectedCategory}
+                onCategoryChange={setSelectedCategory}
+                onAddToCart={addToCart}
+                cartItemCount={cartItemCount}
+                cartComponent={cartComponent}
+                headerComponent={headerComponent}
+              />
+            );
+          default:
+            return (
+              <ModernTemplate
+                vendor={vendor}
+                menuItems={filteredMenuItems}
+                categories={displayCategories}
+                selectedCategory={selectedCategory}
+                onCategoryChange={setSelectedCategory}
+                onAddToCart={addToCart}
+                cartItemCount={cartItemCount}
+                cartComponent={cartComponent}
+                headerComponent={headerComponent}
+              />
+            );
+        }
+      })()}
+
+      {/* Menu Item Modal for variations */}
+      {selectedMenuItem && (
+        <MenuItemModal
+          item={selectedMenuItem}
+          isOpen={isItemModalOpen}
+          onClose={() => {
+            setIsItemModalOpen(false);
+            setSelectedMenuItem(null);
+          }}
           onAddToCart={addToCart}
-          cartItemCount={cartItemCount}
-          cartComponent={cartComponent}
-          headerComponent={headerComponent}
         />
-      );
-    case 'minimal':
-      return (
-        <MinimalTemplate
-          vendor={vendor}
-          menuItems={filteredMenuItems}
-          categories={displayCategories}
-          selectedCategory={selectedCategory}
-          onCategoryChange={setSelectedCategory}
-          onAddToCart={addToCart}
-          cartItemCount={cartItemCount}
-          cartComponent={cartComponent}
-          headerComponent={headerComponent}
-        />
-      );
-    default:
-      return (
-        <ModernTemplate
-          vendor={vendor}
-          menuItems={filteredMenuItems}
-          categories={displayCategories}
-          selectedCategory={selectedCategory}
-          onCategoryChange={setSelectedCategory}
-          onAddToCart={addToCart}
-          cartItemCount={cartItemCount}
-          cartComponent={cartComponent}
-          headerComponent={headerComponent}
-        />
-      );
-  }
+      )}
+    </>
+  );
+
 };
 
 export default Storefront;

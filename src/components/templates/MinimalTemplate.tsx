@@ -14,7 +14,7 @@ interface MinimalTemplateProps {
   categories: MenuCategory[];
   selectedCategory: string;
   onCategoryChange: (category: string) => void;
-  onAddToCart: (item: MenuItem) => void;
+  onAddToCart: (item: MenuItem, quantity?: number, selectedVariation?: any, selectedAddOns?: any[]) => void;
   cartItemCount: number;
   cartComponent: React.ReactNode;
   headerComponent: React.ReactNode;
