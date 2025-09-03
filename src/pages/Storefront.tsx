@@ -14,7 +14,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { vendorStorage, menuStorage, orderStorage, customerStorage, loyaltyStorage, categoryStorage, MenuItem, MenuCategory, MenuVariation, MenuAddOn } from '@/lib/storage';
-import { ShoppingCart, Plus, Minus, Store, User, LogOut, MapPin, Phone, Star } from 'lucide-react';
+import { ShoppingCart, Plus, Minus, Store, User, LogOut, MapPin, Phone, Star, X, ChevronUp, ChevronDown, GripVertical } from 'lucide-react';
 import ModernTemplate from '@/components/templates/ModernTemplate';
 import ClassicTemplate from '@/components/templates/ClassicTemplate';
 import MinimalTemplate from '@/components/templates/MinimalTemplate';
@@ -162,6 +162,20 @@ const Storefront = () => {
         )
       );
     }
+  };
+
+  const removeCartItem = (cartIndex: number) => {
+    setCart(prev => prev.filter((_, index) => index !== cartIndex));
+    toast({ title: 'Item removed', description: 'Item removed from cart.' });
+  };
+
+  const moveCartItem = (fromIndex: number, toIndex: number) => {
+    setCart(prev => {
+      const newCart = [...prev];
+      const [movedItem] = newCart.splice(fromIndex, 1);
+      newCart.splice(toIndex, 0, movedItem);
+      return newCart;
+    });
   };
 
   const cartTotal = cart.reduce((sum, item) => {
@@ -321,8 +335,8 @@ const Storefront = () => {
   // Cart component that all templates can use
   const cartComponent = (
     <Dialog open={isCartOpen} onOpenChange={setIsCartOpen}>
-      <DialogContent className="max-w-md">
-        <DialogHeader>
+      <DialogContent className="max-w-md max-h-[90vh] flex flex-col">
+        <DialogHeader className="flex-shrink-0">
           <div className="flex items-center gap-3 pb-2">
             <VendorLogo 
               vendor={vendor} 
@@ -335,75 +349,123 @@ const Storefront = () => {
         </DialogHeader>
         
         {cart.length === 0 ? (
-          <div className="py-8 text-center">
+          <div className="py-8 text-center flex-1">
             <ShoppingCart className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
             <p className="text-muted-foreground">Your cart is empty</p>
           </div>
         ) : (
-          <div className="space-y-4">
-            {cart.map((item, index) => {
-              const itemPrice = item.selectedVariation?.price || item.menuItem.price;
-              const addOnsPrice = item.selectedAddOns?.reduce((sum, addOn) => sum + addOn.price, 0) || 0;
-              const totalItemPrice = itemPrice + addOnsPrice;
-              
-              return (
-                <div key={`${item.menuItem.id}-${index}`} className="space-y-2">
-                  <div className="flex justify-between items-start">
-                    <div className="flex-1">
-                      <h4 className="font-medium">{item.menuItem.name}</h4>
-                      {item.selectedVariation && (
-                        <p className="text-sm text-muted-foreground">
-                          {item.selectedVariation.name} - ${item.selectedVariation.price.toFixed(2)}
-                        </p>
-                      )}
-                      {item.selectedAddOns && item.selectedAddOns.length > 0 && (
-                        <p className="text-sm text-muted-foreground">
-                          Add-ons: {item.selectedAddOns.map(addOn => `${addOn.name} (+$${addOn.price.toFixed(2)})`).join(', ')}
-                        </p>
-                      )}
-                      <p className="text-sm font-medium">
-                        ${totalItemPrice.toFixed(2)} each
-                      </p>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Button 
-                        variant="outline" 
-                        size="icon"
-                        className="h-10 w-10 min-h-10"
-                        onClick={() => updateCartItemQuantity(index, item.quantity - 1)}
-                      >
-                        <Minus className="h-4 w-4" />
-                      </Button>
-                      <span className="min-w-12 text-center font-medium">{item.quantity}</span>
-                      <Button 
-                        variant="outline" 
-                        size="icon"
-                        className="h-10 w-10 min-h-10"
-                        onClick={() => updateCartItemQuantity(index, item.quantity + 1)}
-                      >
-                        <Plus className="h-4 w-4" />
-                      </Button>
+          <>
+            <div className="flex-1 overflow-y-auto pr-2 space-y-3">
+              {cart.map((item, index) => {
+                const itemPrice = item.selectedVariation?.price || item.menuItem.price;
+                const addOnsPrice = item.selectedAddOns?.reduce((sum, addOn) => sum + addOn.price, 0) || 0;
+                const totalItemPrice = itemPrice + addOnsPrice;
+                
+                return (
+                  <div key={`${item.menuItem.id}-${index}`} className="border rounded-lg p-3 bg-card/50">
+                    <div className="flex items-start gap-3">
+                      {/* Drag handle */}
+                      <div className="flex flex-col gap-1 mt-1">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-6 w-6 p-0 hover:bg-muted"
+                          onClick={() => index > 0 && moveCartItem(index, index - 1)}
+                          disabled={index === 0}
+                        >
+                          <ChevronUp className="h-3 w-3" />
+                        </Button>
+                        <GripVertical className="h-4 w-4 text-muted-foreground mx-auto" />
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-6 w-6 p-0 hover:bg-muted"
+                          onClick={() => index < cart.length - 1 && moveCartItem(index, index + 1)}
+                          disabled={index === cart.length - 1}
+                        >
+                          <ChevronDown className="h-3 w-3" />
+                        </Button>
+                      </div>
+
+                      {/* Item details */}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-start justify-between">
+                          <h4 className="font-medium text-sm leading-tight">{item.menuItem.name}</h4>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-6 w-6 p-0 text-muted-foreground hover:text-destructive flex-shrink-0 ml-2"
+                            onClick={() => removeCartItem(index)}
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        </div>
+                        
+                        {item.selectedVariation && (
+                          <p className="text-xs text-muted-foreground mt-1">
+                            {item.selectedVariation.name} - ${item.selectedVariation.price.toFixed(2)}
+                          </p>
+                        )}
+                        {item.selectedAddOns && item.selectedAddOns.length > 0 && (
+                          <p className="text-xs text-muted-foreground mt-1">
+                            Add-ons: {item.selectedAddOns.map(addOn => `${addOn.name} (+$${addOn.price.toFixed(2)})`).join(', ')}
+                          </p>
+                        )}
+                        
+                        <div className="flex items-center justify-between mt-2">
+                          <span className="text-sm font-medium">
+                            ${totalItemPrice.toFixed(2)} each
+                          </span>
+                          
+                          <div className="flex items-center gap-2">
+                            <Button 
+                              variant="outline" 
+                              size="icon"
+                              className="h-8 w-8"
+                              onClick={() => updateCartItemQuantity(index, item.quantity - 1)}
+                            >
+                              <Minus className="h-3 w-3" />
+                            </Button>
+                            <span className="min-w-8 text-center text-sm font-medium">{item.quantity}</span>
+                            <Button 
+                              variant="outline" 
+                              size="icon"
+                              className="h-8 w-8"
+                              onClick={() => updateCartItemQuantity(index, item.quantity + 1)}
+                            >
+                              <Plus className="h-3 w-3" />
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
             
-            <div className="border-t pt-4">
-              <div className="flex justify-between text-lg font-semibold">
+            <div className="border-t pt-4 flex-shrink-0">
+              <div className="flex justify-between text-lg font-semibold mb-4">
                 <span>Total</span>
                 <span>${cartTotal.toFixed(2)}</span>
               </div>
               
               <Dialog open={isCheckoutOpen} onOpenChange={setIsCheckoutOpen}>
                 <DialogTrigger asChild>
-                  <Button variant="order" size="lg" className="w-full mt-4 min-h-12">
+                  <Button variant="order" size="lg" className="w-full min-h-12">
                     Checkout
                   </Button>
                 </DialogTrigger>
-                <DialogContent>
-                  <DialogHeader>
-                    <div className="flex items-center gap-3 pb-2">
+                <DialogContent className="max-w-lg max-h-[90vh] sm:max-h-[90vh] p-0 gap-0 flex flex-col">
+                  {/* Mobile bottom sheet style header with drag handle */}
+                  <div className="flex flex-col sm:hidden">
+                    <div className="flex justify-center py-2">
+                      <div className="w-12 h-1 bg-muted rounded-full"></div>
+                    </div>
+                  </div>
+                  
+                  <DialogHeader className="px-6 pt-4 pb-2 flex-shrink-0">
+                    <div className="flex items-center gap-3">
                       <VendorLogo 
                         vendor={vendor} 
                         size="sm" 
@@ -413,139 +475,161 @@ const Storefront = () => {
                       <DialogTitle className="flex-1">{vendor.storeName} - Checkout</DialogTitle>
                     </div>
                   </DialogHeader>
-                  <form onSubmit={handleCheckout} className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="checkout-name">Full Name</Label>
-                      <Input 
-                        id="checkout-name" 
-                        name="name" 
-                        defaultValue={customer?.name || ''}
-                        required 
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="checkout-phone">Phone Number</Label>
-                      <Input 
-                        id="checkout-phone" 
-                        name="phone" 
-                        type="tel"
-                        defaultValue={customer?.phone || ''}
-                        required 
-                      />
-                     </div>
-                     <div className="space-y-2">
-                       <Label htmlFor="checkout-address">Address</Label>
-                       <Input 
-                         id="checkout-address" 
-                         name="address" 
-                         placeholder="Enter your delivery address"
-                         required 
-                       />
-                     </div>
-                     <div className="space-y-4">
+                  
+                   <div className="flex-1 overflow-y-auto px-6">
+                     <form id="checkout-form" onSubmit={handleCheckout} className="space-y-4 pb-6">
                        <div className="space-y-2">
-                         <Label>Order Type</Label>
-                        <RadioGroup name="orderType" defaultValue="delivery" className="flex space-x-4">
-                          <div className="flex items-center space-x-2">
-                            <RadioGroupItem value="delivery" id="delivery" />
-                            <Label htmlFor="delivery">Delivery</Label>
-                          </div>
-                          <div className="flex items-center space-x-2">
-                            <RadioGroupItem value="pickup" id="pickup" />
-                            <Label htmlFor="pickup">Pickup</Label>
-                          </div>
-                        </RadioGroup>
-                      </div>
+                         <Label htmlFor="checkout-name">Full Name</Label>
+                         <Input 
+                           id="checkout-name" 
+                           name="name" 
+                           defaultValue={customer?.name || ''}
+                           required 
+                         />
+                       </div>
+                       <div className="space-y-2">
+                         <Label htmlFor="checkout-phone">Phone Number</Label>
+                         <Input 
+                           id="checkout-phone" 
+                           name="phone" 
+                           type="tel"
+                           defaultValue={customer?.phone || ''}
+                           required 
+                         />
+                       </div>
+                       <div className="space-y-2">
+                         <Label htmlFor="checkout-address">Address</Label>
+                         <Input 
+                           id="checkout-address" 
+                           name="address" 
+                           placeholder="Enter your delivery address"
+                           required 
+                         />
+                       </div>
+                       <div className="space-y-4">
+                         <div className="space-y-2">
+                           <Label>Order Type</Label>
+                           <RadioGroup name="orderType" defaultValue="delivery" className="flex space-x-4">
+                             <div className="flex items-center space-x-2">
+                               <RadioGroupItem value="delivery" id="delivery" />
+                               <Label htmlFor="delivery">Delivery</Label>
+                             </div>
+                             <div className="flex items-center space-x-2">
+                               <RadioGroupItem value="pickup" id="pickup" />
+                               <Label htmlFor="pickup">Pickup</Label>
+                             </div>
+                           </RadioGroup>
+                         </div>
 
-                      <div className="space-y-2">
-                        <Label>Payment Method</Label>
-                        <RadioGroup name="paymentMethod" defaultValue="pay_on_delivery" className="space-y-2">
-                          <div className="flex items-center space-x-2">
-                            <RadioGroupItem value="pay_on_delivery" id="pay_on_delivery" />
-                            <Label htmlFor="pay_on_delivery">Pay on Delivery/Pickup</Label>
-                          </div>
-                          <div className="flex items-center space-x-2">
-                            <RadioGroupItem value="proof_of_payment" id="proof_of_payment" />
-                            <Label htmlFor="proof_of_payment">Upload Proof of Payment</Label>
-                          </div>
-                        </RadioGroup>
-                      </div>
+                         <div className="space-y-2">
+                           <Label>Payment Method</Label>
+                           <RadioGroup name="paymentMethod" defaultValue="pay_on_delivery" className="space-y-2">
+                             <div className="flex items-center space-x-2">
+                               <RadioGroupItem value="pay_on_delivery" id="pay_on_delivery" />
+                               <Label htmlFor="pay_on_delivery">Pay on Delivery/Pickup</Label>
+                             </div>
+                             <div className="flex items-center space-x-2">
+                               <RadioGroupItem value="proof_of_payment" id="proof_of_payment" />
+                               <Label htmlFor="proof_of_payment">Upload Proof of Payment</Label>
+                             </div>
+                           </RadioGroup>
+                         </div>
 
-                      <div className="space-y-2">
-                        <Label htmlFor="checkout-notes">Special Instructions (Optional)</Label>
-                        <Textarea 
-                          id="checkout-notes" 
-                          name="notes" 
-                          placeholder="Any special requests or instructions..."
-                          className="min-h-20"
-                        />
-                      </div>
+                         <div className="space-y-2">
+                           <Label htmlFor="checkout-notes">Special Instructions (Optional)</Label>
+                           <Textarea 
+                             id="checkout-notes" 
+                             name="notes" 
+                             placeholder="Any special requests or instructions..."
+                             className="min-h-20"
+                           />
+                         </div>
 
-                      {/* Marketing Preferences for Guest Checkout */}
-                      {!customer && (
-                        <div className="space-y-3 p-4 bg-muted/50 rounded-lg">
-                          <h4 className="font-medium text-sm">Stay connected with us</h4>
-                          <div className="space-y-2">
-                            <div className="flex items-center space-x-2">
-                              <Checkbox 
-                                id="email-marketing"
-                                name="emailMarketing"
-                                defaultChecked={true}
-                              />
-                              <Label htmlFor="email-marketing" className="text-sm">
-                                Email me about special offers and promotions
-                              </Label>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                              <Checkbox 
-                                id="push-notifications"
-                                name="pushNotifications"
-                                defaultChecked={true}
-                              />
-                              <Label htmlFor="push-notifications" className="text-sm">
-                                Send me order updates and notifications
-                              </Label>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                    
-                    <div className="border-t pt-4">
-                      {customer && (() => {
-                        const loyaltySettings = loyaltyStorage.get(vendor.id);
-                        return loyaltySettings?.isActive && (
-                          <div className="bg-muted/50 p-3 rounded-lg mb-4">
-                            <div className="flex items-center justify-between">
-                              <span className="text-sm font-medium">Available Points</span>
-                              <span className="text-sm font-bold">{customer.loyaltyPoints || 0} points</span>
-                            </div>
-                            <div className="text-xs text-muted-foreground mt-1">
-                              You'll earn {Math.floor(cartTotal * (loyaltySettings?.pointsPerPeso || 1))} points from this order
-                            </div>
-                            {loyaltySettings.redemptionRules.length > 0 && (
-                              <div className="text-xs text-muted-foreground">
-                                Redeem: {loyaltySettings.redemptionRules.map(rule => 
-                                  `${rule.pointsRequired} pts = ₱${rule.discountAmount} off`
-                                ).join(', ')}
-                              </div>
-                            )}
-                          </div>
-                        );
-                      })()}
-                      <div className="flex justify-between text-lg font-semibold mb-4">
-                        <span>Total</span>
-                        <span>${cartTotal.toFixed(2)}</span>
-                      </div>
-                      <Button type="submit" variant="order" size="lg" className="w-full" disabled={isLoading}>
-                        {isLoading ? <LoadingSpinner size="sm" /> : `Place Order - $${cartTotal.toFixed(2)}`}
-                      </Button>
-                    </div>
-                  </form>
+                         {/* Marketing Preferences for Guest Checkout */}
+                         {!customer && (
+                           <div className="space-y-3 p-4 bg-muted/50 rounded-lg">
+                             <h4 className="font-medium text-sm">Stay connected with us</h4>
+                             <div className="space-y-2">
+                               <div className="flex items-center space-x-2">
+                                 <Checkbox 
+                                   id="email-marketing"
+                                   name="emailMarketing"
+                                   defaultChecked={true}
+                                 />
+                                 <Label htmlFor="email-marketing" className="text-sm">
+                                   Email me about special offers and promotions
+                                 </Label>
+                               </div>
+                               <div className="flex items-center space-x-2">
+                                 <Checkbox 
+                                   id="push-notifications"
+                                   name="pushNotifications"
+                                   defaultChecked={true}
+                                 />
+                                 <Label htmlFor="push-notifications" className="text-sm">
+                                   Send me order updates and notifications
+                                 </Label>
+                               </div>
+                             </div>
+                           </div>
+                         )}
+                       </div>
+                     </form>
+                   </div>
+                   
+                   {/* Sticky footer with Place Order button */}
+                   <div className="border-t bg-background p-6 flex-shrink-0">
+                     {customer && (() => {
+                       const loyaltySettings = loyaltyStorage.get(vendor.id);
+                       return loyaltySettings?.isActive && (
+                         <div className="bg-muted/50 p-3 rounded-lg mb-4">
+                           <div className="flex items-center justify-between">
+                             <span className="text-sm font-medium">Available Points</span>
+                             <span className="text-sm font-bold">{customer.loyaltyPoints || 0} points</span>
+                           </div>
+                           <div className="text-xs text-muted-foreground mt-1">
+                             You'll earn {Math.floor(cartTotal * (loyaltySettings?.pointsPerPeso || 1))} points from this order
+                           </div>
+                           {loyaltySettings.redemptionRules.length > 0 && (
+                             <div className="text-xs text-muted-foreground">
+                               Redeem: {loyaltySettings.redemptionRules.map(rule => 
+                                 `${rule.pointsRequired} pts = ₱${rule.discountAmount} off`
+                               ).join(', ')}
+                             </div>
+                           )}
+                         </div>
+                       );
+                     })()}
+                     <div className="flex justify-between text-lg font-semibold mb-4">
+                       <span>Total</span>
+                       <span>${cartTotal.toFixed(2)}</span>
+                     </div>
+                     <div className="flex gap-2">
+                       <Button type="button" variant="outline" size="lg" className="flex-1" onClick={() => setIsCheckoutOpen(false)}>
+                         Cancel
+                       </Button>
+                       <Button 
+                         type="submit" 
+                         variant="order" 
+                         size="lg" 
+                         className="flex-1" 
+                         disabled={isLoading}
+                         onClick={(e) => {
+                           e.preventDefault();
+                           const form = document.querySelector('#checkout-form') as HTMLFormElement;
+                           if (form) {
+                             handleCheckout({ preventDefault: () => {}, currentTarget: form } as any);
+                           }
+                         }}
+                       >
+                         {isLoading ? <LoadingSpinner size="sm" /> : `Place Order - $${cartTotal.toFixed(2)}`}
+                       </Button>
+                     </div>
+                   </div>
                 </DialogContent>
               </Dialog>
             </div>
-          </div>
+          </>
         )}
       </DialogContent>
     </Dialog>
