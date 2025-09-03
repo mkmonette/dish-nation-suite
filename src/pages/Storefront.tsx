@@ -192,6 +192,42 @@ const Storefront = () => {
     setIsLoading(true);
     const formData = new FormData(e.currentTarget);
     
+    const paymentMethod = formData.get('paymentMethod') as 'pay_on_delivery' | 'manual_payment';
+    let paymentProof: string | undefined;
+    let selectedPaymentMethod: string | undefined;
+
+    // Handle manual payment proof upload
+    if (paymentMethod === 'manual_payment') {
+      const proofFile = formData.get('paymentProof') as File;
+      if (!proofFile || proofFile.size === 0) {
+        alert('Please upload proof of payment for manual payment method.');
+        setIsLoading(false);
+        return;
+      }
+
+      // Convert image to base64
+      if (proofFile.size > 2 * 1024 * 1024) {
+        alert('Payment proof file size must be less than 2MB');
+        setIsLoading(false);
+        return;
+      }
+
+      try {
+        paymentProof = await new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result as string);
+          reader.onerror = reject;
+          reader.readAsDataURL(proofFile);
+        });
+
+        selectedPaymentMethod = formData.get('selectedPaymentMethod') as string;
+      } catch (error) {
+        alert('Failed to process payment proof image');
+        setIsLoading(false);
+        return;
+      }
+    }
+    
     const order = orderStorage.create({
       customerId: customer?.id || 'guest',
       vendorId: vendor.id,
@@ -202,9 +238,11 @@ const Storefront = () => {
         quantity: item.quantity,
       })),
       total: cartTotal,
-      status: 'pending',
+      status: paymentMethod === 'manual_payment' ? 'paid_manual_verification' : 'pending',
       orderType: formData.get('orderType') as 'delivery' | 'pickup',
-      paymentMethod: formData.get('paymentMethod') as 'pay_on_delivery' | 'proof_of_payment',
+      paymentMethod,
+      paymentProof,
+      selectedPaymentMethod,
       customerInfo: {
         name: formData.get('name') as string,
         phone: formData.get('phone') as string,
@@ -521,19 +559,83 @@ const Storefront = () => {
                            </RadioGroup>
                          </div>
 
-                         <div className="space-y-2">
-                           <Label>Payment Method</Label>
-                           <RadioGroup name="paymentMethod" defaultValue="pay_on_delivery" className="space-y-2">
-                             <div className="flex items-center space-x-2">
-                               <RadioGroupItem value="pay_on_delivery" id="pay_on_delivery" />
-                               <Label htmlFor="pay_on_delivery">Pay on Delivery/Pickup</Label>
-                             </div>
-                             <div className="flex items-center space-x-2">
-                               <RadioGroupItem value="proof_of_payment" id="proof_of_payment" />
-                               <Label htmlFor="proof_of_payment">Upload Proof of Payment</Label>
-                             </div>
-                           </RadioGroup>
-                         </div>
+                          <div className="space-y-2">
+                            <Label>Payment Method</Label>
+                             <RadioGroup 
+                               name="paymentMethod" 
+                               defaultValue="pay_on_delivery" 
+                               className="space-y-2"
+                               onValueChange={(value) => {
+                                 const manualSection = document.getElementById('manual-payment-section');
+                                 if (manualSection) {
+                                   manualSection.style.display = value === 'manual_payment' ? 'block' : 'none';
+                                 }
+                               }}
+                             >
+                               <div className="flex items-center space-x-2">
+                                 <RadioGroupItem value="pay_on_delivery" id="pay_on_delivery" />
+                                 <Label htmlFor="pay_on_delivery">Pay on Delivery/Pickup</Label>
+                               </div>
+                               {vendor?.manualPaymentEnabled && vendor.manualPaymentMethods?.some(method => method.enabled) && (
+                                 <div className="flex items-center space-x-2">
+                                   <RadioGroupItem value="manual_payment" id="manual_payment" />
+                                   <Label htmlFor="manual_payment">Manual Payment</Label>
+                                 </div>
+                               )}
+                             </RadioGroup>
+                          </div>
+
+                          {/* Manual Payment Options */}
+                          <div id="manual-payment-section" className="space-y-4" style={{ display: 'none' }}>
+                            <Label>Select Payment Method</Label>
+                            {vendor?.manualPaymentMethods?.filter(method => method.enabled).map((method) => (
+                              <Card key={method.id} className="p-4">
+                                <div className="flex items-center space-x-2 mb-2">
+                                  <RadioGroupItem 
+                                    value={method.title} 
+                                    id={`payment-method-${method.id}`}
+                                  />
+                                  <input 
+                                    type="hidden" 
+                                    name="selectedPaymentMethod" 
+                                    value={method.title}
+                                  />
+                                  <Label htmlFor={`payment-method-${method.id}`} className="font-medium">
+                                    {method.title}
+                                  </Label>
+                                </div>
+                                <div className="ml-6 space-y-2">
+                                  <p className="text-sm text-muted-foreground whitespace-pre-wrap">
+                                    {method.instructions}
+                                  </p>
+                                  {method.qrCode && (
+                                    <div className="mt-2">
+                                      <img 
+                                        src={method.qrCode} 
+                                        alt="QR Code" 
+                                        className="w-32 h-32 border rounded"
+                                      />
+                                    </div>
+                                  )}
+                                </div>
+                              </Card>
+                            ))}
+                            
+                            <div className="space-y-2">
+                              <Label htmlFor="payment-proof">Upload Proof of Payment *</Label>
+                              <input
+                                id="payment-proof"
+                                name="paymentProof"
+                                type="file"
+                                accept="image/*"
+                                className="w-full p-2 border rounded-md"
+                                required
+                              />
+                              <p className="text-xs text-muted-foreground">
+                                Upload a screenshot or photo of your payment (max 2MB)
+                              </p>
+                            </div>
+                          </div>
 
                          <div className="space-y-2">
                            <Label htmlFor="checkout-notes">Special Instructions (Optional)</Label>

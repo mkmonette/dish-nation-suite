@@ -51,6 +51,14 @@ export interface Admin {
   createdAt: string;
 }
 
+export interface ManualPaymentMethod {
+  id: string;
+  title: string;
+  instructions: string;
+  qrCode?: string; // base64 image data
+  enabled: boolean;
+}
+
 export interface Vendor {
   id: string;
   email: string;
@@ -62,6 +70,8 @@ export interface Vendor {
   status: 'pending' | 'approved' | 'suspended' | 'rejected';
   subscriptionId?: string;
   storefront: StorefrontSettings;
+  manualPaymentMethods?: ManualPaymentMethod[];
+  manualPaymentEnabled?: boolean;
   createdAt: string;
 }
 
@@ -122,10 +132,11 @@ export interface Order {
   vendorId: string;
   items: OrderItem[];
   total: number;
-  status: 'pending' | 'confirmed' | 'preparing' | 'ready' | 'out_for_delivery' | 'delivered' | 'cancelled';
+  status: 'pending' | 'paid_manual_verification' | 'preparing' | 'out_for_delivery' | 'completed' | 'cancelled';
   orderType: 'delivery' | 'pickup';
-  paymentMethod: 'pay_on_delivery' | 'proof_of_payment';
+  paymentMethod: 'pay_on_delivery' | 'manual_payment';
   paymentProof?: string; // base64 image data
+  selectedPaymentMethod?: string; // title of selected manual payment method
   customerInfo: {
     name: string;
     phone: string;

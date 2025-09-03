@@ -41,7 +41,7 @@ const CustomerManager: React.FC<CustomerManagerProps> = ({ vendorId }) => {
   const getCustomerStats = (customerId: string) => {
     const customerOrders = orders.filter(order => order.customerId === customerId);
     const totalSpent = customerOrders.reduce((sum, order) => sum + order.total, 0);
-    const completedOrders = customerOrders.filter(order => order.status === 'delivered').length;
+    const completedOrders = customerOrders.filter(order => order.status === 'completed').length;
     
     return {
       totalOrders: customerOrders.length,
@@ -296,7 +296,7 @@ const CustomerManager: React.FC<CustomerManagerProps> = ({ vendorId }) => {
                           <p className="font-medium">${order.total.toFixed(2)}</p>
                           <Badge 
                             variant={
-                              order.status === 'delivered' ? 'default' : 
+                              order.status === 'completed' ? 'default' : 
                               order.status === 'cancelled' ? 'destructive' : 
                               'secondary'
                             }

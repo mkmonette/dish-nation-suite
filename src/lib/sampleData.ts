@@ -301,7 +301,7 @@ export const initializeSampleData = () => {
       }
     ],
     total: 27.48,
-    status: 'delivered',
+    status: 'completed',
     orderType: 'delivery',
     paymentMethod: 'pay_on_delivery',
     customerInfo: {
@@ -358,9 +358,9 @@ export const initializeSampleData = () => {
       }
     ],
     total: 28.48,
-    status: 'confirmed',
+    status: 'preparing',
     orderType: 'delivery',
-    paymentMethod: 'proof_of_payment',
+    paymentMethod: 'manual_payment',
     customerInfo: {
       name: 'Mike Jones',
       phone: '+1-555-0201',

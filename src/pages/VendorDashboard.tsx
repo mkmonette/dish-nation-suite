@@ -22,6 +22,7 @@ import LoyaltyManager from '@/components/LoyaltyManager';
 import EmailCampaignManager from '@/components/EmailCampaignManager';
 import VendorSubscriptionManager from '@/components/VendorSubscriptionManager';
 import VendorLogo from '@/components/VendorLogo';
+import ManualPaymentSettings from '@/components/ManualPaymentSettings';
 
 const VendorDashboard = () => {
   const { logout } = useVendor();
@@ -221,76 +222,118 @@ const VendorDashboard = () => {
                             {order.customerInfo.name} • {order.customerInfo.phone}
                           </CardDescription>
                         </div>
-                        <Badge variant={order.status === 'pending' ? 'destructive' : order.status === 'delivered' ? 'default' : 'secondary'}>
+                        <Badge variant={order.status === 'pending' ? 'destructive' : order.status === 'completed' ? 'default' : 'secondary'}>
                           {order.status}
                         </Badge>
                       </div>
                     </CardHeader>
-                    <CardContent>
-                      <div className="space-y-2 mb-4">
-                        {order.items.map((item, index) => (
-                          <div key={index} className="flex justify-between text-sm">
-                            <span>{item.quantity}x {item.name}</span>
-                            <span>${(item.price * item.quantity).toFixed(2)}</span>
-                          </div>
-                        ))}
-                        <div className="border-t pt-2 flex justify-between font-semibold">
-                          <span>Total</span>
-                          <span>${order.total.toFixed(2)}</span>
-                        </div>
-                      </div>
+                     <CardContent>
+                       <div className="space-y-4">
+                         <div className="space-y-2">
+                           {order.items.map((item, index) => (
+                             <div key={index} className="flex justify-between text-sm">
+                               <span>{item.quantity}x {item.name}</span>
+                               <span>${(item.price * item.quantity).toFixed(2)}</span>
+                             </div>
+                           ))}
+                           <div className="border-t pt-2 flex justify-between font-semibold">
+                             <span>Total</span>
+                             <span>${order.total.toFixed(2)}</span>
+                           </div>
+                         </div>
+
+                         {/* Payment Information */}
+                         <div className="border-t pt-3">
+                           <div className="text-sm">
+                             <span className="font-medium">Payment Method: </span>
+                             <span className="capitalize">{order.paymentMethod.replace('_', ' ')}</span>
+                           </div>
+                           {order.selectedPaymentMethod && (
+                             <div className="text-sm mt-1">
+                               <span className="font-medium">Selected: </span>
+                               <span>{order.selectedPaymentMethod}</span>
+                             </div>
+                           )}
+                           {order.paymentProof && (
+                             <div className="mt-2">
+                               <span className="text-sm font-medium block mb-2">Payment Proof:</span>
+                               <img 
+                                 src={order.paymentProof} 
+                                 alt="Payment Proof" 
+                                 className="max-w-32 max-h-32 rounded border cursor-pointer"
+                                 onClick={() => window.open(order.paymentProof, '_blank')}
+                               />
+                             </div>
+                           )}
+                         </div>
+
+                         {/* Customer Information */}
+                         <div className="border-t pt-3">
+                           <div className="text-sm space-y-1">
+                             <div><span className="font-medium">Customer:</span> {order.customerInfo.name}</div>
+                             <div><span className="font-medium">Phone:</span> {order.customerInfo.phone}</div>
+                             {order.customerInfo.address && (
+                               <div><span className="font-medium">Address:</span> {order.customerInfo.address}</div>
+                             )}
+                             <div><span className="font-medium">Order Type:</span> {order.orderType}</div>
+                             {order.notes && (
+                               <div><span className="font-medium">Notes:</span> {order.notes}</div>
+                             )}
+                           </div>
+                         </div>
+                       </div>
                       
                       <div className="flex gap-2 flex-wrap">
-                        {order.status === 'pending' && (
+                        {order.status === 'pending' && order.paymentMethod === 'pay_on_delivery' && (
                           <Button 
                             size="sm" 
                             variant="success"
-                            onClick={() => handleUpdateOrderStatus(order.id, 'confirmed')}
-                          >
-                            Confirm
-                          </Button>
-                        )}
-                        {order.status === 'confirmed' && (
-                          <Button 
-                            size="sm" 
-                            variant="warning"
                             onClick={() => handleUpdateOrderStatus(order.id, 'preparing')}
                           >
-                            Start Preparing
+                            Confirm Order
                           </Button>
                         )}
-                        {order.status === 'preparing' && (
-                          <Button 
-                            size="sm" 
-                            variant="order"
-                            onClick={() => handleUpdateOrderStatus(order.id, 'ready')}
-                          >
-                            Mark Ready
-                          </Button>
+                        {order.status === 'paid_manual_verification' && (
+                          <>
+                            <Button 
+                              size="sm" 
+                              variant="success"
+                              onClick={() => handleUpdateOrderStatus(order.id, 'preparing')}
+                            >
+                              Verify & Start Preparing
+                            </Button>
+                            <Button 
+                              size="sm" 
+                              variant="destructive"
+                              onClick={() => handleUpdateOrderStatus(order.id, 'cancelled')}
+                            >
+                              Reject Payment
+                            </Button>
+                          </>
                         )}
-                        {order.status === 'ready' && order.orderType === 'delivery' && (
+                        {order.status === 'preparing' && order.orderType === 'delivery' && (
                           <Button 
                             size="sm" 
                             variant="order"
                             onClick={() => handleUpdateOrderStatus(order.id, 'out_for_delivery')}
                           >
-                            Out for Delivery
+                            Ready for Delivery
                           </Button>
                         )}
                         {order.status === 'out_for_delivery' && (
                           <Button 
                             size="sm" 
                             variant="success"
-                            onClick={() => handleUpdateOrderStatus(order.id, 'delivered')}
+                            onClick={() => handleUpdateOrderStatus(order.id, 'completed')}
                           >
                             Mark Delivered
                           </Button>
                         )}
-                        {order.status === 'ready' && order.orderType === 'pickup' && (
+                        {order.status === 'preparing' && order.orderType === 'pickup' && (
                           <Button 
                             size="sm" 
                             variant="success"
-                            onClick={() => handleUpdateOrderStatus(order.id, 'delivered')}
+                            onClick={() => handleUpdateOrderStatus(order.id, 'completed')}
                           >
                             Mark Picked Up
                           </Button>
@@ -424,17 +467,7 @@ const VendorDashboard = () => {
               <h1 className="text-3xl font-bold">Settings</h1>
               <p className="text-muted-foreground">Configure your store settings</p>
             </div>
-            <Card>
-              <CardHeader>
-                <CardTitle>Store Settings</CardTitle>
-                <CardDescription>Additional settings will be available here</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">
-                  Advanced store settings coming soon! Use the storefront section to customize your store appearance.
-                </p>
-              </CardContent>
-            </Card>
+            <ManualPaymentSettings />
           </div>
         );
 
