@@ -90,6 +90,11 @@ const VendorDashboard = () => {
 
   const storeUrl = `${window.location.origin}/store/${vendor.slug}`;
 
+  // Debug logging for store URL
+  console.log('Vendor:', vendor);
+  console.log('Store URL:', storeUrl);
+  console.log('Vendor slug:', vendor.slug);
+
   // Dashboard overview stats
   const stats = {
     totalOrders: orders.length,
