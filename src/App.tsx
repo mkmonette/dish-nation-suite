@@ -17,6 +17,7 @@ import Storefront from "./pages/Storefront";
 import NotFound from "./pages/NotFound";
 import CustomerOrders from "./pages/CustomerOrders";
 import CustomerProfile from "./pages/CustomerProfile";
+import CustomerDashboard from "./pages/CustomerDashboard";
 
 const queryClient = new QueryClient();
 
@@ -38,6 +39,7 @@ const App = () => (
                   <Route path="/admin/dashboard" element={<AdminDashboard />} />
                   <Route path="/store/:vendorSlug" element={<Storefront />} />
                   <Route path="/store/:vendorSlug/auth" element={<CustomerAuth />} />
+                  <Route path="/store/:vendorSlug/dashboard" element={<CustomerDashboard />} />
                 <Route path="/store/:vendorSlug/orders" element={<CustomerOrders />} />
                 <Route path="/store/:vendorSlug/profile" element={<CustomerProfile />} />
                   <Route path="*" element={<NotFound />} />

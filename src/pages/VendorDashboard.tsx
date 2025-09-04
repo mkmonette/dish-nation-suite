@@ -23,6 +23,7 @@ import EmailCampaignManager from '@/components/EmailCampaignManager';
 import VendorSubscriptionManager from '@/components/VendorSubscriptionManager';
 import VendorLogo from '@/components/VendorLogo';
 import ManualPaymentSettings from '@/components/ManualPaymentSettings';
+import OrdersSection from '@/components/OrdersSection';
 
 const VendorDashboard = () => {
   const { logout } = useVendor();
@@ -196,156 +197,10 @@ const VendorDashboard = () => {
         );
 
       case 'orders':
-        return (
-          <div className="space-y-6">
-            <div>
-              <h1 className="text-3xl font-bold">Orders</h1>
-              <p className="text-muted-foreground">Manage your incoming orders</p>
-            </div>
-
-            {orders.length === 0 ? (
-              <Card>
-                <CardContent className="py-8 text-center">
-                  <Package className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                  <p className="text-muted-foreground">No orders yet. Share your store link to get started!</p>
-                </CardContent>
-              </Card>
-            ) : (
-              <div className="space-y-4">
-                {orders.map((order) => (
-                  <Card key={order.id}>
-                    <CardHeader>
-                      <div className="flex justify-between items-start">
-                        <div>
-                          <CardTitle className="text-lg">Order #{order.id}</CardTitle>
-                          <CardDescription>
-                            {order.customerInfo.name} • {order.customerInfo.phone}
-                          </CardDescription>
-                        </div>
-                        <Badge variant={order.status === 'pending' ? 'destructive' : order.status === 'completed' ? 'default' : 'secondary'}>
-                          {order.status}
-                        </Badge>
-                      </div>
-                    </CardHeader>
-                     <CardContent>
-                       <div className="space-y-4">
-                         <div className="space-y-2">
-                           {order.items.map((item, index) => (
-                             <div key={index} className="flex justify-between text-sm">
-                               <span>{item.quantity}x {item.name}</span>
-                               <span>${(item.price * item.quantity).toFixed(2)}</span>
-                             </div>
-                           ))}
-                           <div className="border-t pt-2 flex justify-between font-semibold">
-                             <span>Total</span>
-                             <span>${order.total.toFixed(2)}</span>
-                           </div>
-                         </div>
-
-                         {/* Payment Information */}
-                         <div className="border-t pt-3">
-                           <div className="text-sm">
-                             <span className="font-medium">Payment Method: </span>
-                             <span className="capitalize">{order.paymentMethod.replace('_', ' ')}</span>
-                           </div>
-                           {order.selectedPaymentMethod && (
-                             <div className="text-sm mt-1">
-                               <span className="font-medium">Selected: </span>
-                               <span>{order.selectedPaymentMethod}</span>
-                             </div>
-                           )}
-                           {order.paymentProof && (
-                             <div className="mt-2">
-                               <span className="text-sm font-medium block mb-2">Payment Proof:</span>
-                               <img 
-                                 src={order.paymentProof} 
-                                 alt="Payment Proof" 
-                                 className="max-w-32 max-h-32 rounded border cursor-pointer"
-                                 onClick={() => window.open(order.paymentProof, '_blank')}
-                               />
-                             </div>
-                           )}
-                         </div>
-
-                         {/* Customer Information */}
-                         <div className="border-t pt-3">
-                           <div className="text-sm space-y-1">
-                             <div><span className="font-medium">Customer:</span> {order.customerInfo.name}</div>
-                             <div><span className="font-medium">Phone:</span> {order.customerInfo.phone}</div>
-                             {order.customerInfo.address && (
-                               <div><span className="font-medium">Address:</span> {order.customerInfo.address}</div>
-                             )}
-                             <div><span className="font-medium">Order Type:</span> {order.orderType}</div>
-                             {order.notes && (
-                               <div><span className="font-medium">Notes:</span> {order.notes}</div>
-                             )}
-                           </div>
-                         </div>
-                       </div>
-                      
-                      <div className="flex gap-2 flex-wrap">
-                        {order.status === 'pending' && order.paymentMethod === 'pay_on_delivery' && (
-                          <Button 
-                            size="sm" 
-                            variant="success"
-                            onClick={() => handleUpdateOrderStatus(order.id, 'preparing')}
-                          >
-                            Confirm Order
-                          </Button>
-                        )}
-                        {order.status === 'paid_manual_verification' && (
-                          <>
-                            <Button 
-                              size="sm" 
-                              variant="success"
-                              onClick={() => handleUpdateOrderStatus(order.id, 'preparing')}
-                            >
-                              Verify & Start Preparing
-                            </Button>
-                            <Button 
-                              size="sm" 
-                              variant="destructive"
-                              onClick={() => handleUpdateOrderStatus(order.id, 'cancelled')}
-                            >
-                              Reject Payment
-                            </Button>
-                          </>
-                        )}
-                        {order.status === 'preparing' && order.orderType === 'delivery' && (
-                          <Button 
-                            size="sm" 
-                            variant="order"
-                            onClick={() => handleUpdateOrderStatus(order.id, 'out_for_delivery')}
-                          >
-                            Ready for Delivery
-                          </Button>
-                        )}
-                        {order.status === 'out_for_delivery' && (
-                          <Button 
-                            size="sm" 
-                            variant="success"
-                            onClick={() => handleUpdateOrderStatus(order.id, 'completed')}
-                          >
-                            Mark Delivered
-                          </Button>
-                        )}
-                        {order.status === 'preparing' && order.orderType === 'pickup' && (
-                          <Button 
-                            size="sm" 
-                            variant="success"
-                            onClick={() => handleUpdateOrderStatus(order.id, 'completed')}
-                          >
-                            Mark Picked Up
-                          </Button>
-                        )}
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            )}
-          </div>
-        );
+        return <OrdersSection 
+          orders={orders} 
+          onUpdateOrderStatus={handleUpdateOrderStatus} 
+        />;
 
       case 'menu':
         return (
