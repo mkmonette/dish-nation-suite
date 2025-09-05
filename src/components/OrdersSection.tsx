@@ -7,8 +7,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
 import { Order } from '@/lib/storage';
-import { Package, Filter, Calendar } from 'lucide-react';
+import { Package, Filter, Calendar, ShoppingCart, DollarSign, Clock, CheckCircle, TrendingUp, Eye } from 'lucide-react';
 import OrderDetailsModal from './OrderDetailsModal';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 
 interface OrdersSectionProps {
   orders: Order[];
@@ -174,12 +175,218 @@ const OrdersSection: React.FC<OrdersSectionProps> = ({ orders, onUpdateOrderStat
     return buttons;
   };
 
+  // Calculate dashboard metrics
+  const calculateMetrics = () => {
+    const now = new Date();
+    const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+    const monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+
+    const thisWeekOrders = orders.filter(order => new Date(order.createdAt) >= weekAgo);
+    const thisMonthOrders = orders.filter(order => new Date(order.createdAt) >= monthAgo);
+    const pendingOrders = orders.filter(order => order.status === 'pending' || order.status === 'paid_manual_verification');
+    const completedOrders = orders.filter(order => order.status === 'completed');
+    const totalSales = orders.reduce((sum, order) => order.status === 'completed' ? sum + order.total : sum, 0);
+
+    return {
+      totalOrders: orders.length,
+      thisWeekOrders: thisWeekOrders.length,
+      thisMonthOrders: thisMonthOrders.length,
+      pendingOrders: pendingOrders.length,
+      completedOrders: completedOrders.length,
+      totalSales
+    };
+  };
+
+  const metrics = calculateMetrics();
+
+  // Chart data
+  const statusDistribution = [
+    { name: 'Pending', value: orders.filter(o => o.status === 'pending').length, color: '#f59e0b' },
+    { name: 'Paid Verification', value: orders.filter(o => o.status === 'paid_manual_verification').length, color: '#3b82f6' },
+    { name: 'Preparing', value: orders.filter(o => o.status === 'preparing').length, color: '#8b5cf6' },
+    { name: 'Out for Delivery', value: orders.filter(o => o.status === 'out_for_delivery').length, color: '#06b6d4' },
+    { name: 'Completed', value: orders.filter(o => o.status === 'completed').length, color: '#10b981' },
+    { name: 'Cancelled', value: orders.filter(o => o.status === 'cancelled').length, color: '#ef4444' },
+  ].filter(item => item.value > 0);
+
+  const salesChartData = () => {
+    const last7Days = [];
+    for (let i = 6; i >= 0; i--) {
+      const date = new Date();
+      date.setDate(date.getDate() - i);
+      const dayOrders = orders.filter(order => {
+        const orderDate = new Date(order.createdAt);
+        return orderDate.toDateString() === date.toDateString() && order.status === 'completed';
+      });
+      const sales = dayOrders.reduce((sum, order) => sum + order.total, 0);
+      last7Days.push({
+        day: date.toLocaleDateString('en-US', { weekday: 'short' }),
+        sales: sales,
+        orders: dayOrders.length
+      });
+    }
+    return last7Days;
+  };
+
+  const handleMetricClick = (filterType: string, filterValue: string) => {
+    if (filterType === 'status') {
+      setStatusFilter(filterValue);
+    } else if (filterType === 'date') {
+      setDateFilter(filterValue);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold">Orders</h1>
-        <p className="text-muted-foreground">Manage your incoming orders</p>
+        <h1 className="text-3xl font-bold">Orders Dashboard</h1>
+        <p className="text-muted-foreground">Monitor and manage your orders with real-time insights</p>
       </div>
+
+      {/* Dashboard Metrics Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+        <Card 
+          className="cursor-pointer hover:bg-muted/50 transition-colors"
+          onClick={() => handleMetricClick('status', 'all')}
+        >
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Orders</CardTitle>
+            <ShoppingCart className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{metrics.totalOrders}</div>
+            <p className="text-xs text-muted-foreground">All time</p>
+          </CardContent>
+        </Card>
+
+        <Card 
+          className="cursor-pointer hover:bg-muted/50 transition-colors"
+          onClick={() => handleMetricClick('date', 'week')}
+        >
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">This Week</CardTitle>
+            <Calendar className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{metrics.thisWeekOrders}</div>
+            <p className="text-xs text-muted-foreground">Last 7 days</p>
+          </CardContent>
+        </Card>
+
+        <Card 
+          className="cursor-pointer hover:bg-muted/50 transition-colors"
+          onClick={() => handleMetricClick('status', 'pending')}
+        >
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Pending Orders</CardTitle>
+            <Clock className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-orange-600">{metrics.pendingOrders}</div>
+            <p className="text-xs text-muted-foreground">Need attention</p>
+          </CardContent>
+        </Card>
+
+        <Card 
+          className="cursor-pointer hover:bg-muted/50 transition-colors"
+          onClick={() => handleMetricClick('status', 'completed')}
+        >
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Completed</CardTitle>
+            <CheckCircle className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-green-600">{metrics.completedOrders}</div>
+            <p className="text-xs text-muted-foreground">Successfully delivered</p>
+          </CardContent>
+        </Card>
+
+        <Card 
+          className="cursor-pointer hover:bg-muted/50 transition-colors"
+          onClick={() => handleMetricClick('status', 'all')}
+        >
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Sales</CardTitle>
+            <DollarSign className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">₱{metrics.totalSales.toFixed(2)}</div>
+            <p className="text-xs text-muted-foreground">Completed orders</p>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Charts Section */}
+      {orders.length > 0 && (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Sales Chart */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <TrendingUp className="h-5 w-5" />
+                Sales Trend (Last 7 Days)
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={salesChartData()}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="day" />
+                  <YAxis />
+                  <Tooltip 
+                    formatter={(value, name) => [
+                      name === 'sales' ? `₱${value}` : value,
+                      name === 'sales' ? 'Sales' : 'Orders'
+                    ]}
+                  />
+                  <Bar dataKey="sales" fill="hsl(var(--primary))" />
+                </BarChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+
+          {/* Status Distribution Chart */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Eye className="h-5 w-5" />
+                Order Status Distribution
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={300}>
+                <PieChart>
+                  <Pie
+                    data={statusDistribution}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={60}
+                    outerRadius={100}
+                    paddingAngle={5}
+                    dataKey="value"
+                  >
+                    {statusDistribution.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                </PieChart>
+              </ResponsiveContainer>
+              <div className="grid grid-cols-2 gap-2 mt-4">
+                {statusDistribution.map((entry, index) => (
+                  <div key={index} className="flex items-center gap-2 text-sm">
+                    <div 
+                      className="w-3 h-3 rounded" 
+                      style={{ backgroundColor: entry.color }}
+                    />
+                    <span className="text-muted-foreground">{entry.name}: {entry.value}</span>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
 
       {/* Filters */}
       <Card>

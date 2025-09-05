@@ -11,7 +11,7 @@ import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { Badge } from '@/components/ui/badge';
 import { toast } from '@/hooks/use-toast';
 import { vendorStorage, customerStorage, orderStorage, loyaltyStorage, Order } from '@/lib/storage';
-import { User, Star, ShoppingBag, LogOut } from 'lucide-react';
+import { User, Star, ShoppingBag, LogOut, ShoppingCart, Clock } from 'lucide-react';
 import CustomerPreferences from '@/components/CustomerPreferences';
 import CustomerSidebar from '@/components/CustomerSidebar';
 import OrderDetailsModal from '@/components/OrderDetailsModal';
@@ -232,12 +232,53 @@ const CustomerDashboard = () => {
         );
 
       case 'orders':
+        const activeOrders = orders.filter(order => 
+          order.status !== 'completed' && order.status !== 'cancelled'
+        );
+        const lastOrder = orders.length > 0 ? orders[orders.length - 1] : null;
+        
         return (
           <div className="space-y-6">
             <div>
               <h1 className="text-3xl font-bold">My Orders</h1>
-              <p className="text-muted-foreground">View your order history and status</p>
+              <p className="text-muted-foreground">View your order history and track current orders</p>
             </div>
+
+            {/* Orders Summary Card */}
+            {orders.length > 0 && (
+              <Card>
+                <CardContent className="pt-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="flex items-center gap-4">
+                      <div className="p-3 bg-primary/10 rounded-lg">
+                        <ShoppingCart className="h-6 w-6 text-primary" />
+                      </div>
+                      <div>
+                        <p className="text-sm text-muted-foreground">Active Orders</p>
+                        <p className="text-2xl font-bold">{activeOrders.length}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {activeOrders.length === 1 ? 'order' : 'orders'} in progress
+                        </p>
+                      </div>
+                    </div>
+                    {lastOrder && (
+                      <div className="flex items-center gap-4">
+                        <div className="p-3 bg-secondary/10 rounded-lg">
+                          <Clock className="h-6 w-6 text-secondary" />
+                        </div>
+                        <div>
+                          <p className="text-sm text-muted-foreground">Last Order</p>
+                          <p className="font-medium">₱{lastOrder.total.toFixed(2)} from {vendor?.storeName}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {new Date(lastOrder.createdAt).toLocaleDateString()}
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
 
             {orders.length === 0 ? (
               <Card>
