@@ -20,6 +20,8 @@ import ClassicTemplate from '@/components/templates/ClassicTemplate';
 import MinimalTemplate from '@/components/templates/MinimalTemplate';
 import VendorLogo from '@/components/VendorLogo';
 import MenuItemModal from '@/components/MenuItemModal';
+import CheckoutModal from '@/components/CheckoutModal';
+import OrderConfirmationModal from '@/components/OrderConfirmationModal';
 
 interface CartItem {
   menuItem: MenuItem;
@@ -42,6 +44,8 @@ const Storefront = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [selectedMenuItem, setSelectedMenuItem] = useState<MenuItem | null>(null);
   const [isItemModalOpen, setIsItemModalOpen] = useState(false);
+  const [isOrderConfirmationOpen, setIsOrderConfirmationOpen] = useState(false);
+  const [completedOrder, setCompletedOrder] = useState<any>(null);
 
   const vendor = React.useMemo(() => {
     if (!vendorSlug) {
@@ -191,12 +195,10 @@ const Storefront = () => {
   }, 0);
   const cartItemCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
-  const handleCheckout = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const handleCheckout = async (formData: FormData) => {
     if (cart.length === 0) return;
 
     setIsLoading(true);
-    const formData = new FormData(e.currentTarget);
     
     const paymentMethod = formData.get('paymentMethod') as 'pay_on_delivery' | 'manual_payment';
     let paymentProof: string | undefined;
@@ -206,14 +208,22 @@ const Storefront = () => {
     if (paymentMethod === 'manual_payment') {
       const proofFile = formData.get('paymentProof') as File;
       if (!proofFile || proofFile.size === 0) {
-        alert('Please upload proof of payment for manual payment method.');
+        toast({
+          title: 'Payment proof required',
+          description: 'Please upload proof of payment for manual payment method.',
+          variant: 'destructive'
+        });
         setIsLoading(false);
         return;
       }
 
       // Convert image to base64
       if (proofFile.size > 2 * 1024 * 1024) {
-        alert('Payment proof file size must be less than 2MB');
+        toast({
+          title: 'File too large',
+          description: 'Payment proof file size must be less than 2MB',
+          variant: 'destructive'
+        });
         setIsLoading(false);
         return;
       }
@@ -228,7 +238,11 @@ const Storefront = () => {
 
         selectedPaymentMethod = formData.get('selectedPaymentMethod') as string;
       } catch (error) {
-        alert('Failed to process payment proof image');
+        toast({
+          title: 'Upload failed',
+          description: 'Failed to process payment proof image',
+          variant: 'destructive'
+        });
         setIsLoading(false);
         return;
       }
@@ -240,7 +254,7 @@ const Storefront = () => {
       items: cart.map(item => ({
         menuItemId: item.menuItem.id,
         name: item.menuItem.name,
-        price: item.menuItem.price,
+        price: item.selectedVariation?.price || item.menuItem.price,
         quantity: item.quantity,
       })),
       total: cartTotal,
@@ -279,10 +293,8 @@ const Storefront = () => {
     setCart([]);
     setIsCheckoutOpen(false);
     setIsCartOpen(false);
-    toast({ 
-      title: 'Order placed!', 
-      description: `Your order #${order.id} has been placed successfully.` 
-    });
+    setCompletedOrder(order);
+    setIsOrderConfirmationOpen(true);
     setIsLoading(false);
   };
 
@@ -494,248 +506,14 @@ const Storefront = () => {
                 <span>${cartTotal.toFixed(2)}</span>
               </div>
               
-              <Dialog open={isCheckoutOpen} onOpenChange={setIsCheckoutOpen}>
-                <DialogTrigger asChild>
-                  <Button variant="order" size="lg" className="w-full min-h-12">
-                    Checkout
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="max-w-lg max-h-[90vh] sm:max-h-[90vh] p-0 gap-0 flex flex-col">
-                  {/* Mobile bottom sheet style header with drag handle */}
-                  <div className="flex flex-col sm:hidden">
-                    <div className="flex justify-center py-2">
-                      <div className="w-12 h-1 bg-muted rounded-full"></div>
-                    </div>
-                  </div>
-                  
-                  <DialogHeader className="px-6 pt-4 pb-2 flex-shrink-0">
-                    <div className="flex items-center gap-3">
-                      <VendorLogo 
-                        vendor={vendor} 
-                        size="sm" 
-                        showFallback={true}
-                        variant="rounded"
-                      />
-                      <DialogTitle className="flex-1">{vendor.storeName} - Checkout</DialogTitle>
-                    </div>
-                  </DialogHeader>
-                  
-                   <div className="flex-1 overflow-y-auto px-6">
-                     <form id="checkout-form" onSubmit={handleCheckout} className="space-y-4 pb-6">
-                       <div className="space-y-2">
-                         <Label htmlFor="checkout-name">Full Name</Label>
-                         <Input 
-                           id="checkout-name" 
-                           name="name" 
-                           defaultValue={customer?.name || ''}
-                           required 
-                         />
-                       </div>
-                       <div className="space-y-2">
-                         <Label htmlFor="checkout-phone">Phone Number</Label>
-                         <Input 
-                           id="checkout-phone" 
-                           name="phone" 
-                           type="tel"
-                           defaultValue={customer?.phone || ''}
-                           required 
-                         />
-                       </div>
-                       <div className="space-y-2">
-                         <Label htmlFor="checkout-address">Address</Label>
-                         <Input 
-                           id="checkout-address" 
-                           name="address" 
-                           placeholder="Enter your delivery address"
-                           required 
-                         />
-                       </div>
-                       <div className="space-y-4">
-                         <div className="space-y-2">
-                           <Label>Order Type</Label>
-                           <RadioGroup name="orderType" defaultValue="delivery" className="flex space-x-4">
-                             <div className="flex items-center space-x-2">
-                               <RadioGroupItem value="delivery" id="delivery" />
-                               <Label htmlFor="delivery">Delivery</Label>
-                             </div>
-                             <div className="flex items-center space-x-2">
-                               <RadioGroupItem value="pickup" id="pickup" />
-                               <Label htmlFor="pickup">Pickup</Label>
-                             </div>
-                           </RadioGroup>
-                         </div>
-
-                          <div className="space-y-2">
-                            <Label>Payment Method</Label>
-                             <RadioGroup 
-                               name="paymentMethod" 
-                               defaultValue="pay_on_delivery" 
-                               className="space-y-2"
-                               onValueChange={(value) => {
-                                 const manualSection = document.getElementById('manual-payment-section');
-                                 if (manualSection) {
-                                   manualSection.style.display = value === 'manual_payment' ? 'block' : 'none';
-                                 }
-                               }}
-                             >
-                               <div className="flex items-center space-x-2">
-                                 <RadioGroupItem value="pay_on_delivery" id="pay_on_delivery" />
-                                 <Label htmlFor="pay_on_delivery">Pay on Delivery/Pickup</Label>
-                               </div>
-                               {vendor?.manualPaymentEnabled && vendor.manualPaymentMethods?.some(method => method.enabled) && (
-                                 <div className="flex items-center space-x-2">
-                                   <RadioGroupItem value="manual_payment" id="manual_payment" />
-                                   <Label htmlFor="manual_payment">Manual Payment</Label>
-                                 </div>
-                               )}
-                             </RadioGroup>
-                          </div>
-
-                          {/* Manual Payment Options */}
-                          <div id="manual-payment-section" className="space-y-4" style={{ display: 'none' }}>
-                            <Label>Select Payment Method</Label>
-                            {vendor?.manualPaymentMethods?.filter(method => method.enabled).map((method) => (
-                              <Card key={method.id} className="p-4">
-                                <div className="flex items-center space-x-2 mb-2">
-                                  <RadioGroupItem 
-                                    value={method.title} 
-                                    id={`payment-method-${method.id}`}
-                                  />
-                                  <input 
-                                    type="hidden" 
-                                    name="selectedPaymentMethod" 
-                                    value={method.title}
-                                  />
-                                  <Label htmlFor={`payment-method-${method.id}`} className="font-medium">
-                                    {method.title}
-                                  </Label>
-                                </div>
-                                <div className="ml-6 space-y-2">
-                                  <p className="text-sm text-muted-foreground whitespace-pre-wrap">
-                                    {method.instructions}
-                                  </p>
-                                  {method.qrCode && (
-                                    <div className="mt-2">
-                                      <img 
-                                        src={method.qrCode} 
-                                        alt="QR Code" 
-                                        className="w-32 h-32 border rounded"
-                                      />
-                                    </div>
-                                  )}
-                                </div>
-                              </Card>
-                            ))}
-                            
-                            <div className="space-y-2">
-                              <Label htmlFor="payment-proof">Upload Proof of Payment *</Label>
-                              <input
-                                id="payment-proof"
-                                name="paymentProof"
-                                type="file"
-                                accept="image/*"
-                                className="w-full p-2 border rounded-md"
-                                required
-                              />
-                              <p className="text-xs text-muted-foreground">
-                                Upload a screenshot or photo of your payment (max 2MB)
-                              </p>
-                            </div>
-                          </div>
-
-                         <div className="space-y-2">
-                           <Label htmlFor="checkout-notes">Special Instructions (Optional)</Label>
-                           <Textarea 
-                             id="checkout-notes" 
-                             name="notes" 
-                             placeholder="Any special requests or instructions..."
-                             className="min-h-20"
-                           />
-                         </div>
-
-                         {/* Marketing Preferences for Guest Checkout */}
-                         {!customer && (
-                           <div className="space-y-3 p-4 bg-muted/50 rounded-lg">
-                             <h4 className="font-medium text-sm">Stay connected with us</h4>
-                             <div className="space-y-2">
-                               <div className="flex items-center space-x-2">
-                                 <Checkbox 
-                                   id="email-marketing"
-                                   name="emailMarketing"
-                                   defaultChecked={true}
-                                 />
-                                 <Label htmlFor="email-marketing" className="text-sm">
-                                   Email me about special offers and promotions
-                                 </Label>
-                               </div>
-                               <div className="flex items-center space-x-2">
-                                 <Checkbox 
-                                   id="push-notifications"
-                                   name="pushNotifications"
-                                   defaultChecked={true}
-                                 />
-                                 <Label htmlFor="push-notifications" className="text-sm">
-                                   Send me order updates and notifications
-                                 </Label>
-                               </div>
-                             </div>
-                           </div>
-                         )}
-                       </div>
-                     </form>
-                   </div>
-                   
-                   {/* Sticky footer with Place Order button */}
-                   <div className="border-t bg-background p-6 flex-shrink-0">
-                     {customer && (() => {
-                       const loyaltySettings = loyaltyStorage.get(vendor.id);
-                       return loyaltySettings?.isActive && (
-                         <div className="bg-muted/50 p-3 rounded-lg mb-4">
-                           <div className="flex items-center justify-between">
-                             <span className="text-sm font-medium">Available Points</span>
-                             <span className="text-sm font-bold">{customer.loyaltyPoints || 0} points</span>
-                           </div>
-                           <div className="text-xs text-muted-foreground mt-1">
-                             You'll earn {Math.floor(cartTotal * (loyaltySettings?.pointsPerPeso || 1))} points from this order
-                           </div>
-                           {loyaltySettings.redemptionRules.length > 0 && (
-                             <div className="text-xs text-muted-foreground">
-                               Redeem: {loyaltySettings.redemptionRules.map(rule => 
-                                 `${rule.pointsRequired} pts = ₱${rule.discountAmount} off`
-                               ).join(', ')}
-                             </div>
-                           )}
-                         </div>
-                       );
-                     })()}
-                     <div className="flex justify-between text-lg font-semibold mb-4">
-                       <span>Total</span>
-                       <span>${cartTotal.toFixed(2)}</span>
-                     </div>
-                     <div className="flex gap-2">
-                       <Button type="button" variant="outline" size="lg" className="flex-1" onClick={() => setIsCheckoutOpen(false)}>
-                         Cancel
-                       </Button>
-                       <Button 
-                         type="submit" 
-                         variant="order" 
-                         size="lg" 
-                         className="flex-1" 
-                         disabled={isLoading}
-                         onClick={(e) => {
-                           e.preventDefault();
-                           const form = document.querySelector('#checkout-form') as HTMLFormElement;
-                           if (form) {
-                             handleCheckout({ preventDefault: () => {}, currentTarget: form } as any);
-                           }
-                         }}
-                       >
-                         {isLoading ? <LoadingSpinner size="sm" /> : `Place Order - $${cartTotal.toFixed(2)}`}
-                       </Button>
-                     </div>
-                   </div>
-                </DialogContent>
-              </Dialog>
+              <Button 
+                variant="default" 
+                size="lg" 
+                className="w-full"
+                onClick={() => setIsCheckoutOpen(true)}
+              >
+                Checkout - ₱{cartTotal.toFixed(2)}
+              </Button>
             </div>
           </>
         )}
@@ -794,6 +572,39 @@ const Storefront = () => {
             );
         }
       })()}
+
+      {/* Checkout Modal */}
+      <CheckoutModal
+        isOpen={isCheckoutOpen}
+        onClose={() => setIsCheckoutOpen(false)}
+        vendor={vendor}
+        cart={cart}
+        cartTotal={cartTotal}
+        customer={customer}
+        loyaltySettings={loyaltyStorage.get(vendor.id)}
+        onSubmit={handleCheckout}
+        isLoading={isLoading}
+      />
+
+      {/* Order Confirmation Modal */}
+      {completedOrder && (
+        <OrderConfirmationModal
+          isOpen={isOrderConfirmationOpen}
+          onClose={() => {
+            setIsOrderConfirmationOpen(false);
+            setCompletedOrder(null);
+          }}
+          order={completedOrder}
+          vendor={vendor}
+          onBackToStore={() => {
+            setIsOrderConfirmationOpen(false);
+            setCompletedOrder(null);
+          }}
+          onViewOrders={() => {
+            navigate(`/store/${vendor.slug}/orders`);
+          }}
+        />
+      )}
 
       {/* Menu Item Modal for variations */}
       {selectedMenuItem && (
