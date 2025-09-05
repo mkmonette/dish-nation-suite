@@ -44,8 +44,14 @@ const Storefront = () => {
   const [isItemModalOpen, setIsItemModalOpen] = useState(false);
 
   const vendor = React.useMemo(() => {
-    if (!vendorSlug) return null;
-    return vendorStorage.getBySlug(vendorSlug);
+    if (!vendorSlug) {
+      console.log('No vendor slug provided');
+      return null;
+    }
+    console.log('Looking for vendor with slug:', vendorSlug);
+    const foundVendor = vendorStorage.getBySlug(vendorSlug);
+    console.log('Found vendor:', foundVendor);
+    return foundVendor;
   }, [vendorSlug]);
 
   useEffect(() => {
