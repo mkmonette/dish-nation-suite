@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/enhanced-button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -18,6 +18,7 @@ interface StorefrontCustomizerProps {
 }
 
 const StorefrontCustomizer: React.FC<StorefrontCustomizerProps> = ({ vendor, onUpdate }) => {
+  const navigate = useNavigate();
   const [settings, setSettings] = useState({
     template: 'modern' as 'modern' | 'classic' | 'minimal',
     colors: {
@@ -98,6 +99,9 @@ const StorefrontCustomizer: React.FC<StorefrontCustomizerProps> = ({ vendor, onU
   };
 
   const previewUrl = `/store/${vendor.slug}`;
+  
+  console.log('Store URL:', window.location.origin + previewUrl);
+  console.log('Vendor slug:', vendor.slug);
 
   return (
     <div className="space-y-6">
@@ -271,7 +275,7 @@ const StorefrontCustomizer: React.FC<StorefrontCustomizerProps> = ({ vendor, onU
               <Button 
                 variant="outline" 
                 size="sm"
-                onClick={() => window.open(previewUrl, '_blank')}
+                onClick={() => navigate(previewUrl)}
               >
                 <Eye className="h-4 w-4 mr-2" />
                 Preview Store
