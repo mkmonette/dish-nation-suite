@@ -9,8 +9,9 @@ import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/u
 import { useToast } from '@/hooks/use-toast';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
-import { Star, Upload, X } from 'lucide-react';
+import { Star, Upload, X, CreditCard, Smartphone } from 'lucide-react';
 import { Vendor, ManualPaymentMethod } from '@/lib/storage';
+import { getEnabledGateways } from '@/lib/paymentGateways';
 
 interface CheckoutModalProps {
   isOpen: boolean;
@@ -47,6 +48,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
 
   const enabledPaymentMethods = vendor.manualPaymentMethods?.filter(method => method.enabled) || [];
   const hasManualPayment = vendor.manualPaymentEnabled && enabledPaymentMethods.length > 0;
+  const enabledGateways = getEnabledGateways();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -164,6 +166,21 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({
               <RadioGroupItem value="pay_on_delivery" id="pay_on_delivery" />
               <Label htmlFor="pay_on_delivery">Pay on Delivery</Label>
             </div>
+            
+            {/* Online Payment Gateways */}
+            {enabledGateways.map((gateway) => (
+              <div key={gateway.name} className="flex items-center space-x-2">
+                <RadioGroupItem value={gateway.name} id={gateway.name} />
+                <Label htmlFor={gateway.name} className="flex items-center gap-2">
+                  {gateway.name === 'stripe' && <CreditCard className="h-4 w-4" />}
+                  {gateway.name === 'paypal' && <div className="h-4 w-4 bg-blue-600 rounded-full" />}
+                  {gateway.name === 'paymongo' && <Smartphone className="h-4 w-4" />}
+                  {gateway.displayName}
+                  {gateway.testMode && <span className="text-xs bg-orange-100 text-orange-800 px-1.5 py-0.5 rounded">TEST</span>}
+                </Label>
+              </div>
+            ))}
+            
             {hasManualPayment && (
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="manual_payment" id="manual_payment" />

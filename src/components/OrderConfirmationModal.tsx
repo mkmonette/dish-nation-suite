@@ -5,7 +5,8 @@ import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/u
 import { Badge } from '@/components/ui/badge';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { CheckCircle, Store, User, Receipt, CreditCard, FileText, ArrowRight } from 'lucide-react';
-import { Order, Vendor } from '@/lib/storage';
+import { Order, Vendor, paymentStorage } from '@/lib/storage';
+import PaymentStatus from './PaymentStatus';
 
 interface OrderConfirmationModalProps {
   isOpen: boolean;

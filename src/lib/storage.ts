@@ -126,16 +126,36 @@ export interface MenuItem {
   createdAt: string;
 }
 
+export interface Payment {
+  id: string;
+  orderId: string;
+  vendorId: string;
+  customerId: string;
+  amount: number;
+  currency: string;
+  gateway: 'stripe' | 'paypal' | 'paymongo' | 'lemonsqueezy' | 'manual';
+  status: 'pending' | 'processing' | 'completed' | 'failed' | 'cancelled' | 'refunded';
+  transactionId?: string; // Gateway transaction ID
+  gatewayResponse?: any; // Store gateway response
+  paymentProof?: string; // For manual payments
+  failureReason?: string;
+  refundAmount?: number;
+  refundTransactionId?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface Order {
   id: string;
   customerId: string;
   vendorId: string;
   items: OrderItem[];
   total: number;
-  status: 'pending' | 'paid_manual_verification' | 'preparing' | 'out_for_delivery' | 'completed' | 'cancelled';
+  status: 'pending' | 'confirmed' | 'pending_payment' | 'paid_manual_verification' | 'preparing' | 'out_for_delivery' | 'completed' | 'cancelled';
   orderType: 'delivery' | 'pickup';
-  paymentMethod: 'pay_on_delivery' | 'manual_payment';
-  paymentProof?: string; // base64 image data
+  paymentMethod: 'pay_on_delivery' | 'manual_payment' | 'stripe' | 'paypal' | 'paymongo' | 'lemonsqueezy';
+  paymentId?: string; // Link to payment record
+  paymentProof?: string; // base64 image data for manual payments
   selectedPaymentMethod?: string; // title of selected manual payment method
   customerInfo: {
     name: string;
@@ -215,6 +235,7 @@ const CUSTOMERS_KEY = 'foodapp_customers';
 const MENU_ITEMS_KEY = 'foodapp_menu_items';
 const MENU_CATEGORIES_KEY = 'foodapp_menu_categories';
 const ORDERS_KEY = 'foodapp_orders';
+const PAYMENTS_KEY = 'foodapp_payments';
 const SUBSCRIPTION_PLANS_KEY = 'foodapp_subscription_plans';
 const VENDOR_SUBSCRIPTIONS_KEY = 'foodapp_vendor_subscriptions';
 const ADMINS_KEY = 'foodapp_admins';
@@ -796,5 +817,56 @@ export const categoryStorage = {
     
     localStorage.setItem(MENU_CATEGORIES_KEY, JSON.stringify(allCategories));
     return true;
+  }
+};
+
+// Payment operations (tenant-isolated)
+export const paymentStorage = {
+  getAll(vendorId: string): Payment[] {
+    const payments = localStorage.getItem(PAYMENTS_KEY);
+    const allPayments: Payment[] = payments ? JSON.parse(payments) : [];
+    return allPayments.filter(payment => payment.vendorId === vendorId);
+  },
+
+  getById(id: string, vendorId: string): Payment | null {
+    const payments = this.getAll(vendorId);
+    return payments.find(payment => payment.id === id) || null;
+  },
+
+  getByOrderId(orderId: string, vendorId: string): Payment | null {
+    const payments = this.getAll(vendorId);
+    return payments.find(payment => payment.orderId === orderId) || null;
+  },
+
+  create(payment: Omit<Payment, 'id' | 'createdAt' | 'updatedAt'>): Payment {
+    const allPayments: Payment[] = JSON.parse(localStorage.getItem(PAYMENTS_KEY) || '[]');
+    const newPayment: Payment = {
+      ...payment,
+      id: Date.now().toString(),
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+    allPayments.push(newPayment);
+    localStorage.setItem(PAYMENTS_KEY, JSON.stringify(allPayments));
+    return newPayment;
+  },
+
+  update(id: string, updates: Partial<Payment>, vendorId: string): Payment | null {
+    const allPayments: Payment[] = JSON.parse(localStorage.getItem(PAYMENTS_KEY) || '[]');
+    const index = allPayments.findIndex(payment => payment.id === id && payment.vendorId === vendorId);
+    if (index === -1) return null;
+    
+    allPayments[index] = { 
+      ...allPayments[index], 
+      ...updates, 
+      updatedAt: new Date().toISOString() 
+    };
+    localStorage.setItem(PAYMENTS_KEY, JSON.stringify(allPayments));
+    return allPayments[index];
+  },
+
+  getByCustomerId(customerId: string, vendorId: string): Payment[] {
+    const payments = this.getAll(vendorId);
+    return payments.filter(payment => payment.customerId === customerId);
   }
 };

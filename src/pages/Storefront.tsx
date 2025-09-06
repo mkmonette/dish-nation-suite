@@ -13,7 +13,8 @@ import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { vendorStorage, menuStorage, orderStorage, customerStorage, loyaltyStorage, categoryStorage, MenuItem, MenuCategory, MenuVariation, MenuAddOn } from '@/lib/storage';
+import { vendorStorage, menuStorage, orderStorage, customerStorage, loyaltyStorage, categoryStorage, paymentStorage, MenuItem, MenuCategory, MenuVariation, MenuAddOn } from '@/lib/storage';
+import { getGateway } from '@/lib/paymentGateways';
 import { ShoppingCart, Plus, Minus, Store, User, LogOut, MapPin, Phone, Star, X, ChevronUp, ChevronDown, GripVertical } from 'lucide-react';
 import ModernTemplate from '@/components/templates/ModernTemplate';
 import ClassicTemplate from '@/components/templates/ClassicTemplate';
@@ -200,7 +201,7 @@ const Storefront = () => {
 
     setIsLoading(true);
     
-    const paymentMethod = formData.get('paymentMethod') as 'pay_on_delivery' | 'manual_payment';
+    const paymentMethod = formData.get('paymentMethod') as string;
     let paymentProof: string | undefined;
     let selectedPaymentMethod: string | undefined;
 
@@ -260,7 +261,7 @@ const Storefront = () => {
       total: cartTotal,
       status: paymentMethod === 'manual_payment' ? 'paid_manual_verification' : 'pending',
       orderType: formData.get('orderType') as 'delivery' | 'pickup',
-      paymentMethod,
+      paymentMethod: paymentMethod as any,
       paymentProof,
       selectedPaymentMethod,
       customerInfo: {

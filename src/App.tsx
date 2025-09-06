@@ -7,6 +7,7 @@ import { VendorProvider } from "./contexts/VendorContext";
 import { CustomerProvider } from "./contexts/CustomerContext";
 import { TenantProvider } from "./contexts/TenantContext";
 import { AdminProvider } from "./contexts/AdminContext";
+import PaymentPage from "./components/PaymentPage";
 import Index from "./pages/Index";
 import VendorAuth from "./pages/VendorAuth";
 import VendorDashboard from "./pages/VendorDashboard";
@@ -42,6 +43,7 @@ const App = () => (
                   <Route path="/store/:vendorSlug/dashboard" element={<CustomerDashboard />} />
                 <Route path="/store/:vendorSlug/orders" element={<CustomerOrders />} />
                 <Route path="/store/:vendorSlug/profile" element={<CustomerProfile />} />
+                <Route path="/payment/*" element={<PaymentPage />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </BrowserRouter>
