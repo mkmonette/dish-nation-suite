@@ -6,19 +6,49 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Switch } from '@/components/ui/switch';
 import { toast } from '@/hooks/use-toast';
 import { Vendor, vendorStorage } from '@/lib/storage';
-import { Palette, Save, Eye, FileText } from 'lucide-react';
+import { Palette, Save, Eye, FileText, Settings, Check, GripVertical } from 'lucide-react';
 import ImageUpload from '@/components/ui/image-upload';
+import { DndContext, closestCenter, DragEndEvent } from '@dnd-kit/core';
+import { arrayMove, SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import { useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import { getDefaultPlaceholder } from '@/utils/imageUtils';
+import SortableSection from './SortableSection';
 
 interface StorefrontCustomizerProps {
   vendor: Vendor;
   onUpdate: (updatedVendor: Vendor) => void;
 }
 
+interface SectionConfig {
+  id: string;
+  name: string;
+  enabled: boolean;
+}
+
+interface TemplateConfig {
+  template: 'modern' | 'classic' | 'minimal';
+  sections: SectionConfig[];
+}
+
 const StorefrontCustomizer: React.FC<StorefrontCustomizerProps> = ({ vendor, onUpdate }) => {
   const navigate = useNavigate();
+  
+  const defaultSections: SectionConfig[] = [
+    { id: 'header', name: 'Header', enabled: true },
+    { id: 'hero', name: 'Hero Banner', enabled: true },
+    { id: 'featured', name: 'Featured Products', enabled: true },
+    { id: 'categories', name: 'Categories', enabled: true },
+    { id: 'promos', name: 'Promo Banners', enabled: false },
+    { id: 'menu', name: 'Full Menu', enabled: true },
+    { id: 'reviews', name: 'Customer Reviews', enabled: false },
+    { id: 'business', name: 'Business Info', enabled: true },
+    { id: 'footer', name: 'Footer', enabled: true },
+  ];
+
   const [settings, setSettings] = useState({
     template: 'modern' as 'modern' | 'classic' | 'minimal',
     colors: {
@@ -33,19 +63,42 @@ const StorefrontCustomizer: React.FC<StorefrontCustomizerProps> = ({ vendor, onU
     aboutUs: '',
     ...vendor.storefront,
   });
+  
+  const [templateConfigs, setTemplateConfigs] = useState<Record<string, SectionConfig[]>>({
+    modern: defaultSections,
+    classic: defaultSections,
+    minimal: defaultSections,
+    ...vendor.storefront?.templateConfigs,
+  });
+  
   const [isLoading, setIsLoading] = useState(false);
 
   const templates = [
-    { value: 'modern', label: 'Modern', description: 'Clean and contemporary design' },
-    { value: 'classic', label: 'Classic', description: 'Traditional and elegant layout' },
-    { value: 'minimal', label: 'Minimal', description: 'Simple and focused design' },
+    { 
+      value: 'modern', 
+      label: 'Modern', 
+      description: 'Clean and contemporary design with bold elements',
+      preview: '/api/placeholder/300/200'
+    },
+    { 
+      value: 'classic', 
+      label: 'Classic', 
+      description: 'Traditional and elegant layout with timeless appeal',
+      preview: '/api/placeholder/300/200'
+    },
+    { 
+      value: 'minimal', 
+      label: 'Minimal', 
+      description: 'Simple and focused design for modern brands',
+      preview: '/api/placeholder/300/200'
+    },
   ];
 
   const handleSave = async () => {
     setIsLoading(true);
     
     const updatedVendor = vendorStorage.update(vendor.id, {
-      storefront: settings
+      storefront: { ...settings, templateConfigs }
     });
 
     if (updatedVendor) {
@@ -58,6 +111,76 @@ const StorefrontCustomizer: React.FC<StorefrontCustomizerProps> = ({ vendor, onU
     
     setIsLoading(false);
   };
+
+  const handleTemplateChange = (template: 'modern' | 'classic' | 'minimal') => {
+    setSettings(prev => ({ ...prev, template }));
+    
+    // Auto-save template change
+    const newSettings = { ...settings, template };
+    vendorStorage.update(vendor.id, { storefront: { ...newSettings, templateConfigs } });
+    onUpdate({ ...vendor, storefront: { ...newSettings, templateConfigs } });
+  };
+
+  const handleApplyTemplate = (template: 'modern' | 'classic' | 'minimal') => {
+    handleTemplateChange(template);
+    toast({
+      title: 'Template Applied!',
+      description: `${templates.find(t => t.value === template)?.label} template is now active.`
+    });
+  };
+
+  const handleSectionToggle = (sectionId: string, enabled: boolean) => {
+    const currentTemplate = settings.template;
+    const updatedSections = templateConfigs[currentTemplate].map(section =>
+      section.id === sectionId ? { ...section, enabled } : section
+    );
+    
+    const newTemplateConfigs = {
+      ...templateConfigs,
+      [currentTemplate]: updatedSections
+    };
+    
+    setTemplateConfigs(newTemplateConfigs);
+    
+    // Auto-save section changes
+    vendorStorage.update(vendor.id, { 
+      storefront: { ...settings, templateConfigs: newTemplateConfigs } 
+    });
+    onUpdate({ 
+      ...vendor, 
+      storefront: { ...settings, templateConfigs: newTemplateConfigs } 
+    });
+  };
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    
+    if (!over || active.id === over.id) return;
+    
+    const currentTemplate = settings.template;
+    const oldIndex = templateConfigs[currentTemplate].findIndex(item => item.id === active.id);
+    const newIndex = templateConfigs[currentTemplate].findIndex(item => item.id === over.id);
+    
+    const reorderedSections = arrayMove(templateConfigs[currentTemplate], oldIndex, newIndex);
+    
+    const newTemplateConfigs = {
+      ...templateConfigs,
+      [currentTemplate]: reorderedSections
+    };
+    
+    setTemplateConfigs(newTemplateConfigs);
+    
+    // Auto-save order changes
+    vendorStorage.update(vendor.id, { 
+      storefront: { ...settings, templateConfigs: newTemplateConfigs } 
+    });
+    onUpdate({ 
+      ...vendor, 
+      storefront: { ...settings, templateConfigs: newTemplateConfigs } 
+    });
+  };
+
+  const currentSections = templateConfigs[settings.template] || defaultSections;
 
   const handleColorChange = (colorKey: keyof typeof settings.colors, value: string) => {
     const newSettings = {
@@ -117,36 +240,102 @@ const StorefrontCustomizer: React.FC<StorefrontCustomizerProps> = ({ vendor, onU
         </CardHeader>
         <CardContent className="space-y-6">
           {/* Template Selection */}
-          <div className="space-y-4">
+          <div className="space-y-6">
             <Label className="text-base font-semibold">Store Template</Label>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {templates.map((template) => (
                 <Card 
                   key={template.value} 
-                  className={`cursor-pointer transition-all duration-200 hover:shadow-lg ${
+                  className={`relative transition-all duration-200 hover:shadow-lg ${
                     settings.template === template.value 
                       ? 'ring-2 ring-primary shadow-lg' 
                       : 'hover:ring-1 hover:ring-muted-foreground/20'
                   }`}
-                  onClick={() => setSettings(prev => ({ ...prev, template: template.value as 'modern' | 'classic' | 'minimal' }))}
                 >
                   <CardHeader className="pb-3">
-                    <CardTitle className="text-sm font-semibold">{template.label}</CardTitle>
-                    <CardDescription className="text-xs">{template.description}</CardDescription>
-                  </CardHeader>
-                  <CardContent className="pt-0">
-                    <div className="aspect-[16/10] rounded-md border bg-gradient-to-br from-muted to-muted/50 flex items-center justify-center text-xs text-muted-foreground">
-                      {template.label} Preview
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <CardTitle className="text-lg font-semibold">{template.label}</CardTitle>
+                        <CardDescription className="text-sm mt-1">{template.description}</CardDescription>
+                      </div>
+                      {settings.template === template.value && (
+                        <Badge variant="default" className="flex items-center gap-1">
+                          <Check className="h-3 w-3" />
+                          Selected
+                        </Badge>
+                      )}
                     </div>
-                    {settings.template === template.value && (
-                      <Badge variant="default" className="mt-2 text-xs">
-                        Currently Active
-                      </Badge>
-                    )}
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="aspect-[16/10] rounded-lg border bg-gradient-to-br from-muted to-muted/50 flex items-center justify-center text-sm text-muted-foreground overflow-hidden">
+                      <div className="text-center">
+                        <div className="text-xs opacity-75 mb-1">{template.label}</div>
+                        <div className="text-lg font-semibold">{template.label} Preview</div>
+                      </div>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => navigate(`/store/${vendor.slug}?preview=${template.value}`)}
+                        className="flex-1"
+                      >
+                        <Eye className="h-4 w-4 mr-1" />
+                        Preview
+                      </Button>
+                      <Button 
+                        variant={settings.template === template.value ? "secondary" : "default"}
+                        size="sm"
+                        onClick={() => handleApplyTemplate(template.value as 'modern' | 'classic' | 'minimal')}
+                        className="flex-1"
+                        disabled={settings.template === template.value}
+                      >
+                        {settings.template === template.value ? "Active" : "Apply"}
+                      </Button>
+                    </div>
                   </CardContent>
                 </Card>
               ))}
             </div>
+          </div>
+
+          {/* Section Configuration */}
+          <div className="space-y-6">
+            <div className="flex items-center gap-2">
+              <Settings className="h-5 w-5 text-primary" />
+              <Label className="text-base font-semibold">Section Configuration</Label>
+            </div>
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">
+                  Manage Sections for {templates.find(t => t.value === settings.template)?.label} Template
+                </CardTitle>
+                <CardDescription>
+                  Toggle sections on/off and drag to reorder them. Changes are saved automatically.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <DndContext 
+                  collisionDetection={closestCenter}
+                  onDragEnd={handleDragEnd}
+                >
+                  <SortableContext 
+                    items={currentSections.map(s => s.id)}
+                    strategy={verticalListSortingStrategy}
+                  >
+                    <div className="space-y-2">
+                      {currentSections.map((section) => (
+                        <SortableSection
+                          key={section.id}
+                          section={section}
+                          onToggle={handleSectionToggle}
+                        />
+                      ))}
+                    </div>
+                  </SortableContext>
+                </DndContext>
+              </CardContent>
+            </Card>
           </div>
 
           {/* Logo & Banner Upload */}

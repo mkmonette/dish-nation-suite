@@ -1,5 +1,11 @@
 // Multi-tenant localStorage utilities for the food ordering SaaS
 
+export interface SectionConfig {
+  id: string;
+  name: string;
+  enabled: boolean;
+}
+
 export interface StorefrontSettings {
   template: 'modern' | 'classic' | 'minimal';
   colors: {
@@ -12,6 +18,7 @@ export interface StorefrontSettings {
   heroText?: string;
   heroSubtext?: string;
   aboutUs?: string;
+  templateConfigs?: Record<string, SectionConfig[]>;
 }
 
 export interface SubscriptionPlan {
