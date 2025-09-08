@@ -14,7 +14,9 @@ const VendorContext = createContext<VendorContextType | undefined>(undefined);
 
 export const useVendor = () => {
   const context = useContext(VendorContext);
+  console.log('useVendor called, context:', context);
   if (!context) {
+    console.error('VendorContext is undefined - provider not found');
     throw new Error('useVendor must be used within a VendorProvider');
   }
   return context;
@@ -39,6 +41,7 @@ const storePassword = (email: string, password: string): void => {
 };
 
 export const VendorProvider: React.FC<VendorProviderProps> = ({ children }) => {
+  console.log('VendorProvider rendering');
   const [vendor, setVendor] = useState<Vendor | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -138,6 +141,7 @@ export const VendorProvider: React.FC<VendorProviderProps> = ({ children }) => {
     }
   };
 
+  console.log('VendorProvider rendering children');
   return (
     <VendorContext.Provider
       value={{
