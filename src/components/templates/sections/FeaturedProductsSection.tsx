@@ -18,7 +18,61 @@ const FeaturedProductsSection: React.FC<FeaturedProductsSectionProps> = ({
   onAddToCart,
   template,
 }) => {
-  if (menuItems.length === 0) return null;
+  if (menuItems.length === 0) {
+    // Placeholder state when no menu items are available
+    if (template === 'modern') {
+      return (
+        <section className="py-20 bg-background/60 backdrop-blur-sm">
+          <div className="container mx-auto px-4">
+            <div className="text-center mb-16">
+              <h2 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                Featured Items
+              </h2>
+              <p className="text-muted-foreground max-w-2xl mx-auto">
+                Our signature dishes will be featured here soon. Check back later for our chef's special recommendations!
+              </p>
+            </div>
+          </div>
+        </section>
+      );
+    }
+    
+    if (template === 'classic') {
+      return (
+        <section className="py-20 bg-background">
+          <div className="container mx-auto px-4">
+            <div className="text-center mb-16">
+              <h2 className="text-3xl md:text-4xl font-bold mb-4 font-serif text-primary">
+                Featured Specialties
+              </h2>
+              <div className="w-24 h-1 bg-primary mx-auto mb-6"></div>
+              <p className="text-muted-foreground max-w-2xl mx-auto">
+                Our carefully curated selection of featured dishes will appear here. Stay tuned for our culinary highlights!
+              </p>
+            </div>
+          </div>
+        </section>
+      );
+    }
+    
+    if (template === 'minimal') {
+      return (
+        <section className="py-16 bg-background">
+          <div className="container mx-auto px-4">
+            <div className="text-center">
+              <h2 className="text-2xl md:text-3xl font-light mb-6 text-foreground">
+                Featured Items
+              </h2>
+              <div className="w-16 h-px bg-primary mx-auto mb-8"></div>
+              <p className="text-muted-foreground max-w-xl mx-auto text-sm">
+                Featured menu items coming soon
+              </p>
+            </div>
+          </div>
+        </section>
+      );
+    }
+  }
 
   const featuredItems = menuItems.slice(0, 6); // Show first 6 items as featured
 

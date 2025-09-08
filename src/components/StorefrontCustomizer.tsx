@@ -36,9 +36,9 @@ const StorefrontCustomizer: React.FC<StorefrontCustomizerProps> = ({ vendor, onU
     { id: 'hero', name: 'Hero Banner', enabled: true, order: 1 },
     { id: 'featured', name: 'Featured Products', enabled: true, order: 2 },
     { id: 'categories', name: 'Categories', enabled: true, order: 3 },
-    { id: 'promos', name: 'Promo Banners', enabled: false, order: 4 },
+    { id: 'promos', name: 'Promo Banners', enabled: true, order: 4 },
     { id: 'menu', name: 'Full Menu', enabled: true, order: 5 },
-    { id: 'reviews', name: 'Customer Reviews', enabled: false, order: 6 },
+    { id: 'reviews', name: 'Customer Reviews', enabled: true, order: 6 },
     { id: 'business', name: 'Business Info', enabled: true, order: 7 },
     { id: 'footer', name: 'Footer', enabled: true, order: 8 },
   ];
