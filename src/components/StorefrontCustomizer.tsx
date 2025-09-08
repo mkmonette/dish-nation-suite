@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { toast } from '@/hooks/use-toast';
-import { Vendor, vendorStorage } from '@/lib/storage';
+import { Vendor, vendorStorage, SectionConfig } from '@/lib/storage';
 import { Palette, Save, Eye, FileText, Settings, Check, GripVertical } from 'lucide-react';
 import ImageUpload from '@/components/ui/image-upload';
 import { DndContext, closestCenter, DragEndEvent } from '@dnd-kit/core';
@@ -23,12 +23,6 @@ interface StorefrontCustomizerProps {
   onUpdate: (updatedVendor: Vendor) => void;
 }
 
-interface SectionConfig {
-  id: string;
-  name: string;
-  enabled: boolean;
-}
-
 interface TemplateConfig {
   template: 'modern' | 'classic' | 'minimal';
   sections: SectionConfig[];
@@ -38,15 +32,15 @@ const StorefrontCustomizer: React.FC<StorefrontCustomizerProps> = ({ vendor, onU
   const navigate = useNavigate();
   
   const defaultSections: SectionConfig[] = [
-    { id: 'header', name: 'Header', enabled: true },
-    { id: 'hero', name: 'Hero Banner', enabled: true },
-    { id: 'featured', name: 'Featured Products', enabled: true },
-    { id: 'categories', name: 'Categories', enabled: true },
-    { id: 'promos', name: 'Promo Banners', enabled: false },
-    { id: 'menu', name: 'Full Menu', enabled: true },
-    { id: 'reviews', name: 'Customer Reviews', enabled: false },
-    { id: 'business', name: 'Business Info', enabled: true },
-    { id: 'footer', name: 'Footer', enabled: true },
+    { id: 'header', name: 'Header', enabled: true, order: 0 },
+    { id: 'hero', name: 'Hero Banner', enabled: true, order: 1 },
+    { id: 'featured', name: 'Featured Products', enabled: true, order: 2 },
+    { id: 'categories', name: 'Categories', enabled: true, order: 3 },
+    { id: 'promos', name: 'Promo Banners', enabled: false, order: 4 },
+    { id: 'menu', name: 'Full Menu', enabled: true, order: 5 },
+    { id: 'reviews', name: 'Customer Reviews', enabled: false, order: 6 },
+    { id: 'business', name: 'Business Info', enabled: true, order: 7 },
+    { id: 'footer', name: 'Footer', enabled: true, order: 8 },
   ];
 
   const [settings, setSettings] = useState({

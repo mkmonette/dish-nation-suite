@@ -4,6 +4,7 @@ export interface SectionConfig {
   id: string;
   name: string;
   enabled: boolean;
+  order: number;
 }
 
 export interface StorefrontSettings {

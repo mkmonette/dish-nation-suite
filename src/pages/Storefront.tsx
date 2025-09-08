@@ -13,7 +13,7 @@ import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { vendorStorage, menuStorage, orderStorage, customerStorage, loyaltyStorage, categoryStorage, paymentStorage, MenuItem, MenuCategory, MenuVariation, MenuAddOn } from '@/lib/storage';
+import { vendorStorage, menuStorage, orderStorage, customerStorage, loyaltyStorage, categoryStorage, paymentStorage, MenuItem, MenuCategory, MenuVariation, MenuAddOn, SectionConfig } from '@/lib/storage';
 import { getGateway } from '@/lib/paymentGateways';
 import { ShoppingCart, Plus, Minus, Store, User, LogOut, MapPin, Phone, Star, X, ChevronUp, ChevronDown, GripVertical } from 'lucide-react';
 import ModernTemplate from '@/components/templates/ModernTemplate';
@@ -47,6 +47,7 @@ const Storefront = () => {
   const [isItemModalOpen, setIsItemModalOpen] = useState(false);
   const [isOrderConfirmationOpen, setIsOrderConfirmationOpen] = useState(false);
   const [completedOrder, setCompletedOrder] = useState<any>(null);
+  const [sectionConfig, setSectionConfig] = useState<SectionConfig[]>([]);
 
   const vendor = React.useMemo(() => {
     if (!vendorSlug) {
@@ -72,6 +73,36 @@ const Storefront = () => {
     // Load menu items and categories
     setMenuItems(menuStorage.getAll(vendor.id));
     setCategories(categoryStorage.getAll(vendor.id));
+    
+    // Load section configuration
+    const storedSettings = vendorStorage.getById(vendor.id);
+    const template = storedSettings?.storefront?.template || 'modern';
+    const templateConfig = storedSettings?.storefront?.templateConfigs?.[template];
+    
+    // Default sections with fallback handling
+    const defaultSections: SectionConfig[] = [
+      { id: 'header', name: 'Header', enabled: true, order: 0 },
+      { id: 'hero', name: 'Hero Banner', enabled: true, order: 1 },
+      { id: 'featured', name: 'Featured Products', enabled: true, order: 2 },
+      { id: 'categories', name: 'Categories', enabled: true, order: 3 },
+      { id: 'promos', name: 'Promo Banners', enabled: true, order: 4 },
+      { id: 'menu', name: 'Full Menu', enabled: true, order: 5 },
+      { id: 'reviews', name: 'Customer Reviews', enabled: true, order: 6 },
+      { id: 'business', name: 'Business Info', enabled: true, order: 7 },
+      { id: 'footer', name: 'Footer', enabled: true, order: 8 },
+    ];
+    
+    // Use stored config or fallback to defaults
+    const storedSections = templateConfig || defaultSections;
+    
+    // Ensure critical sections are always enabled (fallback handling)
+    const criticalSections = ['header', 'menu', 'footer'];
+    const processedSections = storedSections.map(section => ({
+      ...section,
+      enabled: criticalSections.includes(section.id) ? true : section.enabled
+    }));
+    
+    setSectionConfig(processedSections.sort((a, b) => a.order - b.order));
     
     // Load cart from localStorage
     const savedCart = localStorage.getItem(`cart_${vendor.id}`);
@@ -541,6 +572,7 @@ const Storefront = () => {
                 cartItemCount={cartItemCount}
                 cartComponent={cartComponent}
                 headerComponent={headerComponent}
+                sections={sectionConfig}
               />
             );
           case 'minimal':
@@ -555,6 +587,7 @@ const Storefront = () => {
                 cartItemCount={cartItemCount}
                 cartComponent={cartComponent}
                 headerComponent={headerComponent}
+                sections={sectionConfig}
               />
             );
           default:
@@ -569,6 +602,7 @@ const Storefront = () => {
                 cartItemCount={cartItemCount}
                 cartComponent={cartComponent}
                 headerComponent={headerComponent}
+                sections={sectionConfig}
               />
             );
         }

@@ -1,5 +1,5 @@
 import React from 'react';
-import { MenuItem, Vendor, MenuCategory } from '@/lib/storage';
+import { MenuItem, Vendor, MenuCategory, SectionConfig } from '@/lib/storage';
 import SectionRenderer from './sections/SectionRenderer';
 
 interface ModernTemplateProps {
@@ -12,6 +12,7 @@ interface ModernTemplateProps {
   cartItemCount: number;
   cartComponent: React.ReactNode;
   headerComponent: React.ReactNode;
+  sections: SectionConfig[];
 }
 
 const ModernTemplate: React.FC<ModernTemplateProps> = ({
@@ -21,26 +22,16 @@ const ModernTemplate: React.FC<ModernTemplateProps> = ({
   selectedCategory,
   onCategoryChange,
   onAddToCart,
+  cartItemCount,
   cartComponent,
   headerComponent,
+  sections,
 }) => {
   const customStyle = {
     '--primary-color': vendor.storefront?.colors?.primary || '#3b82f6',
     '--secondary-color': vendor.storefront?.colors?.secondary || '#10b981',
     '--accent-color': vendor.storefront?.colors?.accent || '#f59e0b',
   } as React.CSSProperties;
-
-  const sections = vendor.storefront?.templateConfigs?.modern || [
-    { id: 'header', name: 'Header', enabled: true },
-    { id: 'hero', name: 'Hero Banner', enabled: true },
-    { id: 'featured', name: 'Featured Products', enabled: true },
-    { id: 'categories', name: 'Categories', enabled: true },
-    { id: 'promos', name: 'Promo Banners', enabled: false },
-    { id: 'menu', name: 'Full Menu', enabled: true },
-    { id: 'reviews', name: 'Customer Reviews', enabled: false },
-    { id: 'business', name: 'Business Info', enabled: true },
-    { id: 'footer', name: 'Footer', enabled: true },
-  ];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-muted/20 to-background" style={customStyle}>
@@ -52,7 +43,7 @@ const ModernTemplate: React.FC<ModernTemplateProps> = ({
         selectedCategory={selectedCategory}
         onCategoryChange={onCategoryChange}
         onAddToCart={onAddToCart}
-        cartItemCount={0}
+        cartItemCount={cartItemCount}
         cartComponent={cartComponent}
         headerComponent={headerComponent}
         template="modern"
