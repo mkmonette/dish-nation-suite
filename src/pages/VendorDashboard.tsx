@@ -26,8 +26,8 @@ import ManualPaymentSettings from '@/components/ManualPaymentSettings';
 import OrdersSection from '@/components/OrdersSection';
 
 const VendorDashboard = () => {
-  const { logout } = useVendor();
-  const [vendor, setVendor] = useState(useVendor().vendor);
+  const { vendor: contextVendor, logout } = useVendor();
+  const [vendor, setVendor] = useState(contextVendor);
   const navigate = useNavigate();
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
   const [categories, setCategories] = useState<MenuCategory[]>([]);
