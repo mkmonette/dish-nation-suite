@@ -155,7 +155,8 @@ const StorefrontCustomizer: React.FC<StorefrontCustomizerProps> = ({ vendor, onU
     const oldIndex = templateConfigs[currentTemplate].findIndex(item => item.id === active.id);
     const newIndex = templateConfigs[currentTemplate].findIndex(item => item.id === over.id);
     
-    const reorderedSections = arrayMove(templateConfigs[currentTemplate], oldIndex, newIndex);
+    const reorderedSections = arrayMove(templateConfigs[currentTemplate], oldIndex, newIndex)
+      .map((section, index) => ({ ...section, order: index })); // Update order property
     
     const newTemplateConfigs = {
       ...templateConfigs,
