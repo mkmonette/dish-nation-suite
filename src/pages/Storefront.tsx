@@ -48,6 +48,7 @@ const Storefront = () => {
   const [isOrderConfirmationOpen, setIsOrderConfirmationOpen] = useState(false);
   const [completedOrder, setCompletedOrder] = useState<any>(null);
   const [sectionConfig, setSectionConfig] = useState<SectionConfig[]>([]);
+  const [vendorData, setVendorData] = useState<any>(null);
 
   const vendor = React.useMemo(() => {
     if (!vendorSlug) {
@@ -58,7 +59,28 @@ const Storefront = () => {
     const foundVendor = vendorStorage.getBySlug(vendorSlug);
     console.log('Found vendor:', foundVendor);
     return foundVendor;
-  }, [vendorSlug]);
+  }, [vendorSlug, vendorData]); // Add vendorData dependency
+
+  // Listen for vendor data changes
+  useEffect(() => {
+    const handleStorageChange = () => {
+      setVendorData(Date.now()); // Trigger vendor reload
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    
+    // Also listen for custom events from the same window
+    const handleVendorUpdate = () => {
+      setVendorData(Date.now());
+    };
+    
+    window.addEventListener('vendorUpdated', handleVendorUpdate);
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('vendorUpdated', handleVendorUpdate);
+    };
+  }, []);
 
   useEffect(() => {
     if (!vendor) {

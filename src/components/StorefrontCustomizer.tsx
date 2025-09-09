@@ -101,6 +101,9 @@ const StorefrontCustomizer: React.FC<StorefrontCustomizerProps> = ({ vendor, onU
         title: 'Storefront Updated!', 
         description: 'Your storefront customization has been saved and is now live.' 
       });
+      
+      // Notify other windows/tabs that vendor data has changed
+      window.dispatchEvent(new CustomEvent('vendorUpdated'));
     }
     
     setIsLoading(false);
@@ -113,6 +116,9 @@ const StorefrontCustomizer: React.FC<StorefrontCustomizerProps> = ({ vendor, onU
     const newSettings = { ...settings, template };
     vendorStorage.update(vendor.id, { storefront: { ...newSettings, templateConfigs } });
     onUpdate({ ...vendor, storefront: { ...newSettings, templateConfigs } });
+    
+    // Notify other windows/tabs that vendor data has changed
+    window.dispatchEvent(new CustomEvent('vendorUpdated'));
   };
 
   const handleApplyTemplate = (template: 'modern' | 'classic' | 'minimal') => {
@@ -144,6 +150,9 @@ const StorefrontCustomizer: React.FC<StorefrontCustomizerProps> = ({ vendor, onU
       ...vendor, 
       storefront: { ...settings, templateConfigs: newTemplateConfigs } 
     });
+    
+    // Notify other windows/tabs that vendor data has changed
+    window.dispatchEvent(new CustomEvent('vendorUpdated'));
   };
 
   const handleDragEnd = (event: DragEndEvent) => {
@@ -173,6 +182,9 @@ const StorefrontCustomizer: React.FC<StorefrontCustomizerProps> = ({ vendor, onU
       ...vendor, 
       storefront: { ...settings, templateConfigs: newTemplateConfigs } 
     });
+    
+    // Notify other windows/tabs that vendor data has changed
+    window.dispatchEvent(new CustomEvent('vendorUpdated'));
   };
 
   const currentSections = templateConfigs[settings.template] || defaultSections;
@@ -190,6 +202,9 @@ const StorefrontCustomizer: React.FC<StorefrontCustomizerProps> = ({ vendor, onU
     // Auto-save for instant updates
     vendorStorage.update(vendor.id, { storefront: newSettings });
     onUpdate({ ...vendor, storefront: newSettings });
+    
+    // Notify other windows/tabs that vendor data has changed
+    window.dispatchEvent(new CustomEvent('vendorUpdated'));
   };
 
   const handleImageChange = (type: 'logo' | 'banner', imageData: string | null) => {
@@ -202,6 +217,9 @@ const StorefrontCustomizer: React.FC<StorefrontCustomizerProps> = ({ vendor, onU
     // Auto-save for instant updates
     vendorStorage.update(vendor.id, { storefront: newSettings });
     onUpdate({ ...vendor, storefront: newSettings });
+    
+    // Notify other windows/tabs that vendor data has changed
+    window.dispatchEvent(new CustomEvent('vendorUpdated'));
   };
 
   const handleTextChange = (field: 'heroText' | 'heroSubtext' | 'aboutUs', value: string) => {
@@ -214,6 +232,9 @@ const StorefrontCustomizer: React.FC<StorefrontCustomizerProps> = ({ vendor, onU
     // Auto-save for instant updates
     vendorStorage.update(vendor.id, { storefront: newSettings });
     onUpdate({ ...vendor, storefront: newSettings });
+    
+    // Notify other windows/tabs that vendor data has changed
+    window.dispatchEvent(new CustomEvent('vendorUpdated'));
   };
 
   const previewUrl = `/store/${vendor.slug}`;
