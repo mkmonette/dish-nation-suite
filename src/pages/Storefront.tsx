@@ -117,11 +117,9 @@ const Storefront = () => {
     // Use stored config or fallback to defaults
     const storedSections = templateConfig || defaultSections;
     
-    // Ensure critical sections are always enabled and all sections have proper order
-    const criticalSections = ['header', 'menu', 'footer'];
+    // Ensure all sections have proper order
     const processedSections = storedSections.map((section, index) => ({
       ...section,
-      enabled: criticalSections.includes(section.id) ? true : section.enabled,
       order: section.order !== undefined ? section.order : index // Ensure order is always set
     }));
     
