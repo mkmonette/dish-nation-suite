@@ -5,7 +5,7 @@ import { Clock, Award, Heart, Shield } from 'lucide-react';
 
 interface BusinessInfoSectionProps {
   vendor: Vendor;
-  template: 'modern' | 'classic' | 'minimal';
+  template: 'future' | 'neo' | 'premium';
 }
 
 const BusinessInfoSection: React.FC<BusinessInfoSectionProps> = ({ vendor, template }) => {

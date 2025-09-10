@@ -6,7 +6,7 @@ import VendorLogo from '@/components/VendorLogo';
 interface FooterSectionProps {
   vendor: Vendor;
   cartComponent: React.ReactNode;
-  template: 'modern' | 'classic' | 'minimal';
+  template: 'future' | 'neo' | 'premium';
 }
 
 const FooterSection: React.FC<FooterSectionProps> = ({ vendor, cartComponent, template }) => {

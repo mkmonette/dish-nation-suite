@@ -3,13 +3,13 @@ import { Button } from '@/components/ui/enhanced-button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { MenuItem, Vendor } from '@/lib/storage';
-import { Plus, ImageIcon } from 'lucide-react';
+import { Plus, ImageIcon, Zap, Sparkles, Crown } from 'lucide-react';
 
 interface FeaturedProductsSectionProps {
   vendor: Vendor;
   menuItems: MenuItem[];
   onAddToCart: (item: MenuItem, quantity?: number, selectedVariation?: any, selectedAddOns?: any[]) => void;
-  template: 'modern' | 'classic' | 'minimal';
+  template: 'future' | 'neo' | 'premium';
 }
 
 const FeaturedProductsSection: React.FC<FeaturedProductsSectionProps> = ({
@@ -19,11 +19,11 @@ const FeaturedProductsSection: React.FC<FeaturedProductsSectionProps> = ({
   template,
 }) => {
   if (menuItems.length === 0) {
-    // Placeholder state when no menu items are available
-    if (template === 'modern') {
+    if (template === 'future') {
       return (
-        <section className="py-20 bg-background/60 backdrop-blur-sm">
-          <div className="container mx-auto px-4">
+        <section className="py-20 relative">
+          <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-secondary/5"></div>
+          <div className="container mx-auto px-4 relative">
             <div className="text-center mb-16">
               <h2 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
                 Featured Items
@@ -37,17 +37,17 @@ const FeaturedProductsSection: React.FC<FeaturedProductsSectionProps> = ({
       );
     }
     
-    if (template === 'classic') {
+    if (template === 'neo') {
       return (
-        <section className="py-20 bg-background">
+        <section className="py-20 bg-muted/30">
           <div className="container mx-auto px-4">
             <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4 font-serif text-primary">
-                Featured Specialties
-              </h2>
-              <div className="w-24 h-1 bg-primary mx-auto mb-6"></div>
-              <p className="text-muted-foreground max-w-2xl mx-auto">
-                Our carefully curated selection of featured dishes will appear here. Stay tuned for our culinary highlights!
+              <h2 className="text-3xl md:text-4xl font-black mb-6 text-foreground">FEATURED ITEMS</h2>
+              <div className="flex justify-center">
+                <div className="w-32 h-1 bg-gradient-primary"></div>
+              </div>
+              <p className="text-muted-foreground max-w-2xl mx-auto mt-6">
+                Bold flavors coming soon. Stay tuned for our signature selections!
               </p>
             </div>
           </div>
@@ -55,43 +55,41 @@ const FeaturedProductsSection: React.FC<FeaturedProductsSectionProps> = ({
       );
     }
     
-    if (template === 'minimal') {
-      return (
-        <section className="py-16 bg-background">
-          <div className="container mx-auto px-4">
-            <div className="text-center">
-              <h2 className="text-2xl md:text-3xl font-light mb-6 text-foreground">
-                Featured Items
-              </h2>
-              <div className="w-16 h-px bg-primary mx-auto mb-8"></div>
-              <p className="text-muted-foreground max-w-xl mx-auto text-sm">
-                Featured menu items coming soon
-              </p>
-            </div>
+    // Premium template
+    return (
+      <section className="py-24 border-y border-primary/10">
+        <div className="container mx-auto px-8">
+          <div className="text-center">
+            <h2 className="text-2xl font-light text-foreground tracking-wider mb-8">Featured Selections</h2>
+            <div className="w-24 h-px bg-gradient-to-r from-transparent via-primary to-transparent mx-auto mb-8"></div>
+            <p className="text-muted-foreground max-w-xl mx-auto font-light">
+              Curated selections coming soon
+            </p>
           </div>
-        </section>
-      );
-    }
+        </div>
+      </section>
+    );
   }
 
   const featuredItems = menuItems.slice(0, 6); // Show first 6 items as featured
 
-  if (template === 'modern') {
+  if (template === 'future') {
     return (
-      <section className="py-20 bg-background/60 backdrop-blur-sm">
-        <div className="container mx-auto px-4">
+      <section className="py-20 relative">
+        <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-secondary/5"></div>
+        <div className="container mx-auto px-4 relative">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
               Featured Items
             </h2>
-            <p className="text-lg text-muted-foreground">Our most popular dishes</p>
-            <div className="w-24 h-1 bg-gradient-to-r from-primary to-secondary mx-auto rounded-full mt-4"></div>
+            <div className="w-16 h-1 bg-gradient-primary mx-auto mb-6"></div>
+            <p className="text-lg text-muted-foreground">Experience the future of dining</p>
           </div>
           
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
             {featuredItems.map((item) => (
-              <Card key={item.id} className="group overflow-hidden hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border-0 shadow-lg bg-card/80 backdrop-blur-sm">
-                <div className="aspect-[4/3] bg-gradient-to-br from-muted to-muted/50 relative overflow-hidden">
+              <Card key={item.id} className="group overflow-hidden hover:scale-105 transition-all duration-500 backdrop-blur-sm bg-card/60 border border-primary/20 hover:border-primary/40 shadow-glow">
+                <div className="aspect-[4/3] bg-gradient-to-br from-primary/10 to-secondary/10 relative overflow-hidden">
                   {item.image ? (
                     <img 
                       src={item.image} 
@@ -99,11 +97,12 @@ const FeaturedProductsSection: React.FC<FeaturedProductsSectionProps> = ({
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                     />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/10 to-secondary/10">
-                      <ImageIcon className="h-12 w-12 text-primary/40" />
+                    <div className="w-full h-full flex items-center justify-center">
+                      <Sparkles className="h-12 w-12 text-primary/40" />
                     </div>
                   )}
-                  <Badge className="absolute top-3 left-3 bg-secondary text-secondary-foreground">
+                  <Badge className="absolute top-3 left-3 bg-gradient-to-r from-primary to-secondary text-white border-0">
+                    <Zap className="h-3 w-3 mr-1" />
                     Featured
                   </Badge>
                 </div>
@@ -124,7 +123,7 @@ const FeaturedProductsSection: React.FC<FeaturedProductsSectionProps> = ({
                       size="sm"
                       onClick={() => onAddToCart(item)}
                       disabled={!item.available}
-                      className="rounded-full"
+                      className="rounded-full shadow-glow hover:shadow-glow transition-all duration-300"
                     >
                       <Plus className="h-4 w-4 mr-1" />
                       Add
@@ -139,54 +138,58 @@ const FeaturedProductsSection: React.FC<FeaturedProductsSectionProps> = ({
     );
   }
 
-  if (template === 'classic') {
+  if (template === 'neo') {
     return (
-      <section className="py-20 bg-muted/20">
+      <section className="py-20 bg-muted/30">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-serif font-bold mb-6 text-foreground">Featured Selections</h2>
-            <p className="text-xl text-muted-foreground">Curated favorites from our kitchen</p>
+            <h2 className="text-3xl md:text-4xl font-black mb-6 text-foreground">FEATURED ITEMS</h2>
+            <div className="flex justify-center">
+              <div className="w-32 h-1 bg-gradient-primary"></div>
+            </div>
+            <p className="text-lg text-muted-foreground mt-4 font-bold">BOLD FLAVORS. MODERN STYLE.</p>
           </div>
           
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-5xl mx-auto">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
             {featuredItems.map((item) => (
-              <Card key={item.id} className="overflow-hidden hover:shadow-2xl transition-all duration-500 border-2 border-transparent hover:border-primary/20">
-                <div className="aspect-[4/3] bg-gradient-to-br from-muted to-muted/50 relative overflow-hidden">
+              <Card key={item.id} className="group overflow-hidden hover:scale-105 transition-all duration-300 border-2 border-primary/30 hover:border-primary shadow-lg hover:shadow-primary/25">
+                <div className="aspect-[4/3] bg-gradient-to-br from-primary/10 to-secondary/10 relative overflow-hidden">
                   {item.image ? (
                     <img 
                       src={item.image} 
                       alt={item.name}
-                      className="w-full h-full object-cover hover:scale-110 transition-transform duration-500"
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                     />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-primary/5">
-                      <ImageIcon className="h-12 w-12 text-primary/30" />
+                    <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/20 to-secondary/20">
+                      <ImageIcon className="h-12 w-12 text-primary/40" />
                     </div>
                   )}
-                  <Badge className="absolute top-3 left-3 bg-secondary/90 text-secondary-foreground font-serif">
-                    Featured
+                  <Badge className="absolute top-3 left-3 bg-secondary text-secondary-foreground font-black">
+                    FEATURED
                   </Badge>
                 </div>
                 
-                <CardHeader>
-                  <CardTitle className="text-xl font-serif font-bold text-foreground">
+                <CardHeader className="pb-4">
+                  <CardTitle className="text-lg group-hover:text-primary transition-colors font-black uppercase tracking-wider">
                     {item.name}
                   </CardTitle>
                 </CardHeader>
                 
-                <CardContent>
+                <CardContent className="pt-0">
                   <div className="flex items-center justify-between">
-                    <span className="text-2xl font-serif font-bold text-primary">
+                    <span className="text-2xl font-black text-primary">
                       ${item.price.toFixed(2)}
                     </span>
                     <Button 
-                      variant="outline"
+                      variant="hero"
+                      size="sm"
                       onClick={() => onAddToCart(item)}
                       disabled={!item.available}
-                      className="border-primary text-primary hover:bg-primary hover:text-primary-foreground font-serif"
+                      className="font-black uppercase tracking-wider"
                     >
-                      <Plus className="h-4 w-4 mr-2" />
-                      Add
+                      <Plus className="h-4 w-4 mr-1" />
+                      ADD
                     </Button>
                   </div>
                 </CardContent>
@@ -198,46 +201,59 @@ const FeaturedProductsSection: React.FC<FeaturedProductsSectionProps> = ({
     );
   }
 
-  // Minimal template
+  // Premium template
   return (
-    <section className="py-24 border-b border-border/30">
-      <div className="container mx-auto px-4">
+    <section className="py-24 border-y border-primary/10">
+      <div className="container mx-auto px-8">
         <div className="text-center mb-20">
-          <h2 className="text-3xl font-extralight text-primary tracking-wider mb-8">Featured</h2>
-          <div className="w-24 h-0.5 bg-primary mx-auto mb-8"></div>
-          <p className="text-lg text-muted-foreground font-light">Carefully selected highlights</p>
+          <h2 className="text-2xl font-light text-foreground tracking-wider mb-8">Featured Selections</h2>
+          <div className="w-24 h-px bg-gradient-to-r from-transparent via-primary to-transparent mx-auto mb-6"></div>
+          <p className="text-muted-foreground font-light max-w-md mx-auto">Meticulously curated for the discerning palate</p>
         </div>
         
-        <div className="max-w-4xl mx-auto space-y-12">
+        <div className="max-w-5xl mx-auto space-y-12">
           {featuredItems.map((item) => (
             <div key={item.id} className="group">
-              <div className="flex items-start justify-between py-8 border-b border-border/20 hover:border-border/40 transition-all duration-500">
-                <div className="flex-1 space-y-3">
-                  <div className="flex items-baseline gap-4">
-                    <h4 className="text-xl font-light text-foreground group-hover:text-primary transition-colors tracking-wide">
-                      {item.name}
-                    </h4>
-                    <Badge variant="outline" className="text-xs border-primary/30 font-light">
-                      Featured
-                    </Badge>
-                    <div className="flex-1 border-b border-dotted border-muted-foreground/20 mx-4 translate-y-[-4px]"></div>
-                    <span className="text-xl font-light text-foreground tracking-wide">
-                      ${item.price.toFixed(2)}
-                    </span>
+              <div className="flex items-center justify-between py-8 border-b border-primary/10 hover:border-primary/20 transition-all duration-700">
+                <div className="flex items-center space-x-8">
+                  <div className="w-20 h-20 relative overflow-hidden rounded-lg border border-primary/10">
+                    {item.image ? (
+                      <img 
+                        src={item.image} 
+                        alt={item.name}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-muted flex items-center justify-center">
+                        <Crown className="h-6 w-6 text-primary/40" />
+                      </div>
+                    )}
                   </div>
-                  <div className="flex items-center justify-between pt-4">
-                    <div></div>
-                    <Button 
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => onAddToCart(item)}
-                      disabled={!item.available}
-                      className="border border-primary/30 hover:bg-primary hover:text-primary-foreground transition-all duration-300 font-light tracking-wider h-9 px-6"
-                    >
-                      <Plus className="h-4 w-4 mr-2" />
-                      Add
-                    </Button>
+                  <div className="flex-1 space-y-2">
+                    <div className="flex items-center gap-3">
+                      <h4 className="text-xl font-light text-foreground group-hover:text-primary transition-colors tracking-wide">
+                        {item.name}
+                      </h4>
+                      <Badge variant="outline" className="text-xs border-primary/30 font-light">
+                        Featured
+                      </Badge>
+                    </div>
                   </div>
+                </div>
+                <div className="flex items-center space-x-8">
+                  <span className="text-2xl font-light text-foreground tracking-wide">
+                    ${item.price.toFixed(2)}
+                  </span>
+                  <Button 
+                    variant="outline"
+                    size="sm"
+                    onClick={() => onAddToCart(item)}
+                    disabled={!item.available}
+                    className="border-primary/30 hover:bg-primary hover:text-primary-foreground transition-all duration-300 font-light tracking-wider px-8"
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add
+                  </Button>
                 </div>
               </div>
             </div>

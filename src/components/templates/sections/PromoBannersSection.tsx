@@ -1,144 +1,133 @@
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Vendor } from '@/lib/storage';
-import { Percent, Clock, Gift } from 'lucide-react';
+import { Zap, Gift, Clock, Star, Sparkles, Crown } from 'lucide-react';
 
 interface PromoBannersSectionProps {
   vendor: Vendor;
-  template: 'modern' | 'classic' | 'minimal';
+  template: 'future' | 'neo' | 'premium';
 }
 
 const PromoBannersSection: React.FC<PromoBannersSectionProps> = ({ vendor, template }) => {
-  // Sample promo data - in a real app this would come from props or API
-  const promos = [
+  // Sample promotions - in a real app this would come from vendor data
+  const promotions = [
     {
       id: '1',
-      title: '20% Off First Order',
-      description: 'New customers save on their first delivery',
-      icon: Percent,
-      color: 'from-green-500 to-emerald-600'
+      icon: Zap,
+      title: 'Lightning Fast Delivery',
+      description: 'Get your order in 30 minutes or less'
     },
     {
-      id: '2', 
-      title: 'Free Delivery',
-      description: 'On orders over $25',
-      icon: Clock,
-      color: 'from-blue-500 to-cyan-600'
+      id: '2',
+      icon: Gift,
+      title: 'Special Offers',
+      description: 'Exclusive deals for our valued customers'
     },
     {
       id: '3',
-      title: 'Weekend Special',
-      description: 'Buy 2 get 1 free on selected items',
-      icon: Gift,
-      color: 'from-purple-500 to-pink-600'
+      icon: Clock,
+      title: '24/7 Service',
+      description: 'Order anytime, we\'re always here for you'
     }
   ];
 
-  if (template === 'modern') {
+  if (template === 'future') {
     return (
-      <section className="py-16 bg-gradient-to-r from-primary/5 via-secondary/5 to-accent/5">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
+      <section className="py-20 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-secondary/10"></div>
+        {/* Floating elements */}
+        <div className="absolute top-10 right-20 w-32 h-32 bg-gradient-to-br from-primary/20 to-transparent rounded-full blur-2xl animate-pulse"></div>
+        <div className="absolute bottom-10 left-20 w-40 h-40 bg-gradient-to-br from-secondary/20 to-transparent rounded-full blur-3xl animate-pulse delay-1000"></div>
+        
+        <div className="container mx-auto px-4 relative">
+          <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-              Special Offers
+              Why Choose Us
             </h2>
-            <p className="text-lg text-muted-foreground">Don't miss out on these amazing deals</p>
+            <div className="w-16 h-1 bg-gradient-primary mx-auto mb-6"></div>
+            <p className="text-lg text-muted-foreground">Experience the future of food delivery</p>
           </div>
           
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
-            {promos.map((promo) => {
-              const IconComponent = promo.icon;
-              return (
-                <Card key={promo.id} className="overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-                  <CardContent className={`p-6 bg-gradient-to-br ${promo.color} text-white`}>
-                    <div className="flex items-center gap-4 mb-4">
-                      <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
-                        <IconComponent className="h-6 w-6" />
-                      </div>
-                      <Badge variant="secondary" className="bg-white/20 text-white border-white/30">
-                        Limited Time
-                      </Badge>
-                    </div>
-                    <h3 className="text-xl font-bold mb-2">{promo.title}</h3>
-                    <p className="text-white/90">{promo.description}</p>
-                  </CardContent>
-                </Card>
-              );
-            })}
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            {promotions.map((promo) => (
+              <Card key={promo.id} className="group p-8 text-center backdrop-blur-sm bg-card/60 border border-primary/20 hover:border-primary/40 transition-all duration-500 hover:scale-105 shadow-glow">
+                <CardContent className="p-0">
+                  <div className="w-16 h-16 mx-auto mb-6 bg-gradient-to-br from-primary to-secondary rounded-2xl flex items-center justify-center shadow-glow group-hover:shadow-glow transition-all duration-500">
+                    <promo.icon className="h-8 w-8 text-white" />
+                  </div>
+                  <h3 className="text-xl font-bold mb-4 text-foreground group-hover:text-primary transition-colors">
+                    {promo.title}
+                  </h3>
+                  <p className="text-muted-foreground leading-relaxed">
+                    {promo.description}
+                  </p>
+                </CardContent>
+              </Card>
+            ))}
           </div>
         </div>
       </section>
     );
   }
 
-  if (template === 'classic') {
+  if (template === 'neo') {
     return (
-      <section className="py-20 bg-muted/30">
+      <section className="py-20 bg-background relative">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-serif font-bold mb-6 text-foreground">Current Promotions</h2>
-            <div className="flex items-center justify-center gap-3 mb-8">
-              <div className="w-12 h-0.5 bg-primary"></div>
-              <div className="w-3 h-3 bg-primary rotate-45"></div>
-              <div className="w-12 h-0.5 bg-primary"></div>
+            <h2 className="text-3xl md:text-4xl font-black mb-6 text-foreground">WHY CHOOSE US</h2>
+            <div className="flex justify-center">
+              <div className="w-32 h-1 bg-gradient-primary"></div>
             </div>
-            <p className="text-xl text-muted-foreground">Exceptional value for discerning palates</p>
+            <p className="text-lg text-muted-foreground mt-4 font-bold uppercase tracking-wider">BOLD. FAST. RELIABLE.</p>
           </div>
           
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            {promos.map((promo) => {
-              const IconComponent = promo.icon;
-              return (
-                <Card key={promo.id} className="border-2 border-primary/20 hover:border-primary/40 transition-all duration-300 hover:shadow-lg">
-                  <CardContent className="p-8 text-center">
-                    <div className="w-16 h-16 bg-primary/10 border-2 border-primary/20 rounded-full flex items-center justify-center mx-auto mb-6">
-                      <IconComponent className="h-8 w-8 text-primary" />
-                    </div>
-                    <h3 className="text-xl font-serif font-bold mb-3 text-foreground">{promo.title}</h3>
-                    <p className="text-muted-foreground leading-relaxed">{promo.description}</p>
-                    <Badge variant="outline" className="mt-4 border-primary/30 text-primary font-serif">
-                      Available Now
-                    </Badge>
-                  </CardContent>
-                </Card>
-              );
-            })}
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            {promotions.map((promo) => (
+              <Card key={promo.id} className="group p-8 text-center border-2 border-primary/30 hover:border-primary transition-all duration-300 shadow-lg hover:shadow-primary/25 bg-background">
+                <CardContent className="p-0">
+                  <div className="w-16 h-16 mx-auto mb-6 bg-gradient-to-br from-primary to-secondary rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                    <promo.icon className="h-8 w-8 text-white" />
+                  </div>
+                  <h3 className="text-xl font-black mb-4 text-foreground group-hover:text-primary transition-colors uppercase tracking-wider">
+                    {promo.title}
+                  </h3>
+                  <p className="text-muted-foreground leading-relaxed font-medium">
+                    {promo.description}
+                  </p>
+                </CardContent>
+              </Card>
+            ))}
           </div>
         </div>
       </section>
     );
   }
 
-  // Minimal template
+  // Premium template
   return (
-    <section className="py-20 border-b border-border/30">
-      <div className="container mx-auto px-4">
-        <div className="text-center mb-16">
-          <h2 className="text-2xl font-extralight text-primary tracking-wider mb-8">Offers</h2>
-          <div className="w-16 h-0.5 bg-primary mx-auto"></div>
+    <section className="py-24 bg-muted/10">
+      <div className="container mx-auto px-8">
+        <div className="text-center mb-20">
+          <h2 className="text-2xl font-light text-foreground tracking-wider mb-8">Our Promise</h2>
+          <div className="w-24 h-px bg-gradient-to-r from-transparent via-primary to-transparent mx-auto mb-6"></div>
+          <p className="text-muted-foreground font-light max-w-md mx-auto">Excellence delivered with every order</p>
         </div>
         
-        <div className="max-w-3xl mx-auto space-y-8">
-          {promos.map((promo) => {
-            const IconComponent = promo.icon;
-            return (
-              <div key={promo.id} className="flex items-center justify-between py-6 border-b border-border/20 hover:border-border/40 transition-all duration-500">
-                <div className="flex items-center gap-6">
-                  <div className="w-12 h-12 border border-primary/20 rounded-full flex items-center justify-center">
-                    <IconComponent className="h-5 w-5 text-primary" />
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-light text-foreground tracking-wide mb-1">{promo.title}</h3>
-                    <p className="text-muted-foreground font-light text-sm">{promo.description}</p>
-                  </div>
-                </div>
-                <Badge variant="outline" className="text-xs border-primary/30 font-light">
-                  Active
-                </Badge>
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-12 max-w-5xl mx-auto">
+          {promotions.map((promo) => (
+            <div key={promo.id} className="group text-center">
+              <div className="w-12 h-12 mx-auto mb-6 border border-primary/20 rounded-full flex items-center justify-center group-hover:border-primary/40 transition-colors duration-700">
+                <promo.icon className="h-6 w-6 text-primary" />
               </div>
-            );
-          })}
+              <h3 className="text-lg font-light mb-4 text-foreground group-hover:text-primary transition-colors tracking-wide">
+                {promo.title}
+              </h3>
+              <p className="text-muted-foreground leading-relaxed font-light">
+                {promo.description}
+              </p>
+            </div>
+          ))}
         </div>
       </div>
     </section>

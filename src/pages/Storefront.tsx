@@ -16,9 +16,9 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { vendorStorage, menuStorage, orderStorage, customerStorage, loyaltyStorage, categoryStorage, paymentStorage, MenuItem, MenuCategory, MenuVariation, MenuAddOn, SectionConfig } from '@/lib/storage';
 import { getGateway } from '@/lib/paymentGateways';
 import { ShoppingCart, Plus, Minus, Store, User, LogOut, MapPin, Phone, Star, X, ChevronUp, ChevronDown, GripVertical } from 'lucide-react';
-import ModernTemplate from '@/components/templates/ModernTemplate';
-import ClassicTemplate from '@/components/templates/ClassicTemplate';
-import MinimalTemplate from '@/components/templates/MinimalTemplate';
+import FutureTemplate from '@/components/templates/FutureTemplate';
+import NeoTemplate from '@/components/templates/NeoTemplate';
+import PremiumTemplate from '@/components/templates/PremiumTemplate';
 import VendorLogo from '@/components/VendorLogo';
 import MenuItemModal from '@/components/MenuItemModal';
 import CheckoutModal from '@/components/CheckoutModal';
@@ -98,7 +98,7 @@ const Storefront = () => {
     
     // Load section configuration
     const storedSettings = vendorStorage.getById(vendor.id);
-    const template = storedSettings?.storefront?.template || 'modern';
+    const template = storedSettings?.storefront?.template || 'future';
     const templateConfig = storedSettings?.storefront?.templateConfigs?.[template];
     
     // Default sections with fallback handling
@@ -578,12 +578,12 @@ const Storefront = () => {
     <>
       {/* Render the appropriate template */}
       {(() => {
-        const template = vendor.storefront?.template || 'modern';
+        const template = vendor.storefront?.template || 'future';
         
         switch (template) {
-          case 'classic':
+          case 'neo':
             return (
-              <ClassicTemplate
+              <NeoTemplate
                 vendor={vendor}
                 menuItems={filteredMenuItems}
                 categories={displayCategories}
@@ -596,9 +596,9 @@ const Storefront = () => {
                 sections={sectionConfig}
               />
             );
-          case 'minimal':
+          case 'premium':
             return (
-              <MinimalTemplate
+              <PremiumTemplate
                 vendor={vendor}
                 menuItems={filteredMenuItems}
                 categories={displayCategories}
@@ -613,7 +613,7 @@ const Storefront = () => {
             );
           default:
             return (
-              <ModernTemplate
+              <FutureTemplate
                 vendor={vendor}
                 menuItems={filteredMenuItems}
                 categories={displayCategories}
