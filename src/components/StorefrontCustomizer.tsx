@@ -58,12 +58,25 @@ const StorefrontCustomizer: React.FC<StorefrontCustomizerProps> = ({ vendor, onU
     ...vendor.storefront,
   });
   
-  const [templateConfigs, setTemplateConfigs] = useState<Record<string, SectionConfig[]>>({
-    future: defaultSections,
-    neo: defaultSections,
-    premium: defaultSections,
-    ...vendor.storefront?.templateConfigs,
-  });
+  // Initialize template configs properly, avoiding circular references
+  const initializeTemplateConfigs = () => {
+    const configs: Record<string, SectionConfig[]> = {};
+    const templates = ['future', 'neo', 'premium'] as const;
+    
+    templates.forEach(template => {
+      const storedConfig = vendor.storefront?.templateConfigs?.[template];
+      // Check if stored config is valid (array) and not a circular reference
+      if (Array.isArray(storedConfig) && storedConfig.length > 0) {
+        configs[template] = storedConfig;
+      } else {
+        configs[template] = [...defaultSections]; // Deep copy to avoid reference issues
+      }
+    });
+    
+    return configs;
+  };
+  
+  const [templateConfigs, setTemplateConfigs] = useState<Record<string, SectionConfig[]>>(initializeTemplateConfigs());
   
   const [isLoading, setIsLoading] = useState(false);
 

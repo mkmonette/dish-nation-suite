@@ -82,6 +82,55 @@ const Storefront = () => {
     };
   }, []);
 
+  // Clean up corrupted template configs on mount
+  useEffect(() => {
+    if (!vendor) return;
+    
+    const storedSettings = vendorStorage.getById(vendor.id);
+    if (storedSettings?.storefront?.templateConfigs) {
+      const configs = storedSettings.storefront.templateConfigs;
+      let needsCleanup = false;
+      
+      // Check for circular references or invalid configs
+      ['future', 'neo', 'premium'].forEach(template => {
+        const config = configs[template];
+        if (!Array.isArray(config) || (config as any).message) {
+          needsCleanup = true;
+        }
+      });
+      
+      if (needsCleanup) {
+        const defaultSections = [
+          { id: 'header', name: 'Header', enabled: true, order: 0 },
+          { id: 'hero', name: 'Hero Banner', enabled: true, order: 1 },
+          { id: 'featured', name: 'Featured Products', enabled: true, order: 2 },
+          { id: 'categories', name: 'Categories', enabled: true, order: 3 },
+          { id: 'promos', name: 'Promo Banners', enabled: true, order: 4 },
+          { id: 'menu', name: 'Full Menu', enabled: true, order: 5 },
+          { id: 'reviews', name: 'Customer Reviews', enabled: true, order: 6 },
+          { id: 'business', name: 'Business Info', enabled: true, order: 7 },
+          { id: 'footer', name: 'Footer', enabled: true, order: 8 },
+        ];
+        
+        // Clean up corrupted template configs
+        const cleanConfigs = {
+          future: [...defaultSections],
+          neo: [...defaultSections], 
+          premium: [...defaultSections]
+        };
+        
+        vendorStorage.update(vendor.id, {
+          storefront: {
+            ...storedSettings.storefront,
+            templateConfigs: cleanConfigs
+          }
+        });
+        
+        console.log('Cleaned up corrupted template configurations');
+      }
+    }
+  }, [vendor]);
+
   useEffect(() => {
     if (!vendor) {
       navigate('/');
@@ -96,11 +145,6 @@ const Storefront = () => {
     setMenuItems(menuStorage.getAll(vendor.id));
     setCategories(categoryStorage.getAll(vendor.id));
     
-    // Load section configuration
-    const storedSettings = vendorStorage.getById(vendor.id);
-    const template = storedSettings?.storefront?.template || 'future';
-    const templateConfig = storedSettings?.storefront?.templateConfigs?.[template];
-    
     // Default sections with fallback handling
     const defaultSections: SectionConfig[] = [
       { id: 'header', name: 'Header', enabled: true, order: 0 },
@@ -114,16 +158,32 @@ const Storefront = () => {
       { id: 'footer', name: 'Footer', enabled: true, order: 8 },
     ];
     
-    // Use stored config or fallback to defaults
-    const storedSections = templateConfig || defaultSections;
+    // Load section configuration from vendor settings
+    const storedSettings = vendorStorage.getById(vendor.id);
+    const template = storedSettings?.storefront?.template || 'future';
+    const templateConfig = storedSettings?.storefront?.templateConfigs?.[template];
     
-    // Ensure all sections have proper order
-    const processedSections = storedSections.map((section, index) => ({
-      ...section,
-      order: section.order !== undefined ? section.order : index // Ensure order is always set
-    }));
+    // Use stored config if valid (array), otherwise use defaults
+    let storedSections = defaultSections;
+    if (Array.isArray(templateConfig) && templateConfig.length > 0) {
+      // Validate that stored sections have required properties
+      const validSections = templateConfig.every(section => 
+        section && typeof section.id === 'string' && typeof section.enabled === 'boolean'
+      );
+      if (validSections) {
+        storedSections = templateConfig;
+      }
+    }
     
-    setSectionConfig(processedSections.sort((a, b) => a.order - b.order));
+    // Process sections: ensure proper order and filter enabled ones
+    const processedSections = storedSections
+      .map((section, index) => ({
+        ...section,
+        order: section.order !== undefined ? section.order : index
+      }))
+      .sort((a, b) => a.order - b.order);
+    
+    setSectionConfig(processedSections);
     
     // Load cart from localStorage
     const savedCart = localStorage.getItem(`cart_${vendor.id}`);
