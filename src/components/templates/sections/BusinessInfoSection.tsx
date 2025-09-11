@@ -31,7 +31,7 @@ const BusinessInfoSection: React.FC<BusinessInfoSectionProps> = ({ vendor, templ
     }
   ];
 
-  if (template === 'modern') {
+  if (template === 'future') {
     return (
       <section className="py-20 bg-background/60 backdrop-blur-sm">
         <div className="container mx-auto px-4">
@@ -65,7 +65,7 @@ const BusinessInfoSection: React.FC<BusinessInfoSectionProps> = ({ vendor, templ
     );
   }
 
-  if (template === 'classic') {
+  if (template === 'neo') {
     return (
       <section className="py-20 bg-muted/30">
         <div className="container mx-auto px-4">
@@ -101,7 +101,7 @@ const BusinessInfoSection: React.FC<BusinessInfoSectionProps> = ({ vendor, templ
     );
   }
 
-  if (template === 'minimal') {
+  if (template === 'premium') {
     return (
       <section className="py-16 bg-background border-b">
         <div className="container mx-auto px-4">

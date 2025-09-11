@@ -37,7 +37,7 @@ const MenuSection: React.FC<MenuSectionProps> = ({
     return acc;
   }, {} as Record<string, MenuItem[]>);
 
-  if (template === 'modern') {
+  if (template === 'future') {
     return (
       <main className="container mx-auto px-4 py-20">
         <div className="text-center mb-16">
@@ -134,7 +134,7 @@ const MenuSection: React.FC<MenuSectionProps> = ({
     );
   }
 
-  if (template === 'classic') {
+  if (template === 'neo') {
     return (
       <main className="container mx-auto px-4 py-20">
         <div className="text-center mb-16">
@@ -264,7 +264,7 @@ const MenuSection: React.FC<MenuSectionProps> = ({
     );
   }
 
-  // Minimal template
+  // Premium template
   return (
     <main className="container mx-auto px-4 py-24">
       <div className="text-center mb-20">

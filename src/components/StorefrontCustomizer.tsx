@@ -24,7 +24,7 @@ interface StorefrontCustomizerProps {
 }
 
 interface TemplateConfig {
-  template: 'modern' | 'classic' | 'minimal';
+  template: 'future' | 'neo' | 'premium';
   sections: SectionConfig[];
 }
 
@@ -44,7 +44,7 @@ const StorefrontCustomizer: React.FC<StorefrontCustomizerProps> = ({ vendor, onU
   ];
 
   const [settings, setSettings] = useState({
-    template: 'modern' as 'modern' | 'classic' | 'minimal',
+    template: 'future' as 'future' | 'neo' | 'premium',
     colors: {
       primary: '#3b82f6',
       secondary: '#10b981',
@@ -59,9 +59,9 @@ const StorefrontCustomizer: React.FC<StorefrontCustomizerProps> = ({ vendor, onU
   });
   
   const [templateConfigs, setTemplateConfigs] = useState<Record<string, SectionConfig[]>>({
-    modern: defaultSections,
-    classic: defaultSections,
-    minimal: defaultSections,
+    future: defaultSections,
+    neo: defaultSections,
+    premium: defaultSections,
     ...vendor.storefront?.templateConfigs,
   });
   
@@ -69,21 +69,21 @@ const StorefrontCustomizer: React.FC<StorefrontCustomizerProps> = ({ vendor, onU
 
   const templates = [
     { 
-      value: 'modern', 
-      label: 'Modern', 
-      description: 'Clean and contemporary design with bold elements',
+      value: 'future', 
+      label: 'Future', 
+      description: 'Cutting-edge design with innovative elements and animations',
       preview: '/api/placeholder/300/200'
     },
     { 
-      value: 'classic', 
-      label: 'Classic', 
-      description: 'Traditional and elegant layout with timeless appeal',
+      value: 'neo', 
+      label: 'Neo', 
+      description: 'Modern aesthetic with bold colors and dynamic layouts',
       preview: '/api/placeholder/300/200'
     },
     { 
-      value: 'minimal', 
-      label: 'Minimal', 
-      description: 'Simple and focused design for modern brands',
+      value: 'premium', 
+      label: 'Premium', 
+      description: 'Elegant and sophisticated design for luxury brands',
       preview: '/api/placeholder/300/200'
     },
   ];
@@ -109,7 +109,7 @@ const StorefrontCustomizer: React.FC<StorefrontCustomizerProps> = ({ vendor, onU
     setIsLoading(false);
   };
 
-  const handleTemplateChange = (template: 'modern' | 'classic' | 'minimal') => {
+  const handleTemplateChange = (template: 'future' | 'neo' | 'premium') => {
     setSettings(prev => ({ ...prev, template }));
     
     // Auto-save template change
@@ -121,7 +121,7 @@ const StorefrontCustomizer: React.FC<StorefrontCustomizerProps> = ({ vendor, onU
     window.dispatchEvent(new CustomEvent('vendorUpdated'));
   };
 
-  const handleApplyTemplate = (template: 'modern' | 'classic' | 'minimal') => {
+  const handleApplyTemplate = (template: 'future' | 'neo' | 'premium') => {
     handleTemplateChange(template);
     toast({
       title: 'Template Applied!',
@@ -302,7 +302,7 @@ const StorefrontCustomizer: React.FC<StorefrontCustomizerProps> = ({ vendor, onU
                       <Button 
                         variant={settings.template === template.value ? "secondary" : "default"}
                         size="sm"
-                        onClick={() => handleApplyTemplate(template.value as 'modern' | 'classic' | 'minimal')}
+                        onClick={() => handleApplyTemplate(template.value as 'future' | 'neo' | 'premium')}
                         className="flex-1"
                         disabled={settings.template === template.value}
                       >

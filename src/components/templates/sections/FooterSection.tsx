@@ -10,7 +10,7 @@ interface FooterSectionProps {
 }
 
 const FooterSection: React.FC<FooterSectionProps> = ({ vendor, cartComponent, template }) => {
-  if (template === 'modern') {
+  if (template === 'future') {
     return (
       <>
         <footer className="bg-card/80 backdrop-blur-sm border-t py-16">
@@ -63,7 +63,7 @@ const FooterSection: React.FC<FooterSectionProps> = ({ vendor, cartComponent, te
     );
   }
 
-  if (template === 'classic') {
+  if (template === 'neo') {
     return (
       <>
         <footer className="bg-card/80 backdrop-blur-sm border-t-2 border-primary/20 py-16">
@@ -116,7 +116,7 @@ const FooterSection: React.FC<FooterSectionProps> = ({ vendor, cartComponent, te
     );
   }
 
-  // Minimal template
+  // Premium template
   return (
     <>
       <footer className="border-t border-border/30 py-20 bg-muted/5">
