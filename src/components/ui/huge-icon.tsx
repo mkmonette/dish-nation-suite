@@ -1,7 +1,8 @@
 import React from 'react';
+import { IconName } from '@/icons';
 
-// Dynamic imports for icons
-const iconImports = {
+// Dynamic imports for tree-shaking - only imported icons will be included in bundle
+const iconImports: Record<IconName, () => Promise<{ default: React.ComponentType<any> }>> = {
   'shopping-cart-outline': () => import('@/icons/shopping-cart-outline'),
   'heart-outline': () => import('@/icons/heart-outline'),
   'user-outline': () => import('@/icons/user-outline'),
@@ -10,9 +11,11 @@ const iconImports = {
   'x-circle': () => import('@/icons/x-circle'),
   'plus': () => import('@/icons/plus'),
   'minus': () => import('@/icons/minus'),
-} as const;
-
-type IconName = keyof typeof iconImports;
+  'home': () => import('@/icons/home'),
+  'search': () => import('@/icons/search'),
+  'menu': () => import('@/icons/menu'),
+  'bell': () => import('@/icons/bell'),
+};
 
 interface HugeIconProps {
   name: IconName;
