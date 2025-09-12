@@ -9,6 +9,7 @@ import { Shield, Users, CreditCard, Settings, LogOut, DollarSign, TrendingUp } f
 import SubscriptionPlanManager from '../components/SubscriptionPlanManager';
 import VendorManager from '../components/VendorManager';
 import AdminSidebar from '../components/AdminSidebar';
+import IconManager from '../components/IconManager';
 import { vendorStorage, orderStorage, subscriptionPlanStorage, vendorSubscriptionStorage } from '../lib/storage';
 
 const AdminDashboard: React.FC = () => {
@@ -191,6 +192,17 @@ const AdminDashboard: React.FC = () => {
               <p className="text-muted-foreground">Create and manage subscription plans</p>
             </div>
             <SubscriptionPlanManager />
+          </div>
+        );
+
+      case 'icons':
+        return (
+          <div className="space-y-6">
+            <div>
+              <h1 className="text-3xl font-bold">Icon Library Management</h1>
+              <p className="text-muted-foreground">Manage icons available for storefront customization</p>
+            </div>
+            <IconManager />
           </div>
         );
 

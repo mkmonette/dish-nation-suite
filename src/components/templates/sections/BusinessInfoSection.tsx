@@ -2,7 +2,6 @@ import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Vendor } from '@/lib/storage';
 import HugeIcon from '@/components/ui/huge-icon';
-import { IconName } from '@/icons';
 
 interface BusinessInfoSectionProps {
   vendor: Vendor;
@@ -16,17 +15,17 @@ const BusinessInfoSection: React.FC<BusinessInfoSectionProps> = ({ vendor, templ
 
   const features = [
     {
-      icon: (vendor.storefront?.icons?.features?.delivery || 'plus') as IconName,
+      icon: vendor.storefront?.icons?.features?.delivery || 'plus',
       title: 'Fast Delivery',
       description: 'Quick and reliable delivery to your doorstep'
     },
     {
-      icon: (vendor.storefront?.icons?.features?.quality || 'check-circle') as IconName,
+      icon: vendor.storefront?.icons?.features?.quality || 'check-circle',
       title: 'Quality Assured', 
       description: 'Fresh ingredients and highest food safety standards'
     },
     {
-      icon: (vendor.storefront?.icons?.features?.service || 'heart-outline') as IconName,
+      icon: vendor.storefront?.icons?.features?.service || 'heart-outline',
       title: 'Made with Love',
       description: 'Every dish prepared with care and attention to detail'
     }

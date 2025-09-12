@@ -12,6 +12,7 @@ import { Vendor, vendorStorage, SectionConfig } from '@/lib/storage';
 import { Palette, Save, Eye, FileText, Settings, Check, GripVertical, Settings2 } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { IconName } from '@/icons';
+import { iconStorage } from '@/components/IconManager';
 import ImageUpload from '@/components/ui/image-upload';
 import { DndContext, closestCenter, DragEndEvent } from '@dnd-kit/core';
 import { arrayMove, SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
@@ -252,7 +253,7 @@ const StorefrontCustomizer: React.FC<StorefrontCustomizerProps> = ({ vendor, onU
     window.dispatchEvent(new CustomEvent('vendorUpdated'));
   };
 
-  const handleIconChange = (section: string, iconType: string, value: IconName) => {
+  const handleIconChange = (section: string, iconType: string, value: string) => {
     const newSettings = {
       ...settings,
       icons: {
@@ -273,10 +274,17 @@ const StorefrontCustomizer: React.FC<StorefrontCustomizerProps> = ({ vendor, onU
     window.dispatchEvent(new CustomEvent('vendorUpdated'));
   };
 
-  const availableIcons: IconName[] = [
-    'shopping-cart-outline', 'heart-outline', 'user-outline', 'star-outline', 
-    'check-circle', 'x-circle', 'plus', 'minus', 'home', 'search', 'menu', 'bell'
-  ];
+  // Get available icons (bundled + uploaded)
+  const getAvailableIcons = () => {
+    const bundledIcons: string[] = [
+      'shopping-cart-outline', 'heart-outline', 'user-outline', 'star-outline', 
+      'check-circle', 'x-circle', 'plus', 'minus', 'home', 'search', 'menu', 'bell'
+    ];
+    
+    const uploadedIcons = iconStorage.getAll().map(icon => icon.filename);
+    
+    return [...bundledIcons, ...uploadedIcons];
+  };
 
   const previewUrl = `/store/${vendor.slug}`;
   
@@ -527,13 +535,13 @@ const StorefrontCustomizer: React.FC<StorefrontCustomizerProps> = ({ vendor, onU
                     <Label htmlFor="delivery-icon">Delivery Icon</Label>
                     <Select
                       value={settings.icons?.features?.delivery || 'plus'}
-                      onValueChange={(value) => handleIconChange('features', 'delivery', value as IconName)}
+                      onValueChange={(value) => handleIconChange('features', 'delivery', value)}
                     >
                       <SelectTrigger>
                         <SelectValue placeholder="Select icon" />
                       </SelectTrigger>
                       <SelectContent>
-                        {availableIcons.map((icon) => (
+                        {getAvailableIcons().map((icon) => (
                           <SelectItem key={icon} value={icon}>
                             {icon.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
                           </SelectItem>
@@ -546,13 +554,13 @@ const StorefrontCustomizer: React.FC<StorefrontCustomizerProps> = ({ vendor, onU
                     <Label htmlFor="quality-icon">Quality Icon</Label>
                     <Select
                       value={settings.icons?.features?.quality || 'check-circle'}
-                      onValueChange={(value) => handleIconChange('features', 'quality', value as IconName)}
+                      onValueChange={(value) => handleIconChange('features', 'quality', value)}
                     >
                       <SelectTrigger>
                         <SelectValue placeholder="Select icon" />
                       </SelectTrigger>
                       <SelectContent>
-                        {availableIcons.map((icon) => (
+                        {getAvailableIcons().map((icon) => (
                           <SelectItem key={icon} value={icon}>
                             {icon.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
                           </SelectItem>
@@ -565,13 +573,13 @@ const StorefrontCustomizer: React.FC<StorefrontCustomizerProps> = ({ vendor, onU
                     <Label htmlFor="service-icon">Service Icon</Label>
                     <Select
                       value={settings.icons?.features?.service || 'heart-outline'}
-                      onValueChange={(value) => handleIconChange('features', 'service', value as IconName)}
+                      onValueChange={(value) => handleIconChange('features', 'service', value)}
                     >
                       <SelectTrigger>
                         <SelectValue placeholder="Select icon" />
                       </SelectTrigger>
                       <SelectContent>
-                        {availableIcons.map((icon) => (
+                        {getAvailableIcons().map((icon) => (
                           <SelectItem key={icon} value={icon}>
                             {icon.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
                           </SelectItem>
@@ -590,13 +598,13 @@ const StorefrontCustomizer: React.FC<StorefrontCustomizerProps> = ({ vendor, onU
                     <Label htmlFor="speed-icon">Speed Icon</Label>
                     <Select
                       value={settings.icons?.promotions?.speed || 'plus'}
-                      onValueChange={(value) => handleIconChange('promotions', 'speed', value as IconName)}
+                      onValueChange={(value) => handleIconChange('promotions', 'speed', value)}
                     >
                       <SelectTrigger>
                         <SelectValue placeholder="Select icon" />
                       </SelectTrigger>
                       <SelectContent>
-                        {availableIcons.map((icon) => (
+                        {getAvailableIcons().map((icon) => (
                           <SelectItem key={icon} value={icon}>
                             {icon.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
                           </SelectItem>
@@ -609,13 +617,13 @@ const StorefrontCustomizer: React.FC<StorefrontCustomizerProps> = ({ vendor, onU
                     <Label htmlFor="offers-icon">Offers Icon</Label>
                     <Select
                       value={settings.icons?.promotions?.offers || 'star-outline'}
-                      onValueChange={(value) => handleIconChange('promotions', 'offers', value as IconName)}
+                      onValueChange={(value) => handleIconChange('promotions', 'offers', value)}
                     >
                       <SelectTrigger>
                         <SelectValue placeholder="Select icon" />
                       </SelectTrigger>
                       <SelectContent>
-                        {availableIcons.map((icon) => (
+                        {getAvailableIcons().map((icon) => (
                           <SelectItem key={icon} value={icon}>
                             {icon.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
                           </SelectItem>
@@ -628,13 +636,13 @@ const StorefrontCustomizer: React.FC<StorefrontCustomizerProps> = ({ vendor, onU
                     <Label htmlFor="availability-icon">Availability Icon</Label>
                     <Select
                       value={settings.icons?.promotions?.availability || 'bell'}
-                      onValueChange={(value) => handleIconChange('promotions', 'availability', value as IconName)}
+                      onValueChange={(value) => handleIconChange('promotions', 'availability', value)}
                     >
                       <SelectTrigger>
                         <SelectValue placeholder="Select icon" />
                       </SelectTrigger>
                       <SelectContent>
-                        {availableIcons.map((icon) => (
+                        {getAvailableIcons().map((icon) => (
                           <SelectItem key={icon} value={icon}>
                             {icon.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
                           </SelectItem>

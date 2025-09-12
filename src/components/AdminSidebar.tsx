@@ -7,7 +7,8 @@ import {
   DollarSign, 
   Settings,
   Building,
-  TrendingUp
+  TrendingUp,
+  Image
 } from 'lucide-react';
 import {
   Sidebar,
@@ -46,6 +47,7 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({
         { id: 'vendors', label: 'Vendors', icon: Building },
         { id: 'customers', label: 'Customers', icon: Users },
         { id: 'subscriptions', label: 'Subscriptions', icon: CreditCard },
+        { id: 'icons', label: 'Icon Library', icon: Image },
       ]
     },
     {

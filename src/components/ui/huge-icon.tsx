@@ -52,7 +52,15 @@ const HugeIcon: React.FC<HugeIconProps> = ({
         }
       }
 
-      // Fallback to uploaded icon
+      // Try to get uploaded icon from localStorage
+      const uploadedSvg = localStorage.getItem(`uploads_icons_${name}`);
+      if (uploadedSvg) {
+        setUploadedIconUrl(`data:image/svg+xml;base64,${btoa(uploadedSvg)}`);
+        setIsLoading(false);
+        return;
+      }
+
+      // Fallback to check /uploads/icons/ path (for real server implementations)
       const uploadedPath = `/uploads/icons/${name}.svg`;
       try {
         const response = await fetch(uploadedPath, { method: 'HEAD' });
@@ -60,7 +68,7 @@ const HugeIcon: React.FC<HugeIconProps> = ({
           setUploadedIconUrl(uploadedPath);
         }
       } catch (error) {
-        console.warn(`Failed to load uploaded icon: ${name}`);
+        console.warn(`Icon not found: ${name}`);
       }
 
       setIsLoading(false);
@@ -95,8 +103,38 @@ const HugeIcon: React.FC<HugeIconProps> = ({
     );
   }
 
-  // Render uploaded icon as img
+  // Render uploaded icon as img or inline SVG
   if (uploadedIconUrl) {
+    // If it's a data URL (from localStorage), render as inline SVG for better color control
+    if (uploadedIconUrl.startsWith('data:image/svg+xml;base64,')) {
+      const svgContent = localStorage.getItem(`uploads_icons_${name}`);
+      if (svgContent) {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(svgContent, 'image/svg+xml');
+        const svgElement = doc.documentElement;
+        
+        // Apply size and color
+        svgElement.setAttribute('width', size.toString());
+        svgElement.setAttribute('height', size.toString());
+        
+        if (color !== 'currentColor' && color !== 'inherit') {
+          svgElement.setAttribute('fill', color);
+        }
+        
+        if (className) {
+          svgElement.setAttribute('class', className);
+        }
+        
+        return (
+          <div 
+            dangerouslySetInnerHTML={{ __html: svgElement.outerHTML }}
+            style={{ width: size, height: size, display: 'inline-block' }}
+          />
+        );
+      }
+    }
+    
+    // Fallback to img tag
     return (
       <img 
         src={uploadedIconUrl}

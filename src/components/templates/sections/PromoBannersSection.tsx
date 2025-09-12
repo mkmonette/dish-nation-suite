@@ -2,7 +2,6 @@ import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Vendor } from '@/lib/storage';
 import HugeIcon from '@/components/ui/huge-icon';
-import { IconName } from '@/icons';
 
 interface PromoBannersSectionProps {
   vendor: Vendor;
@@ -14,19 +13,19 @@ const PromoBannersSection: React.FC<PromoBannersSectionProps> = ({ vendor, templ
   const promotions = [
     {
       id: '1',
-      icon: (vendor.storefront?.icons?.promotions?.speed || 'plus') as IconName,
+      icon: vendor.storefront?.icons?.promotions?.speed || 'plus',
       title: 'Lightning Fast Delivery',
       description: 'Get your order in 30 minutes or less'
     },
     {
       id: '2',
-      icon: (vendor.storefront?.icons?.promotions?.offers || 'star-outline') as IconName,
+      icon: vendor.storefront?.icons?.promotions?.offers || 'star-outline',
       title: 'Special Offers',
       description: 'Exclusive deals for our valued customers'
     },
     {
       id: '3',
-      icon: (vendor.storefront?.icons?.promotions?.availability || 'bell') as IconName,
+      icon: vendor.storefront?.icons?.promotions?.availability || 'bell',
       title: '24/7 Service',
       description: 'Order anytime, we\'re always here for you'
     }
