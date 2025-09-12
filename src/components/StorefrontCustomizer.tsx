@@ -9,7 +9,9 @@ import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { toast } from '@/hooks/use-toast';
 import { Vendor, vendorStorage, SectionConfig } from '@/lib/storage';
-import { Palette, Save, Eye, FileText, Settings, Check, GripVertical } from 'lucide-react';
+import { Palette, Save, Eye, FileText, Settings, Check, GripVertical, Settings2 } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { IconName } from '@/icons';
 import ImageUpload from '@/components/ui/image-upload';
 import { DndContext, closestCenter, DragEndEvent } from '@dnd-kit/core';
 import { arrayMove, SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
@@ -250,6 +252,32 @@ const StorefrontCustomizer: React.FC<StorefrontCustomizerProps> = ({ vendor, onU
     window.dispatchEvent(new CustomEvent('vendorUpdated'));
   };
 
+  const handleIconChange = (section: string, iconType: string, value: IconName) => {
+    const newSettings = {
+      ...settings,
+      icons: {
+        ...settings.icons,
+        [section]: {
+          ...settings.icons?.[section],
+          [iconType]: value
+        }
+      }
+    };
+    setSettings(newSettings);
+    
+    // Auto-save for instant updates
+    vendorStorage.update(vendor.id, { storefront: newSettings });
+    onUpdate({ ...vendor, storefront: newSettings });
+    
+    // Notify other windows/tabs that vendor data has changed
+    window.dispatchEvent(new CustomEvent('vendorUpdated'));
+  };
+
+  const availableIcons: IconName[] = [
+    'shopping-cart-outline', 'heart-outline', 'user-outline', 'star-outline', 
+    'check-circle', 'x-circle', 'plus', 'minus', 'home', 'search', 'menu', 'bell'
+  ];
+
   const previewUrl = `/store/${vendor.slug}`;
   
   console.log('Store URL:', window.location.origin + previewUrl);
@@ -480,6 +508,142 @@ const StorefrontCustomizer: React.FC<StorefrontCustomizerProps> = ({ vendor, onU
               <p className="text-xs text-muted-foreground">
                 This section will appear on your storefront. Updates are saved automatically.
               </p>
+            </div>
+          </div>
+
+          {/* Icon Configuration */}
+          <div className="space-y-4">
+            <div className="flex items-center gap-2">
+              <Settings2 className="h-5 w-5 text-primary" />
+              <Label className="text-base font-semibold">Icon Settings</Label>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Features Icons */}
+              <div className="space-y-3">
+                <Label className="text-sm font-medium">Feature Icons</Label>
+                <div className="space-y-3">
+                  <div className="space-y-2">
+                    <Label htmlFor="delivery-icon">Delivery Icon</Label>
+                    <Select
+                      value={settings.icons?.features?.delivery || 'plus'}
+                      onValueChange={(value) => handleIconChange('features', 'delivery', value as IconName)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select icon" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {availableIcons.map((icon) => (
+                          <SelectItem key={icon} value={icon}>
+                            {icon.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="quality-icon">Quality Icon</Label>
+                    <Select
+                      value={settings.icons?.features?.quality || 'check-circle'}
+                      onValueChange={(value) => handleIconChange('features', 'quality', value as IconName)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select icon" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {availableIcons.map((icon) => (
+                          <SelectItem key={icon} value={icon}>
+                            {icon.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="service-icon">Service Icon</Label>
+                    <Select
+                      value={settings.icons?.features?.service || 'heart-outline'}
+                      onValueChange={(value) => handleIconChange('features', 'service', value as IconName)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select icon" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {availableIcons.map((icon) => (
+                          <SelectItem key={icon} value={icon}>
+                            {icon.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Promotion Icons */}
+              <div className="space-y-3">
+                <Label className="text-sm font-medium">Promotion Icons</Label>
+                <div className="space-y-3">
+                  <div className="space-y-2">
+                    <Label htmlFor="speed-icon">Speed Icon</Label>
+                    <Select
+                      value={settings.icons?.promotions?.speed || 'plus'}
+                      onValueChange={(value) => handleIconChange('promotions', 'speed', value as IconName)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select icon" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {availableIcons.map((icon) => (
+                          <SelectItem key={icon} value={icon}>
+                            {icon.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="offers-icon">Offers Icon</Label>
+                    <Select
+                      value={settings.icons?.promotions?.offers || 'star-outline'}
+                      onValueChange={(value) => handleIconChange('promotions', 'offers', value as IconName)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select icon" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {availableIcons.map((icon) => (
+                          <SelectItem key={icon} value={icon}>
+                            {icon.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="availability-icon">Availability Icon</Label>
+                    <Select
+                      value={settings.icons?.promotions?.availability || 'bell'}
+                      onValueChange={(value) => handleIconChange('promotions', 'availability', value as IconName)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select icon" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {availableIcons.map((icon) => (
+                          <SelectItem key={icon} value={icon}>
+                            {icon.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 

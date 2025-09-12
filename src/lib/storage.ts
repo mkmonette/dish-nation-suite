@@ -20,6 +20,18 @@ export interface StorefrontSettings {
   heroSubtext?: string;
   aboutUs?: string;
   templateConfigs?: Record<string, SectionConfig[]>;
+  icons?: {
+    features?: {
+      delivery?: string;
+      quality?: string;
+      service?: string;
+    };
+    promotions?: {
+      speed?: string;
+      offers?: string;
+      availability?: string;
+    };
+  };
 }
 
 export interface SubscriptionPlan {

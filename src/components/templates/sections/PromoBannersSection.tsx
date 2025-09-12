@@ -1,7 +1,8 @@
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Vendor } from '@/lib/storage';
-import { Zap, Gift, Clock, Star, Sparkles, Crown } from 'lucide-react';
+import HugeIcon from '@/components/ui/huge-icon';
+import { IconName } from '@/icons';
 
 interface PromoBannersSectionProps {
   vendor: Vendor;
@@ -13,19 +14,19 @@ const PromoBannersSection: React.FC<PromoBannersSectionProps> = ({ vendor, templ
   const promotions = [
     {
       id: '1',
-      icon: Zap,
+      icon: (vendor.storefront?.icons?.promotions?.speed || 'plus') as IconName,
       title: 'Lightning Fast Delivery',
       description: 'Get your order in 30 minutes or less'
     },
     {
       id: '2',
-      icon: Gift,
+      icon: (vendor.storefront?.icons?.promotions?.offers || 'star-outline') as IconName,
       title: 'Special Offers',
       description: 'Exclusive deals for our valued customers'
     },
     {
       id: '3',
-      icon: Clock,
+      icon: (vendor.storefront?.icons?.promotions?.availability || 'bell') as IconName,
       title: '24/7 Service',
       description: 'Order anytime, we\'re always here for you'
     }
@@ -53,7 +54,7 @@ const PromoBannersSection: React.FC<PromoBannersSectionProps> = ({ vendor, templ
               <Card key={promo.id} className="group p-8 text-center backdrop-blur-sm bg-card/60 border border-primary/20 hover:border-primary/40 transition-all duration-500 hover:scale-105 shadow-glow">
                 <CardContent className="p-0">
                   <div className="w-16 h-16 mx-auto mb-6 bg-gradient-to-br from-primary to-secondary rounded-2xl flex items-center justify-center shadow-glow group-hover:shadow-glow transition-all duration-500">
-                    <promo.icon className="h-8 w-8 text-white" />
+                    <HugeIcon name={promo.icon} size={32} color="white" />
                   </div>
                   <h3 className="text-xl font-bold mb-4 text-foreground group-hover:text-primary transition-colors">
                     {promo.title}
@@ -87,7 +88,7 @@ const PromoBannersSection: React.FC<PromoBannersSectionProps> = ({ vendor, templ
               <Card key={promo.id} className="group p-8 text-center border-2 border-primary/30 hover:border-primary transition-all duration-300 shadow-lg hover:shadow-primary/25 bg-background">
                 <CardContent className="p-0">
                   <div className="w-16 h-16 mx-auto mb-6 bg-gradient-to-br from-primary to-secondary rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                    <promo.icon className="h-8 w-8 text-white" />
+                    <HugeIcon name={promo.icon} size={32} color="white" />
                   </div>
                   <h3 className="text-xl font-black mb-4 text-foreground group-hover:text-primary transition-colors uppercase tracking-wider">
                     {promo.title}
@@ -118,7 +119,7 @@ const PromoBannersSection: React.FC<PromoBannersSectionProps> = ({ vendor, templ
           {promotions.map((promo) => (
             <div key={promo.id} className="group text-center">
               <div className="w-12 h-12 mx-auto mb-6 border border-primary/20 rounded-full flex items-center justify-center group-hover:border-primary/40 transition-colors duration-700">
-                <promo.icon className="h-6 w-6 text-primary" />
+                <HugeIcon name={promo.icon} size={24} className="text-primary" />
               </div>
               <h3 className="text-lg font-light mb-4 text-foreground group-hover:text-primary transition-colors tracking-wide">
                 {promo.title}

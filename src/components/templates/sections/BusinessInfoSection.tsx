@@ -1,7 +1,8 @@
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Vendor } from '@/lib/storage';
-import { Clock, Award, Heart, Shield } from 'lucide-react';
+import HugeIcon from '@/components/ui/huge-icon';
+import { IconName } from '@/icons';
 
 interface BusinessInfoSectionProps {
   vendor: Vendor;
@@ -15,17 +16,17 @@ const BusinessInfoSection: React.FC<BusinessInfoSectionProps> = ({ vendor, templ
 
   const features = [
     {
-      icon: Clock,
+      icon: (vendor.storefront?.icons?.features?.delivery || 'plus') as IconName,
       title: 'Fast Delivery',
       description: 'Quick and reliable delivery to your doorstep'
     },
     {
-      icon: Shield,
+      icon: (vendor.storefront?.icons?.features?.quality || 'check-circle') as IconName,
       title: 'Quality Assured', 
       description: 'Fresh ingredients and highest food safety standards'
     },
     {
-      icon: Heart,
+      icon: (vendor.storefront?.icons?.features?.service || 'heart-outline') as IconName,
       title: 'Made with Love',
       description: 'Every dish prepared with care and attention to detail'
     }
@@ -46,7 +47,7 @@ const BusinessInfoSection: React.FC<BusinessInfoSectionProps> = ({ vendor, templ
             {features.map((feature, index) => (
               <Card key={index} className="text-center p-8 border-0 bg-card/60 backdrop-blur-sm hover:scale-105 transition-transform duration-300">
                 <div className="w-16 h-16 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center mx-auto mb-6">
-                  <feature.icon className="h-8 w-8 text-white" />
+                  <HugeIcon name={feature.icon} size={32} color="white" />
                 </div>
                 <h3 className="text-xl font-bold mb-3 text-foreground">{feature.title}</h3>
                 <p className="text-muted-foreground">{feature.description}</p>
@@ -81,7 +82,7 @@ const BusinessInfoSection: React.FC<BusinessInfoSectionProps> = ({ vendor, templ
             {features.map((feature, index) => (
               <Card key={index} className="text-center p-8 border border-primary/20 bg-background hover:shadow-lg transition-shadow duration-300">
                 <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <feature.icon className="h-8 w-8 text-primary" />
+                  <HugeIcon name={feature.icon} size={32} className="text-primary" />
                 </div>
                 <h3 className="text-xl font-bold mb-3 text-foreground font-serif">{feature.title}</h3>
                 <p className="text-muted-foreground">{feature.description}</p>
@@ -116,7 +117,7 @@ const BusinessInfoSection: React.FC<BusinessInfoSectionProps> = ({ vendor, templ
             {features.map((feature, index) => (
               <div key={index} className="text-center">
                 <div className="w-12 h-12 border border-primary/30 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <feature.icon className="h-6 w-6 text-primary" />
+                  <HugeIcon name={feature.icon} size={24} className="text-primary" />
                 </div>
                 <h3 className="text-lg font-medium mb-3 text-foreground">{feature.title}</h3>
                 <p className="text-sm text-muted-foreground">{feature.description}</p>
