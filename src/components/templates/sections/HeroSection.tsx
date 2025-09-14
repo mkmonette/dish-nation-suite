@@ -1,6 +1,6 @@
 import React from 'react';
 import { Vendor } from '@/lib/storage';
-import { MapPin, Clock, Star, Sparkles, Zap } from 'lucide-react';
+import { MapPin, Clock, Star, Sparkles, Zap, Cpu } from 'lucide-react';
 import VendorLogo from '@/components/VendorLogo';
 
 interface HeroSectionProps {
@@ -17,51 +17,107 @@ const HeroSection: React.FC<HeroSectionProps> = ({ vendor, template }) => {
 
   if (template === 'future') {
     return (
-      <section className="relative overflow-hidden min-h-[80vh] flex items-center" style={customStyle}>
-        {/* Animated Background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-background via-muted/10 to-background">
-          {vendor.storefront?.banner && (
+      <section className="relative min-h-screen flex items-center overflow-hidden" style={customStyle}>
+        {/* Holographic grid background */}
+        <div className="absolute inset-0 opacity-20">
+          <div className="absolute inset-0" style={{
+            backgroundImage: `
+              linear-gradient(rgba(59, 130, 246, 0.3) 1px, transparent 1px),
+              linear-gradient(90deg, rgba(59, 130, 246, 0.3) 1px, transparent 1px)
+            `,
+            backgroundSize: '50px 50px',
+            animation: 'pulse 4s ease-in-out infinite'
+          }}></div>
+        </div>
+
+        {/* Dynamic animated background */}
+        {vendor.storefront?.banner && (
+          <div className="absolute inset-0">
             <img 
               src={vendor.storefront.banner} 
               alt="Store banner"
               className="w-full h-full object-cover opacity-20"
             />
-          )}
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-transparent to-secondary/20"></div>
-        </div>
+            <div className="absolute inset-0 bg-gradient-to-br from-primary/40 via-transparent to-secondary/40"></div>
+          </div>
+        )}
         
-        {/* Floating elements */}
-        <div className="absolute top-20 right-20 w-32 h-32 bg-gradient-to-br from-primary/20 to-transparent rounded-full blur-2xl animate-pulse"></div>
-        <div className="absolute bottom-20 left-20 w-40 h-40 bg-gradient-to-br from-secondary/20 to-transparent rounded-full blur-3xl animate-pulse delay-1000"></div>
+        {/* Floating holographic elements */}
+        <div className="absolute top-1/4 right-1/4 w-64 h-64 bg-gradient-to-br from-primary/30 to-transparent rounded-full blur-3xl animate-bounce" style={{ animationDuration: '6s' }}></div>
+        <div className="absolute bottom-1/4 left-1/4 w-48 h-48 bg-gradient-to-br from-secondary/30 to-transparent rounded-full blur-2xl animate-bounce" style={{ animationDuration: '8s', animationDelay: '2s' }}></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-br from-accent/20 to-transparent rounded-full blur-3xl animate-pulse" style={{ animationDuration: '5s' }}></div>
         
-        <div className="relative container mx-auto px-4 py-24">
-          <div className="max-w-4xl mx-auto text-center">
-            <div className="mb-8 relative">
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-secondary/10 rounded-full blur-2xl scale-150"></div>
+        <div className="relative container mx-auto px-4 py-24 grid lg:grid-cols-2 gap-12 items-center">
+          {/* Left side - Logo and branding */}
+          <div className="space-y-8">
+            <div className="relative">
+              <div className="absolute -inset-4 bg-gradient-to-r from-primary via-secondary to-primary rounded-full blur-xl opacity-30 animate-pulse"></div>
               <VendorLogo 
                 vendor={vendor}
                 size="2xl"
                 showFallback={true}
                 variant="rounded"
-                className="mx-auto relative z-10 backdrop-blur-sm bg-card/30 p-4 rounded-2xl border border-primary/20"
+                className="relative z-10 backdrop-blur-sm bg-card/40 p-6 rounded-3xl border border-primary/30 shadow-2xl mx-auto lg:mx-0"
               />
             </div>
-            <h1 className="text-5xl md:text-7xl font-black mb-6 bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent animate-in slide-in-from-bottom-8 duration-1000">
-              {vendor.storefront?.heroText || `${vendor.storeName}`}
-            </h1>
-            <p className="text-xl md:text-2xl text-muted-foreground mb-12 animate-in slide-in-from-bottom-8 duration-1000 delay-300">
-              {vendor.storefront?.heroSubtext || vendor.description || 'Experience the future of dining'}
-            </p>
-            <div className="flex flex-wrap justify-center gap-6 animate-in slide-in-from-bottom-8 duration-1000 delay-500">
-              <div className="flex items-center gap-3 glass-card px-6 py-3 rounded-full backdrop-blur-lg bg-primary/10 border border-primary/20">
-                <Zap className="h-5 w-5 text-primary" />
-                <span className="text-sm font-semibold">Lightning Fast</span>
-              </div>
-              <div className="flex items-center gap-3 glass-card px-6 py-3 rounded-full backdrop-blur-lg bg-secondary/10 border border-secondary/20">
-                <Sparkles className="h-5 w-5 text-secondary" />
-                <span className="text-sm font-semibold">Premium Quality</span>
+            
+            <div className="text-center lg:text-left">
+              <h1 className="text-4xl md:text-6xl lg:text-7xl font-black mb-6 bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent animate-in slide-in-from-left-8 duration-1000 leading-tight">
+                {vendor.storefront?.heroText || `${vendor.storeName}`}
+              </h1>
+              <p className="text-lg md:text-xl text-muted-foreground mb-8 animate-in slide-in-from-left-8 duration-1000 delay-300 max-w-lg">
+                {vendor.storefront?.heroSubtext || vendor.description || 'Step into the future of culinary excellence'}
+              </p>
+            </div>
+          </div>
+
+          {/* Right side - Feature highlights in holographic cards */}
+          <div className="space-y-6 animate-in slide-in-from-right-8 duration-1000 delay-500">
+            <div className="relative group">
+              <div className="absolute -inset-1 bg-gradient-to-r from-primary to-secondary rounded-2xl blur opacity-60 group-hover:opacity-100 transition duration-1000"></div>
+              <div className="relative backdrop-blur-lg bg-card/30 p-6 rounded-2xl border border-primary/20">
+                <div className="flex items-center gap-4 mb-3">
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-primary/50 flex items-center justify-center">
+                    <Zap className="h-6 w-6 text-white" />
+                  </div>
+                  <h3 className="text-xl font-bold text-foreground">Quantum Speed</h3>
+                </div>
+                <p className="text-muted-foreground">Experience instant ordering with our advanced tech</p>
               </div>
             </div>
+
+            <div className="relative group">
+              <div className="absolute -inset-1 bg-gradient-to-r from-secondary to-accent rounded-2xl blur opacity-60 group-hover:opacity-100 transition duration-1000"></div>
+              <div className="relative backdrop-blur-lg bg-card/30 p-6 rounded-2xl border border-secondary/20">
+                <div className="flex items-center gap-4 mb-3">
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-secondary to-secondary/50 flex items-center justify-center">
+                    <Sparkles className="h-6 w-6 text-white" />
+                  </div>
+                  <h3 className="text-xl font-bold text-foreground">Premium Quality</h3>
+                </div>
+                <p className="text-muted-foreground">Crafted with precision and future ingredients</p>
+              </div>
+            </div>
+
+            <div className="relative group">
+              <div className="absolute -inset-1 bg-gradient-to-r from-accent to-primary rounded-2xl blur opacity-60 group-hover:opacity-100 transition duration-1000"></div>
+              <div className="relative backdrop-blur-lg bg-card/30 p-6 rounded-2xl border border-accent/20">
+                <div className="flex items-center gap-4 mb-3">
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-accent to-accent/50 flex items-center justify-center">
+                    <Cpu className="h-6 w-6 text-white" />
+                  </div>
+                  <h3 className="text-xl font-bold text-foreground">AI Powered</h3>
+                </div>
+                <p className="text-muted-foreground">Smart recommendations tailored just for you</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Animated scroll indicator */}
+        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+          <div className="w-6 h-10 border-2 border-primary/50 rounded-full flex justify-center">
+            <div className="w-1 h-3 bg-primary rounded-full mt-2 animate-pulse"></div>
           </div>
         </div>
       </section>

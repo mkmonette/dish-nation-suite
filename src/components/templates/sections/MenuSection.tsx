@@ -39,93 +39,187 @@ const MenuSection: React.FC<MenuSectionProps> = ({
 
   if (template === 'future') {
     return (
-      <main className="container mx-auto px-4 py-20">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-            Our Menu
-          </h2>
-          <p className="text-lg text-muted-foreground">Discover our delicious selection</p>
-          <div className="w-24 h-1 bg-gradient-to-r from-primary to-secondary mx-auto rounded-full mt-4"></div>
+      <main className="container mx-auto px-4 py-16 relative">
+        {/* Animated background elements */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-1/4 -left-20 w-40 h-40 bg-primary/10 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '4s' }}></div>
+          <div className="absolute bottom-1/4 -right-20 w-48 h-48 bg-secondary/10 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '6s', animationDelay: '2s' }}></div>
+        </div>
+
+        <div className="text-center mb-20 relative">
+          <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-secondary/20 to-accent/20 rounded-full blur-3xl scale-150 opacity-30"></div>
+          <div className="relative backdrop-blur-sm bg-card/20 rounded-3xl border border-primary/30 p-8 mx-auto max-w-2xl">
+            <h2 className="text-5xl font-black mb-4 bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
+              Quantum Menu
+            </h2>
+            <p className="text-muted-foreground text-lg">Discover interdimensional flavors crafted with precision</p>
+            <div className="flex justify-center items-center gap-4 mt-4">
+              <div className="w-16 h-0.5 bg-gradient-to-r from-transparent to-primary rounded-full"></div>
+              <div className="w-3 h-3 bg-primary rounded-full animate-pulse"></div>
+              <div className="w-16 h-0.5 bg-gradient-to-r from-primary to-transparent rounded-full"></div>
+            </div>
+          </div>
         </div>
         
-        {menuItems.length === 0 ? (
-          <Card className="max-w-lg mx-auto border-0 bg-card/60 backdrop-blur-sm">
-            <CardContent className="py-20 text-center">
-              <div className="w-20 h-20 mx-auto mb-8 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
-                <Utensils className="h-10 w-10 text-white" />
-              </div>
-              <h3 className="text-2xl font-bold mb-4 text-foreground">Menu Coming Soon</h3>
-              <p className="text-muted-foreground text-lg">
-                We're carefully crafting our selection of amazing dishes
-              </p>
-            </CardContent>
-          </Card>
+        {filteredItems.length === 0 ? (
+          <div className="text-center py-20 relative">
+            <div className="inline-block p-8 backdrop-blur-lg bg-card/30 rounded-3xl border border-primary/20">
+              <h3 className="text-3xl font-bold mb-4 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                Quantum Menu Loading...
+              </h3>
+              <p className="text-muted-foreground">New culinary experiences materializing soon!</p>
+            </div>
+          </div>
         ) : (
-          <div className="space-y-20">
-            {Object.entries(categorizedItems).map(([category, items]) => (
+          <div className="space-y-20 relative">
+            {Object.entries(categorizedItems).map(([category, items], categoryIndex) => (
               <section key={category} className="space-y-12">
-                <div className="text-center">
-                  <h3 className="text-2xl md:text-3xl font-bold mb-4 text-foreground">
-                    {category}
-                  </h3>
-                  <div className="w-16 h-0.5 bg-gradient-to-r from-primary to-secondary mx-auto rounded-full"></div>
+                {/* Unique header design for each category */}
+                <div className="relative">
+                  <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-secondary/20 to-accent/20 rounded-3xl blur-2xl"></div>
+                  <div className="relative text-center py-8 backdrop-blur-sm bg-card/20 rounded-2xl border border-primary/30">
+                    <h3 className="text-4xl font-black mb-4 bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
+                      {category}
+                    </h3>
+                    <div className="flex justify-center items-center gap-4">
+                      <div className="w-16 h-0.5 bg-gradient-to-r from-transparent to-primary rounded-full"></div>
+                      <div className="w-3 h-3 bg-primary rounded-full animate-pulse"></div>
+                      <div className="w-16 h-0.5 bg-gradient-to-r from-primary to-transparent rounded-full"></div>
+                    </div>
+                  </div>
                 </div>
                 
-                <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-                  {items.map((item) => (
-                    <Card key={item.id} className="group overflow-hidden hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border-0 shadow-lg bg-card/80 backdrop-blur-sm">
-                      <div className="aspect-[4/3] bg-gradient-to-br from-muted to-muted/50 relative overflow-hidden">
-                        {item.image ? (
-                          <img 
-                            src={item.image} 
-                            alt={item.name}
-                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                          />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/10 to-secondary/10">
-                            <ImageIcon className="h-12 w-12 text-primary/40" />
+                {/* Alternating layouts per category */}
+                {categoryIndex % 2 === 0 ? (
+                  // Floating card layout for even categories
+                  <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    {items.map((item, index) => (
+                      <div 
+                        key={item.id} 
+                        className="relative group"
+                        style={{ 
+                          transform: `translateY(${index % 2 === 0 ? '0' : '2rem'})`,
+                          animationDelay: `${index * 0.1}s`
+                        }}
+                      >
+                        <div className="absolute -inset-1 bg-gradient-to-r from-primary via-secondary to-accent rounded-3xl blur opacity-30 group-hover:opacity-100 transition duration-1000"></div>
+                        <Card className="relative overflow-hidden border-0 shadow-2xl bg-card/80 backdrop-blur-lg rounded-3xl group-hover:scale-105 transition-all duration-500">
+                          <div className="aspect-[4/3] relative overflow-hidden rounded-t-3xl">
+                            {item.image ? (
+                              <img 
+                                src={item.image} 
+                                alt={item.name}
+                                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                              />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/20 via-secondary/20 to-accent/20">
+                                <ImageIcon className="h-16 w-16 text-primary/40" />
+                              </div>
+                            )}
+                            <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent"></div>
+                            <div className="absolute top-4 right-4">
+                              <Badge 
+                                variant={item.available ? 'default' : 'secondary'}
+                                className="bg-white/90 text-black border-0 shadow-lg"
+                              >
+                                {item.available ? '✓ Available' : '⏳ Sold Out'}
+                              </Badge>
+                            </div>
+                            <div className="absolute bottom-4 left-4">
+                              <div className="bg-card/90 backdrop-blur-lg px-4 py-2 rounded-2xl border border-primary/30">
+                                <span className="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                                  ${item.price.toFixed(2)}
+                                </span>
+                              </div>
+                            </div>
                           </div>
-                        )}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
-                        <div className="absolute bottom-4 left-4 right-4">
-                          <Badge 
-                            variant={item.available ? 'default' : 'secondary'}
-                            className="mb-2 bg-white/90 text-black"
-                          >
-                            {item.available ? 'Available' : 'Sold Out'}
-                          </Badge>
+                          
+                          <CardHeader className="pb-4">
+                            <CardTitle className="text-xl font-bold group-hover:text-primary transition-colors">
+                              {item.name}
+                            </CardTitle>
+                            <CardDescription className="line-clamp-2 text-muted-foreground">
+                              {item.description}
+                            </CardDescription>
+                          </CardHeader>
+                          
+                          <CardContent className="pt-0">
+                            <Button 
+                              variant="default"
+                              className="w-full bg-gradient-to-r from-primary to-secondary hover:from-primary/80 hover:to-secondary/80 text-white border-0 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+                              onClick={() => onAddToCart(item)}
+                              disabled={!item.available}
+                            >
+                              <Plus className="h-4 w-4 mr-2" />
+                              Add to Quantum Cart
+                            </Button>
+                          </CardContent>
+                        </Card>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  // Horizontal showcase for odd categories
+                  <div className="space-y-8">
+                    {items.map((item, index) => (
+                      <div 
+                        key={item.id} 
+                        className={`relative group ${index % 2 === 0 ? 'lg:flex-row' : 'lg:flex-row-reverse'} flex flex-col lg:flex gap-8 items-center`}
+                      >
+                        <div className="absolute -inset-4 bg-gradient-to-r from-primary/20 via-secondary/20 to-accent/20 rounded-3xl blur-xl opacity-50 group-hover:opacity-100 transition duration-1000"></div>
+                        <div className="relative flex-1 backdrop-blur-lg bg-card/40 rounded-3xl border border-primary/30 overflow-hidden">
+                          <div className="p-8">
+                            <div className="flex items-start justify-between mb-4">
+                              <div>
+                                <h4 className="text-2xl font-bold mb-2 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                                  {item.name}
+                                </h4>
+                                <p className="text-muted-foreground mb-4">{item.description}</p>
+                              </div>
+                              <div className="text-right">
+                                <div className="text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                                  ${item.price.toFixed(2)}
+                                </div>
+                                <Badge 
+                                  variant={item.available ? 'default' : 'secondary'}
+                                  className="mt-2 bg-primary/10 border border-primary/30"
+                                >
+                                  {item.available ? 'Available' : 'Sold Out'}
+                                </Badge>
+                              </div>
+                            </div>
+                            <Button 
+                              variant="default"
+                              size="lg"
+                              className="bg-gradient-to-r from-primary to-secondary hover:from-primary/80 hover:to-secondary/80 text-white border-0 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300"
+                              onClick={() => onAddToCart(item)}
+                              disabled={!item.available}
+                            >
+                              <Plus className="h-5 w-5 mr-2" />
+                              Add to Cart
+                            </Button>
+                          </div>
+                        </div>
+                        <div className="relative lg:w-80 w-full">
+                          <div className="aspect-square rounded-3xl overflow-hidden relative">
+                            {item.image ? (
+                              <img 
+                                src={item.image} 
+                                alt={item.name}
+                                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                              />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/20 via-secondary/20 to-accent/20">
+                                <ImageIcon className="h-20 w-20 text-primary/40" />
+                              </div>
+                            )}
+                            <div className="absolute inset-0 rounded-3xl border-2 border-primary/30 shadow-2xl"></div>
+                          </div>
                         </div>
                       </div>
-                      
-                      <CardHeader className="pb-4">
-                        <CardTitle className="text-lg group-hover:text-primary transition-colors">
-                          {item.name}
-                        </CardTitle>
-                        <CardDescription className="line-clamp-2 text-muted-foreground">
-                          {item.description}
-                        </CardDescription>
-                      </CardHeader>
-                      
-                      <CardContent className="pt-0">
-                        <div className="flex items-center justify-between">
-                          <span className="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-                            ${item.price.toFixed(2)}
-                          </span>
-                          <Button 
-                            variant="hero"
-                            size="sm"
-                            onClick={() => onAddToCart(item)}
-                            disabled={!item.available}
-                            className="rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
-                          >
-                            <Plus className="h-4 w-4 mr-1" />
-                            Add
-                          </Button>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                )}
               </section>
             ))}
           </div>
