@@ -638,7 +638,8 @@ const Storefront = () => {
     <>
       {/* Render the appropriate template */}
       {(() => {
-        const template = vendor.storefront?.template || 'future';
+        const storedSettings = vendorStorage.getById(vendor.id);
+        const template = storedSettings?.storefront?.template || 'future';
         
         switch (template) {
           case 'neo':
