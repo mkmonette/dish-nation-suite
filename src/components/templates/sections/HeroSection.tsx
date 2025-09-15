@@ -1,11 +1,11 @@
 import React from 'react';
 import { Vendor } from '@/lib/storage';
-import { MapPin, Clock, Star, Sparkles, Zap, Cpu } from 'lucide-react';
+import { MapPin, Clock, Star, Sparkles, Zap, Cpu, Heart } from 'lucide-react';
 import VendorLogo from '@/components/VendorLogo';
 
 interface HeroSectionProps {
   vendor: Vendor;
-  template: 'future' | 'neo' | 'premium';
+  template: 'future' | 'neo' | 'premium' | 'modern';
 }
 
 const HeroSection: React.FC<HeroSectionProps> = ({ vendor, template }) => {
@@ -178,6 +178,118 @@ const HeroSection: React.FC<HeroSectionProps> = ({ vendor, template }) => {
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (template === 'modern') {
+    return (
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden" style={customStyle}>
+        {/* Dynamic gradient background */}
+        <div className="absolute inset-0">
+          {vendor.storefront?.banner ? (
+            <>
+              <img 
+                src={vendor.storefront.banner} 
+                alt="Store banner"
+                className="w-full h-full object-cover opacity-10"
+              />
+              <div className="absolute inset-0 bg-gradient-to-br from-background/95 via-background/80 to-background/95"></div>
+            </>
+          ) : (
+            <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-secondary/5"></div>
+          )}
+        </div>
+
+        {/* Floating geometric elements */}
+        <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-gradient-to-br from-primary/10 to-secondary/5 rounded-full blur-3xl animate-pulse opacity-60" style={{ animationDuration: '8s' }}></div>
+        <div className="absolute bottom-1/3 right-1/3 w-48 h-48 bg-gradient-to-br from-accent/10 to-primary/5 rounded-full blur-2xl animate-pulse opacity-60" style={{ animationDuration: '6s', animationDelay: '2s' }}></div>
+
+        <div className="relative container mx-auto px-6 py-24 text-center">
+          <div className="max-w-4xl mx-auto space-y-12">
+            {/* Logo section */}
+            <div className="relative inline-block">
+              <div className="absolute -inset-8 bg-gradient-to-r from-primary/10 via-secondary/10 to-accent/10 rounded-3xl blur-2xl opacity-70"></div>
+              <VendorLogo 
+                vendor={vendor}
+                size="2xl"
+                showFallback={true}
+                variant="rounded"
+                className="relative z-10 mx-auto backdrop-blur-sm bg-card/60 p-8 rounded-3xl border border-muted/20 shadow-2xl"
+              />
+            </div>
+
+            {/* Hero text */}
+            <div className="space-y-8">
+              <h1 className="text-4xl sm:text-6xl lg:text-7xl font-light tracking-tight text-foreground leading-[1.1]">
+                <span className="block font-extralight text-muted-foreground text-lg mb-4 tracking-widest uppercase">Welcome to</span>
+                <span className="bg-gradient-to-r from-foreground via-primary to-foreground bg-clip-text text-transparent">
+                  {vendor.storefront?.heroText || vendor.storeName}
+                </span>
+              </h1>
+              
+              <div className="flex justify-center">
+                <div className="w-24 h-px bg-gradient-to-r from-transparent via-primary/50 to-transparent"></div>
+              </div>
+              
+              <p className="text-lg sm:text-xl lg:text-2xl text-muted-foreground font-light leading-relaxed max-w-3xl mx-auto">
+                {vendor.storefront?.heroSubtext || vendor.description || 'Where contemporary cuisine meets timeless elegance in every carefully crafted dish.'}
+              </p>
+            </div>
+
+            {/* Feature highlights */}
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-4xl mx-auto">
+              <div className="group">
+                <div className="relative p-6 rounded-2xl bg-card/40 border border-muted/20 backdrop-blur-sm hover:bg-card/60 transition-all duration-300 hover:scale-105">
+                  <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  <div className="relative">
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center mb-4 mx-auto">
+                      <Star className="h-6 w-6 text-primary" />
+                    </div>
+                    <h3 className="font-semibold text-foreground mb-2">Premium Quality</h3>
+                    <p className="text-sm text-muted-foreground">Curated ingredients, exceptional taste</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="group">
+                <div className="relative p-6 rounded-2xl bg-card/40 border border-muted/20 backdrop-blur-sm hover:bg-card/60 transition-all duration-300 hover:scale-105">
+                  <div className="absolute inset-0 bg-gradient-to-br from-secondary/5 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  <div className="relative">
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-secondary/20 to-secondary/10 flex items-center justify-center mb-4 mx-auto">
+                      <Clock className="h-6 w-6 text-secondary" />
+                    </div>
+                    <h3 className="font-semibold text-foreground mb-2">Swift Service</h3>
+                    <p className="text-sm text-muted-foreground">Fast, reliable, always on time</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="group sm:col-span-2 lg:col-span-1">
+                <div className="relative p-6 rounded-2xl bg-card/40 border border-muted/20 backdrop-blur-sm hover:bg-card/60 transition-all duration-300 hover:scale-105">
+                  <div className="absolute inset-0 bg-gradient-to-br from-accent/5 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  <div className="relative">
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-accent/20 to-accent/10 flex items-center justify-center mb-4 mx-auto">
+                      <Heart className="h-6 w-6 text-accent" />
+                    </div>
+                    <h3 className="font-semibold text-foreground mb-2">Made with Care</h3>
+                    <p className="text-sm text-muted-foreground">Every dish crafted with passion</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Subtle scroll indicator */}
+        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 opacity-50">
+          <div className="flex flex-col items-center space-y-2 animate-bounce">
+            <div className="w-6 h-10 border border-muted rounded-full flex justify-center">
+              <div className="w-0.5 h-2 bg-muted-foreground rounded-full mt-2 animate-pulse"></div>
+            </div>
+            <span className="text-xs text-muted-foreground font-light tracking-wide">Scroll</span>
           </div>
         </div>
       </section>

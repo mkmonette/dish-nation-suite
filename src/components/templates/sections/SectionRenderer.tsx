@@ -21,7 +21,7 @@ interface SectionRendererProps {
   cartItemCount: number;
   cartComponent: React.ReactNode;
   headerComponent: React.ReactNode;
-  template: 'future' | 'neo' | 'premium';
+  template: 'future' | 'neo' | 'premium' | 'modern';
 }
 
 const SectionRenderer: React.FC<SectionRendererProps> = ({

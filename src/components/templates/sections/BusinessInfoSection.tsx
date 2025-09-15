@@ -5,7 +5,7 @@ import HugeIcon from '@/components/ui/huge-icon';
 
 interface BusinessInfoSectionProps {
   vendor: Vendor;
-  template: 'future' | 'neo' | 'premium';
+  template: 'future' | 'neo' | 'premium' | 'modern';
 }
 
 const BusinessInfoSection: React.FC<BusinessInfoSectionProps> = ({ vendor, template }) => {

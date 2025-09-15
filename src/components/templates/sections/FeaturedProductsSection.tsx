@@ -9,7 +9,7 @@ interface FeaturedProductsSectionProps {
   vendor: Vendor;
   menuItems: MenuItem[];
   onAddToCart: (item: MenuItem, quantity?: number, selectedVariation?: any, selectedAddOns?: any[]) => void;
-  template: 'future' | 'neo' | 'premium';
+  template: 'future' | 'neo' | 'premium' | 'modern';
 }
 
 const FeaturedProductsSection: React.FC<FeaturedProductsSectionProps> = ({

@@ -19,6 +19,7 @@ import { ShoppingCart, Plus, Minus, Store, User, LogOut, MapPin, Phone, Star, X,
 import FutureTemplate from '@/components/templates/FutureTemplate';
 import NeoTemplate from '@/components/templates/NeoTemplate';
 import PremiumTemplate from '@/components/templates/PremiumTemplate';
+import ModernTemplate from '@/components/templates/ModernTemplate';
 import VendorLogo from '@/components/VendorLogo';
 import MenuItemModal from '@/components/MenuItemModal';
 import CheckoutModal from '@/components/CheckoutModal';
@@ -660,6 +661,21 @@ const Storefront = () => {
           case 'premium':
             return (
               <PremiumTemplate
+                vendor={vendor}
+                menuItems={filteredMenuItems}
+                categories={displayCategories}
+                selectedCategory={selectedCategory}
+                onCategoryChange={setSelectedCategory}
+                onAddToCart={addToCart}
+                cartItemCount={cartItemCount}
+                cartComponent={cartComponent}
+                headerComponent={headerComponent}
+                sections={sectionConfig}
+              />
+            );
+          case 'modern':
+            return (
+              <ModernTemplate
                 vendor={vendor}
                 menuItems={filteredMenuItems}
                 categories={displayCategories}
