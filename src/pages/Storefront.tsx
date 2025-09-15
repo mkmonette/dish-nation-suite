@@ -86,7 +86,7 @@ const Storefront = () => {
   useEffect(() => {
     if (!vendor) return;
     
-    const storedSettings = vendorStorage.getById(vendor.id);
+    const storedSettings = vendor;
     if (storedSettings?.storefront?.templateConfigs) {
       const configs = storedSettings.storefront.templateConfigs;
       let needsCleanup = false;
@@ -121,7 +121,7 @@ const Storefront = () => {
         
         vendorStorage.update(vendor.id, {
           storefront: {
-            ...storedSettings.storefront,
+            ...vendor.storefront,
             templateConfigs: cleanConfigs
           }
         });
@@ -159,9 +159,8 @@ const Storefront = () => {
     ];
     
     // Load section configuration from vendor settings
-    const storedSettings = vendorStorage.getById(vendor.id);
-    const template = storedSettings?.storefront?.template || 'future';
-    const templateConfig = storedSettings?.storefront?.templateConfigs?.[template];
+    const template = vendor.storefront?.template || 'future';
+    const templateConfig = vendor.storefront?.templateConfigs?.[template];
     
     // Use stored config if valid (array), otherwise use defaults
     let storedSections = defaultSections;
@@ -638,8 +637,7 @@ const Storefront = () => {
     <>
       {/* Render the appropriate template */}
       {(() => {
-        const storedSettings = vendorStorage.getById(vendor.id);
-        const template = storedSettings?.storefront?.template || 'future';
+        const template = vendor.storefront?.template || 'future';
         
         switch (template) {
           case 'neo':
