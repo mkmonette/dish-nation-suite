@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { useCustomer } from '@/contexts/CustomerContext';
 import { useTenant } from '@/contexts/TenantContext';
 import { Button } from '@/components/ui/enhanced-button';
@@ -33,6 +33,8 @@ interface CartItem {
 
 const Storefront = () => {
   const { vendorSlug } = useParams();
+  const [searchParams] = useSearchParams();
+  const previewTemplate = searchParams.get('preview');
   const { customer, logout, refreshCustomer } = useCustomer();
   const { currentTenant, setTenant } = useTenant();
   const navigate = useNavigate();
@@ -159,7 +161,7 @@ const Storefront = () => {
     ];
     
     // Load section configuration from vendor settings
-    const template = vendor.storefront?.template || 'future';
+    const template = previewTemplate || vendor.storefront?.template || 'future';
     const templateConfig = vendor.storefront?.templateConfigs?.[template];
     
     // Use stored config if valid (array), otherwise use defaults
@@ -637,7 +639,7 @@ const Storefront = () => {
     <>
       {/* Render the appropriate template */}
       {(() => {
-        const template = vendor.storefront?.template || 'future';
+        const template = previewTemplate || vendor.storefront?.template || 'future';
         
         switch (template) {
           case 'neo':
