@@ -13,7 +13,7 @@ interface MenuSectionProps {
   selectedCategory: string;
   onCategoryChange: (category: string) => void;
   onAddToCart: (item: MenuItem, quantity?: number, selectedVariation?: any, selectedAddOns?: any[]) => void;
-  template: 'future' | 'neo' | 'premium' | 'modern';
+  template: 'future' | 'neo' | 'premium' | 'modern' | 'classic' | 'minimal' | 'vibrant';
 }
 
 const MenuSection: React.FC<MenuSectionProps> = ({

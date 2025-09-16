@@ -5,7 +5,7 @@ import { Star, Quote } from 'lucide-react';
 
 interface ReviewsSectionProps {
   vendor: Vendor;
-  template: 'future' | 'neo' | 'premium' | 'modern';
+  template: 'future' | 'neo' | 'premium' | 'modern' | 'classic' | 'minimal' | 'vibrant';
 }
 
 const ReviewsSection: React.FC<ReviewsSectionProps> = ({ vendor, template }) => {

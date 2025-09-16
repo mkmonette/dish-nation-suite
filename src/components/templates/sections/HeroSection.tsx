@@ -5,7 +5,7 @@ import VendorLogo from '@/components/VendorLogo';
 
 interface HeroSectionProps {
   vendor: Vendor;
-  template: 'future' | 'neo' | 'premium' | 'modern';
+  template: 'future' | 'neo' | 'premium' | 'modern' | 'classic' | 'minimal' | 'vibrant';
 }
 
 const HeroSection: React.FC<HeroSectionProps> = ({ vendor, template }) => {
@@ -347,6 +347,220 @@ const HeroSection: React.FC<HeroSectionProps> = ({ vendor, template }) => {
       </div>
     </section>
   );
+
+  if (template === 'classic') {
+    return (
+      <section className="relative min-h-screen flex items-center overflow-hidden bg-gradient-to-br from-amber-50 via-orange-50 to-amber-100" style={customStyle}>
+        {/* Vintage paper texture overlay */}
+        <div 
+          className="absolute inset-0 opacity-20"
+          style={{
+            backgroundImage: `
+              radial-gradient(circle at 1px 1px, rgba(139, 69, 19, 0.15) 1px, transparent 0),
+              repeating-linear-gradient(0deg, rgba(210, 180, 140, 0.1), rgba(210, 180, 140, 0.1) 1px, transparent 1px, transparent 20px)
+            `,
+            backgroundSize: '20px 20px, 100% 20px'
+          }}
+        />
+
+        {/* Ornamental borders */}
+        <div className="absolute inset-4 border-4 border-primary/30 rounded-lg"></div>
+        <div className="absolute inset-8 border-2 border-primary/20 rounded-md"></div>
+
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="max-w-4xl mx-auto text-center">
+            {/* Vintage logo display */}
+            <div className="mb-12">
+              <div className="relative inline-block">
+                <div className="absolute -inset-8 bg-gradient-to-br from-primary/20 via-secondary/20 to-accent/20 rounded-full blur-xl"></div>
+                <VendorLogo 
+                  vendor={vendor}
+                  size="xl"
+                  showFallback={true}
+                  variant="circle"
+                  className="relative w-32 h-32 mx-auto border-4 border-primary/30 shadow-2xl"
+                />
+              </div>
+            </div>
+
+            {/* Classic typography */}
+            <div className="mb-8">
+              <h1 className="text-6xl md:text-7xl font-serif font-bold text-primary mb-6 leading-none">
+                {vendor.storeName}
+              </h1>
+              <div className="flex items-center justify-center gap-4 mb-6">
+                <div className="w-16 h-1 bg-gradient-to-r from-transparent via-primary to-transparent"></div>
+                <div className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center">
+                  <div className="w-3 h-3 bg-primary rounded-full"></div>
+                </div>
+                <div className="w-16 h-1 bg-gradient-to-r from-primary via-transparent to-transparent"></div>
+              </div>
+              <p className="text-xl md:text-2xl text-muted-foreground font-light italic leading-relaxed max-w-2xl mx-auto">
+                {vendor.description || "Established traditions meet timeless flavors in every carefully crafted dish"}
+              </p>
+            </div>
+
+            {/* Vintage badges */}
+            <div className="flex flex-wrap justify-center gap-6 text-sm">
+              <div className="flex items-center gap-2 px-4 py-2 bg-card/60 rounded-full border border-primary/20">
+                <Clock className="h-4 w-4 text-primary" />
+                <span className="text-muted-foreground font-medium">Since 1985</span>
+              </div>
+              <div className="flex items-center gap-2 px-4 py-2 bg-card/60 rounded-full border border-primary/20">
+                <Star className="h-4 w-4 text-primary" />
+                <span className="text-muted-foreground font-medium">Family Recipe</span>
+              </div>
+              <div className="flex items-center gap-2 px-4 py-2 bg-card/60 rounded-full border border-primary/20">
+                <MapPin className="h-4 w-4 text-primary" />
+                <span className="text-muted-foreground font-medium">Local Favorite</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Decorative scrollwork */}
+        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2">
+          <div className="w-16 h-16 border-2 border-primary/30 rounded-full flex items-center justify-center animate-bounce">
+            <div className="w-2 h-8 bg-gradient-to-b from-primary to-transparent rounded-full"></div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (template === 'minimal') {
+    return (
+      <section className="relative min-h-screen flex items-center justify-center bg-white" style={customStyle}>
+        <div className="container mx-auto px-4">
+          <div className="max-w-2xl mx-auto text-center space-y-16">
+            {/* Minimal logo */}
+            <div className="flex justify-center">
+              <VendorLogo 
+                vendor={vendor}
+                size="lg"
+                showFallback={true}
+                variant="square"
+                className="w-20 h-20"
+              />
+            </div>
+
+            {/* Minimal typography */}
+            <div className="space-y-8">
+              <h1 className="text-4xl md:text-5xl font-light tracking-wider text-black leading-tight">
+                {vendor.storeName}
+              </h1>
+              
+              <div className="w-16 h-px bg-black mx-auto"></div>
+              
+              <p className="text-lg md:text-xl text-gray-600 font-light leading-relaxed max-w-lg mx-auto">
+                {vendor.description || "Pure. Simple. Exceptional."}
+              </p>
+            </div>
+
+            {/* Minimal status indicators */}
+            <div className="flex justify-center space-x-12">
+              <div className="text-center">
+                <div className="w-1 h-1 bg-black rounded-full mx-auto mb-2"></div>
+                <p className="text-xs uppercase tracking-widest text-gray-500">Fresh Daily</p>
+              </div>
+              <div className="text-center">
+                <div className="w-1 h-1 bg-black rounded-full mx-auto mb-2"></div>
+                <p className="text-xs uppercase tracking-widest text-gray-500">Local Source</p>
+              </div>
+              <div className="text-center">
+                <div className="w-1 h-1 bg-black rounded-full mx-auto mb-2"></div>
+                <p className="text-xs uppercase tracking-widest text-gray-500">Craft Made</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (template === 'vibrant') {
+    return (
+      <section className="relative min-h-screen flex items-center overflow-hidden" style={customStyle}>
+        {/* Dynamic animated background */}
+        <div className="absolute inset-0">
+          <div className="absolute inset-0 bg-gradient-to-br from-pink-500 via-purple-600 to-indigo-700"></div>
+          <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-tr from-orange-400/30 via-transparent to-green-400/30 animate-pulse" style={{ animationDuration: '4s' }}></div>
+          <div className="absolute bottom-0 right-0 w-full h-full bg-gradient-to-tl from-blue-400/30 via-transparent to-red-400/30 animate-pulse" style={{ animationDuration: '6s', animationDelay: '2s' }}></div>
+        </div>
+
+        {/* Floating geometric elements */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-1/4 left-1/4 w-8 h-8 bg-white/20 rotate-45 animate-spin" style={{ animationDuration: '20s' }}></div>
+          <div className="absolute top-3/4 right-1/4 w-12 h-12 bg-yellow-300/30 rotate-45 animate-spin" style={{ animationDuration: '15s', animationDirection: 'reverse' }}></div>
+          <div className="absolute bottom-1/3 left-2/3 w-6 h-6 bg-green-300/40 rotate-45 animate-spin" style={{ animationDuration: '25s' }}></div>
+        </div>
+
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="max-w-4xl mx-auto text-center">
+            {/* Vibrant logo with glow effect */}
+            <div className="mb-12">
+              <div className="relative inline-block">
+                <div className="absolute -inset-12 bg-white/20 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '3s' }}></div>
+                <VendorLogo 
+                  vendor={vendor}
+                  size="xl"
+                  showFallback={true}
+                  variant="circle"
+                  className="relative w-32 h-32 mx-auto border-4 border-white/30 shadow-2xl backdrop-blur-sm bg-white/10"
+                />
+              </div>
+            </div>
+
+            {/* Bold energetic typography */}
+            <div className="mb-8">
+              <h1 className="text-6xl md:text-8xl font-black text-white mb-6 leading-none drop-shadow-2xl">
+                {vendor.storeName}
+              </h1>
+              <div className="flex items-center justify-center gap-4 mb-8">
+                <div className="w-8 h-2 bg-gradient-to-r from-yellow-300 to-orange-300 rounded-full animate-pulse"></div>
+                <div className="w-6 h-6 bg-white rounded-full animate-bounce"></div>
+                <div className="w-8 h-2 bg-gradient-to-r from-green-300 to-blue-300 rounded-full animate-pulse"></div>
+              </div>
+              <p className="text-2xl md:text-3xl text-white/90 font-bold leading-relaxed max-w-3xl mx-auto drop-shadow-lg">
+                {vendor.description || "Explosive flavors, vibrant experiences, unforgettable memories!"}
+              </p>
+            </div>
+
+            {/* Energetic feature highlights */}
+            <div className="flex flex-wrap justify-center gap-6">
+              <div className="px-6 py-3 bg-gradient-to-r from-yellow-400 to-orange-500 text-white font-bold rounded-full shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300">
+                <span className="flex items-center gap-2">
+                  <Zap className="h-5 w-5" />
+                  Lightning Fast
+                </span>
+              </div>
+              <div className="px-6 py-3 bg-gradient-to-r from-green-400 to-blue-500 text-white font-bold rounded-full shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300">
+                <span className="flex items-center gap-2">
+                  <Sparkles className="h-5 w-5" />
+                  Fresh & Bold
+                </span>
+              </div>
+              <div className="px-6 py-3 bg-gradient-to-r from-purple-400 to-pink-500 text-white font-bold rounded-full shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300">
+                <span className="flex items-center gap-2">
+                  <Heart className="h-5 w-5" />
+                  Made with Love
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Animated scroll indicator */}
+        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2">
+          <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center animate-bounce backdrop-blur-sm">
+            <div className="w-3 h-8 bg-gradient-to-b from-white to-transparent rounded-full animate-pulse"></div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // Default fallback to future template
 };
 
 export default HeroSection;

@@ -5,7 +5,7 @@ import HugeIcon from '@/components/ui/huge-icon';
 
 interface PromoBannersSectionProps {
   vendor: Vendor;
-  template: 'future' | 'neo' | 'premium' | 'modern';
+  template: 'future' | 'neo' | 'premium' | 'modern' | 'classic' | 'minimal' | 'vibrant';
 }
 
 const PromoBannersSection: React.FC<PromoBannersSectionProps> = ({ vendor, template }) => {

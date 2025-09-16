@@ -20,6 +20,9 @@ import FutureTemplate from '@/components/templates/FutureTemplate';
 import NeoTemplate from '@/components/templates/NeoTemplate';
 import PremiumTemplate from '@/components/templates/PremiumTemplate';
 import ModernTemplate from '@/components/templates/ModernTemplate';
+import ClassicTemplate from '@/components/templates/ClassicTemplate';
+import MinimalTemplate from '@/components/templates/MinimalTemplate';
+import VibrantTemplate from '@/components/templates/VibrantTemplate';
 import VendorLogo from '@/components/VendorLogo';
 import MenuItemModal from '@/components/MenuItemModal';
 import CheckoutModal from '@/components/CheckoutModal';
@@ -676,6 +679,51 @@ const Storefront = () => {
           case 'modern':
             return (
               <ModernTemplate
+                vendor={vendor}
+                menuItems={filteredMenuItems}
+                categories={displayCategories}
+                selectedCategory={selectedCategory}
+                onCategoryChange={setSelectedCategory}
+                onAddToCart={addToCart}
+                cartItemCount={cartItemCount}
+                cartComponent={cartComponent}
+                headerComponent={headerComponent}
+                sections={sectionConfig}
+              />
+            );
+          case 'classic':
+            return (
+              <ClassicTemplate
+                vendor={vendor}
+                menuItems={filteredMenuItems}
+                categories={displayCategories}
+                selectedCategory={selectedCategory}
+                onCategoryChange={setSelectedCategory}
+                onAddToCart={addToCart}
+                cartItemCount={cartItemCount}
+                cartComponent={cartComponent}
+                headerComponent={headerComponent}
+                sections={sectionConfig}
+              />
+            );
+          case 'minimal':
+            return (
+              <MinimalTemplate
+                vendor={vendor}
+                menuItems={filteredMenuItems}
+                categories={displayCategories}
+                selectedCategory={selectedCategory}
+                onCategoryChange={setSelectedCategory}
+                onAddToCart={addToCart}
+                cartItemCount={cartItemCount}
+                cartComponent={cartComponent}
+                headerComponent={headerComponent}
+                sections={sectionConfig}
+              />
+            );
+          case 'vibrant':
+            return (
+              <VibrantTemplate
                 vendor={vendor}
                 menuItems={filteredMenuItems}
                 categories={displayCategories}
