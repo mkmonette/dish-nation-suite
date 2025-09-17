@@ -694,7 +694,8 @@ const HeroSection: React.FC<HeroSectionProps> = ({ vendor, template }) => {
     );
   }
 
-  // Default fallback to future template
+  // Default fallback (should not reach here with proper template routing)
+  return null;
 };
 
 export default HeroSection;
