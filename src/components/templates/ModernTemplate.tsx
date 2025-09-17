@@ -28,36 +28,41 @@ const ModernTemplate: React.FC<ModernTemplateProps> = ({
   sections,
 }) => {
   const customStyle = {
-    '--primary-color': vendor.storefront?.colors?.primary || '#0f172a',
-    '--secondary-color': vendor.storefront?.colors?.secondary || '#3b82f6',
-    '--accent-color': vendor.storefront?.colors?.accent || '#f59e0b',
+    '--primary-color': vendor.storefront?.colors?.primary || '#10b981',
+    '--secondary-color': vendor.storefront?.colors?.secondary || '#06b6d4',
+    '--accent-color': vendor.storefront?.colors?.accent || '#8b5cf6',
   } as React.CSSProperties;
 
   return (
     <div 
-      className="min-h-screen bg-gradient-to-br from-background via-muted/5 to-background/80 relative overflow-x-hidden"
+      className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50 relative overflow-hidden"
       style={customStyle}
     >
-      {/* Subtle geometric background pattern */}
-      <div className="fixed inset-0 opacity-[0.02] pointer-events-none">
-        <div className="absolute inset-0" style={{
+      {/* Modern grid pattern */}
+      <div 
+        className="fixed inset-0 opacity-[0.02] pointer-events-none"
+        style={{
           backgroundImage: `
-            radial-gradient(circle at 25% 25%, hsl(var(--primary)) 1px, transparent 1px),
-            radial-gradient(circle at 75% 75%, hsl(var(--secondary)) 1px, transparent 1px),
-            radial-gradient(circle at 75% 25%, hsl(var(--accent)) 1px, transparent 1px),
-            radial-gradient(circle at 25% 75%, hsl(var(--primary)) 1px, transparent 1px)
+            linear-gradient(90deg, #000 1px, transparent 1px),
+            linear-gradient(180deg, #000 1px, transparent 1px)
           `,
-          backgroundSize: '100px 100px, 80px 80px, 120px 120px, 90px 90px',
-          backgroundPosition: '0 0, 20px 20px, 40px 5px, 70px 35px'
-        }}></div>
+          backgroundSize: '60px 60px'
+        }}
+      />
+      
+      {/* Dynamic gradient blobs */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-40 -right-40 w-96 h-96 bg-gradient-to-br from-emerald-200/30 via-teal-200/20 to-blue-200/30 rounded-full blur-3xl animate-pulse" style={{animationDuration: '8s'}}></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-tr from-purple-200/30 via-indigo-200/20 to-cyan-200/30 rounded-full blur-3xl animate-pulse" style={{animationDuration: '10s', animationDelay: '2s'}}></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-gradient-to-r from-green-200/20 to-blue-200/20 rounded-full blur-2xl animate-pulse" style={{animationDuration: '6s', animationDelay: '4s'}}></div>
       </div>
-
-      {/* Floating accent elements */}
-      <div className="fixed top-20 right-20 w-2 h-20 bg-gradient-to-b from-primary/20 to-transparent rounded-full animate-pulse" style={{ animationDuration: '3s' }}></div>
-      <div className="fixed bottom-32 left-16 w-2 h-16 bg-gradient-to-t from-secondary/20 to-transparent rounded-full animate-pulse" style={{ animationDuration: '4s', animationDelay: '1s' }}></div>
-      <div className="fixed top-1/3 left-8 w-1 h-12 bg-gradient-to-b from-accent/30 to-transparent rounded-full animate-pulse" style={{ animationDuration: '5s', animationDelay: '2s' }}></div>
-
-      <div className="relative z-10">
+      
+      {/* Modern floating UI elements */}
+      <div className="fixed top-20 left-20 w-8 h-8 border-2 border-emerald-400/30 rounded-lg rotate-45 animate-spin pointer-events-none" style={{animationDuration: '20s'}}></div>
+      <div className="fixed bottom-20 right-20 w-6 h-6 bg-teal-400/20 rounded-full animate-bounce pointer-events-none" style={{animationDuration: '3s'}}></div>
+      <div className="fixed top-1/3 right-1/4 w-4 h-16 bg-gradient-to-b from-blue-400/20 to-transparent rounded-full animate-pulse pointer-events-none" style={{animationDuration: '4s'}}></div>
+      
+      <div className="relative z-10 min-h-screen">
         <SectionRenderer
           sections={sections}
           vendor={vendor}

@@ -35,23 +35,29 @@ const MinimalTemplate: React.FC<MinimalTemplateProps> = ({
 
   return (
     <div 
-      className="min-h-screen bg-white relative"
+      className="min-h-screen bg-white relative overflow-hidden"
       style={customStyle}
     >
-      {/* Minimal grid overlay */}
+      {/* Ultra-minimal dot pattern */}
       <div 
-        className="fixed inset-0 opacity-[0.02] pointer-events-none"
+        className="fixed inset-0 opacity-[0.015] pointer-events-none"
         style={{
-          backgroundImage: `
-            linear-gradient(to right, #000000 1px, transparent 1px),
-            linear-gradient(to bottom, #000000 1px, transparent 1px)
-          `,
-          backgroundSize: '100px 100px'
+          backgroundImage: `radial-gradient(circle, #000000 1px, transparent 1px)`,
+          backgroundSize: '80px 80px'
         }}
       />
       
-      {/* Ultra-clean content area */}
-      <div className="relative z-10">
+      {/* Subtle geometric accent */}
+      <div className="fixed top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-black/10 to-transparent pointer-events-none"></div>
+      <div className="fixed bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-black/10 to-transparent pointer-events-none"></div>
+      <div className="fixed top-0 left-0 w-px h-full bg-gradient-to-b from-transparent via-black/10 to-transparent pointer-events-none"></div>
+      <div className="fixed top-0 right-0 w-px h-full bg-gradient-to-b from-transparent via-black/10 to-transparent pointer-events-none"></div>
+      
+      {/* Floating minimal elements */}
+      <div className="fixed top-1/4 right-1/4 w-2 h-2 bg-black/5 rounded-full animate-pulse pointer-events-none" style={{animationDuration: '8s'}}></div>
+      <div className="fixed bottom-1/3 left-1/3 w-1 h-1 bg-black/10 rounded-full animate-pulse pointer-events-none" style={{animationDuration: '12s', animationDelay: '4s'}}></div>
+      
+      <div className="relative z-10 min-h-screen">
         <SectionRenderer
           sections={sections}
           vendor={vendor}

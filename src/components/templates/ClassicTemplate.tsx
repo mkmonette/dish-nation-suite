@@ -28,45 +28,38 @@ const ClassicTemplate: React.FC<ClassicTemplateProps> = ({
   sections,
 }) => {
   const customStyle = {
-    '--primary-color': vendor.storefront?.colors?.primary || '#8B4513',
-    '--secondary-color': vendor.storefront?.colors?.secondary || '#D2B48C',
-    '--accent-color': vendor.storefront?.colors?.accent || '#CD853F',
+    '--primary-color': vendor.storefront?.colors?.primary || '#8b4513',
+    '--secondary-color': vendor.storefront?.colors?.secondary || '#d2691e',
+    '--accent-color': vendor.storefront?.colors?.accent || '#cd853f',
   } as React.CSSProperties;
 
   return (
     <div 
-      className="min-h-screen bg-gradient-to-b from-amber-50 via-orange-50 to-amber-50 relative"
+      className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 relative overflow-x-hidden"
       style={customStyle}
     >
-      {/* Classic paper texture overlay */}
+      {/* Vintage paper texture */}
       <div 
-        className="fixed inset-0 opacity-30 pointer-events-none"
+        className="fixed inset-0 opacity-[0.02] pointer-events-none"
         style={{
-          backgroundImage: `
-            radial-gradient(circle at 1px 1px, rgba(139, 69, 19, 0.15) 1px, transparent 0),
-            linear-gradient(45deg, rgba(210, 180, 140, 0.1) 25%, transparent 25%),
-            linear-gradient(-45deg, rgba(205, 133, 63, 0.1) 25%, transparent 25%)
-          `,
-          backgroundSize: '20px 20px, 40px 40px, 40px 40px'
+          backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cg fill-opacity='0.03'%3E%3Cpolygon fill='%23000' points='50 0 60 40 100 50 60 60 50 100 40 60 0 50 40 40'/%3E%3C/g%3E%3C/svg%3E")`
         }}
       />
       
-      {/* Vintage ornamental corners */}
-      <div className="fixed top-0 left-0 w-32 h-32 border-l-4 border-t-4 border-primary/20 pointer-events-none">
-        <div className="absolute top-2 left-2 w-4 h-4 border-l-2 border-t-2 border-primary/30"></div>
-      </div>
-      <div className="fixed top-0 right-0 w-32 h-32 border-r-4 border-t-4 border-primary/20 pointer-events-none">
-        <div className="absolute top-2 right-2 w-4 h-4 border-r-2 border-t-2 border-primary/30"></div>
-      </div>
-      <div className="fixed bottom-0 left-0 w-32 h-32 border-l-4 border-b-4 border-primary/20 pointer-events-none">
-        <div className="absolute bottom-2 left-2 w-4 h-4 border-l-2 border-b-2 border-primary/30"></div>
-      </div>
-      <div className="fixed bottom-0 right-0 w-32 h-32 border-r-4 border-b-4 border-primary/20 pointer-events-none">
-        <div className="absolute bottom-2 right-2 w-4 h-4 border-r-2 border-b-2 border-primary/30"></div>
+      {/* Decorative border frame */}
+      <div className="fixed inset-4 border-2 border-amber-700/20 rounded-lg pointer-events-none z-0">
+        {/* Corner ornaments */}
+        <div className="absolute -top-2 -left-2 w-6 h-6 bg-amber-700/30 rotate-45 rounded-sm"></div>
+        <div className="absolute -top-2 -right-2 w-6 h-6 bg-amber-700/30 rotate-45 rounded-sm"></div>
+        <div className="absolute -bottom-2 -left-2 w-6 h-6 bg-amber-700/30 rotate-45 rounded-sm"></div>
+        <div className="absolute -bottom-2 -right-2 w-6 h-6 bg-amber-700/30 rotate-45 rounded-sm"></div>
       </div>
       
-      {/* Content with vintage book feel */}
-      <div className="relative z-10">
+      {/* Classic floating elements */}
+      <div className="fixed top-20 left-10 w-32 h-32 bg-amber-200/10 rounded-full blur-2xl animate-pulse pointer-events-none" style={{animationDuration: '4s'}}></div>
+      <div className="fixed bottom-20 right-10 w-40 h-40 bg-orange-200/10 rounded-full blur-3xl animate-pulse pointer-events-none" style={{animationDuration: '6s', animationDelay: '2s'}}></div>
+      
+      <div className="relative z-10 min-h-screen">
         <SectionRenderer
           sections={sections}
           vendor={vendor}
