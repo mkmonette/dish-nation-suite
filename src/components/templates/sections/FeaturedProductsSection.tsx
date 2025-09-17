@@ -2,9 +2,8 @@ import React from 'react';
 import { Button } from '@/components/ui/enhanced-button';
 import { Badge } from '@/components/ui/badge';
 import { MenuItem, Vendor } from '@/lib/storage';
-import { Plus, Star, Heart, ShoppingCart } from 'lucide-react';
+import { Plus, Star } from 'lucide-react';
 import { getDefaultPlaceholder } from '@/utils/imageUtils';
-import EmptySection from './EmptySection';
 
 interface FeaturedProductsSectionProps {
   vendor: Vendor;
@@ -22,98 +21,92 @@ const FeaturedProductsSection: React.FC<FeaturedProductsSectionProps> = ({
   const featuredItems = menuItems.slice(0, 6);
 
   if (template === 'modern-glass') {
-    if (featuredItems.length === 0) {
-      return <EmptySection sectionName="Featured Products" message="Add menu items to showcase your best dishes" />;
-    }
     return (
-      <section className="py-16 relative">
+      <section className="py-20 relative">
         <div className="container mx-auto px-4">
           {/* Section header */}
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-5xl font-bold mb-4">
-              <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-                Featured Dishes
-              </span>
-            </h2>
-            <p className="text-lg text-gray-400 max-w-2xl mx-auto">
-              Discover our most popular and chef-recommended dishes
-            </p>
+          <div className="text-center mb-16">
+            <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-8 inline-block shadow-xl">
+              <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+                <span className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
+                  Featured Dishes
+                </span>
+              </h2>
+              <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+                Discover our most popular and chef-recommended dishes
+              </p>
+            </div>
           </div>
 
-          {/* Mobile-first swipeable cards */}
-          <div className="flex gap-6 overflow-x-auto snap-x snap-mandatory pb-4 md:grid md:grid-cols-2 lg:grid-cols-3 md:overflow-visible">
+          {/* Products grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {featuredItems.map((item, index) => (
               <div 
                 key={item.id} 
-                className="flex-shrink-0 w-80 md:w-full snap-start group"
-                style={{ animationDelay: `${index * 150}ms` }}
+                className="group relative"
+                style={{ animationDelay: `${index * 100}ms` }}
               >
-                {/* Modern card with glass effect */}
-                <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl overflow-hidden shadow-2xl hover:shadow-3xl transition-all duration-500 hover:scale-[1.02] hover:bg-white/10">
+                {/* Glass card with hover effects */}
+                <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-6 shadow-xl hover:shadow-2xl transition-all duration-500 hover:scale-[1.02] hover:bg-white/15">
                   {/* Product image */}
-                  <div className="relative h-48 overflow-hidden">
+                  <div className="relative mb-6 overflow-hidden rounded-2xl">
                     <img
                       src={item.image || getDefaultPlaceholder('food')}
                       alt={item.name}
-                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                      className="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-110"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 via-transparent to-transparent"></div>
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                     
-                    {/* Interactive overlays */}
-                    <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                      <button className="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-white/30 transition-colors">
-                        <Heart className="w-5 h-5" />
-                      </button>
-                    </div>
-                    
-                    {/* Popular badge */}
-                    <div className="absolute top-4 left-4">
-                      <Badge className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white border-0 shadow-lg">
-                        <Star className="w-3 h-3 mr-1 fill-current" />
-                        Featured
+                    {/* Floating badge */}
+                    <div className="absolute top-4 right-4">
+                      <Badge className="bg-yellow-400/90 text-yellow-900 backdrop-blur-sm">
+                        <Star className="w-3 h-3 mr-1" />
+                        Popular
                       </Badge>
                     </div>
                   </div>
 
                   {/* Product info */}
-                  <div className="p-6 space-y-4">
+                  <div className="space-y-4">
                     <div>
-                      <h3 className="text-xl font-bold text-white mb-2 group-hover:text-blue-300 transition-colors">
+                      <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-indigo-600 transition-colors">
                         {item.name}
                       </h3>
-                      <p className="text-gray-400 text-sm line-clamp-2 leading-relaxed">
-                        {item.description || 'Delicious and freshly prepared with premium ingredients'}
+                      <p className="text-gray-600 text-sm line-clamp-2">
+                        {item.description || 'Delicious and freshly prepared'}
                       </p>
                     </div>
 
                     {/* Price and add button */}
-                    <div className="flex items-center justify-between pt-2">
-                      <div className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+                    <div className="flex items-center justify-between">
+                      <div className="text-2xl font-bold text-indigo-600">
                         ₱{item.price.toFixed(2)}
                       </div>
                       <Button
                         onClick={() => onAddToCart(item)}
                         size="sm"
-                        className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white border-0 rounded-2xl px-6 py-2.5 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+                        className="bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white border-0 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
                       >
-                        <ShoppingCart className="w-4 h-4 mr-2" />
+                        <Plus className="w-4 h-4 mr-1" />
                         Add
                       </Button>
                     </div>
                   </div>
                 </div>
+
+                {/* Floating decoration */}
+                <div className="absolute -top-2 -right-2 w-4 h-4 bg-gradient-to-br from-pink-400 to-purple-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 animate-pulse"></div>
               </div>
             ))}
           </div>
 
-          {/* View all CTA */}
+          {/* View all button */}
           <div className="text-center mt-12">
             <Button 
-              size="xl"
-              className="bg-white/5 hover:bg-white/10 border border-white/20 text-white rounded-2xl px-8 py-4 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105 backdrop-blur-xl"
+              size="lg"
+              className="bg-white/10 backdrop-blur-xl border border-white/20 text-gray-900 hover:bg-white/20 rounded-2xl px-8 py-4 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105"
             >
-              Explore Full Menu
-              <Plus className="ml-2 w-5 h-5" />
+              View Full Menu
             </Button>
           </div>
         </div>

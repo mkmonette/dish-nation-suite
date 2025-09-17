@@ -1,7 +1,6 @@
 import React from 'react';
 import { Vendor } from '@/lib/storage';
-import { MapPin, Phone, Clock, Mail, MessageCircle, Navigation } from 'lucide-react';
-import EmptySection from './EmptySection';
+import { MapPin, Phone, Clock, Mail } from 'lucide-react';
 
 interface BusinessInfoSectionProps {
   vendor: Vendor;
@@ -10,24 +9,18 @@ interface BusinessInfoSectionProps {
 
 const BusinessInfoSection: React.FC<BusinessInfoSectionProps> = ({ vendor, template }) => {
   if (template === 'modern-glass') {
-    // Check if business info has meaningful content
-    const hasContent = vendor.storefront?.aboutUs || vendor.description;
-    
-    if (!hasContent) {
-      return <EmptySection sectionName="Business Info" message="Add business description to tell customers about your story" />;
-    }
     return (
-      <section className="py-16 relative">
+      <section className="py-20 relative">
         <div className="container mx-auto px-4">
           {/* Section header */}
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-5xl font-bold mb-4">
-              <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-                About & Contact
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+              <span className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
+                Visit Us
               </span>
             </h2>
-            <p className="text-lg text-gray-400 max-w-2xl mx-auto">
-              Learn more about us and get in touch
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              Find us, contact us, or visit our location
             </p>
           </div>
 
