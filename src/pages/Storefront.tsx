@@ -148,8 +148,27 @@ const Storefront = () => {
     }
 
     // Load menu items and categories
-    setMenuItems(menuStorage.getAll(vendor.id));
-    setCategories(categoryStorage.getAll(vendor.id));
+    const allMenuItemsInStorage = localStorage.getItem('foodapp_menu_items');
+    const allCategoriesInStorage = localStorage.getItem('foodapp_menu_categories');
+    
+    console.log('Raw menu items in storage:', allMenuItemsInStorage);
+    console.log('Raw categories in storage:', allCategoriesInStorage);
+    
+    const loadedMenuItems = menuStorage.getAll(vendor.id);
+    const loadedCategories = categoryStorage.getAll(vendor.id);
+    
+    console.log('Loading menu items for vendor:', vendor.id);
+    console.log('Loaded menu items:', loadedMenuItems);
+    console.log('Loaded categories:', loadedCategories);
+    
+    setMenuItems(loadedMenuItems);
+    setCategories(loadedCategories);
+    
+    // Check if we have an empty state
+    if (loadedMenuItems.length === 0) {
+      console.log('[Storefront] No menu items found for vendor:', vendor.id);
+      console.log('[Storefront] Vendor details:', vendor);
+    }
     
     // Default sections with fallback handling
     const defaultSections: SectionConfig[] = [

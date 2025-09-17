@@ -25,9 +25,22 @@ const MenuSection: React.FC<MenuSectionProps> = ({
   onAddToCart,
   template,
 }) => {
+  console.log('[MenuSection] Received props:', {
+    vendorId: vendor.id,
+    menuItemsCount: menuItems.length,
+    categoriesCount: categories.length,
+    selectedCategory,
+    template
+  });
+  
+  console.log('[MenuSection] Menu items:', menuItems);
+  console.log('[MenuSection] Categories:', categories);
+
   const filteredItems = selectedCategory === 'all' 
     ? menuItems 
     : menuItems.filter(item => item.category === selectedCategory);
+
+  console.log('[MenuSection] Filtered items:', filteredItems);
 
   const categorizedItems = filteredItems.reduce((acc, item) => {
     if (!acc[item.category]) {
@@ -36,6 +49,8 @@ const MenuSection: React.FC<MenuSectionProps> = ({
     acc[item.category].push(item);
     return acc;
   }, {} as Record<string, MenuItem[]>);
+  
+  console.log('[MenuSection] Categorized items:', categorizedItems);
 
   if (template === 'modern') {
     return (
