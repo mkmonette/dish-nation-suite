@@ -16,13 +16,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { vendorStorage, menuStorage, orderStorage, customerStorage, loyaltyStorage, categoryStorage, paymentStorage, MenuItem, MenuCategory, MenuVariation, MenuAddOn, SectionConfig } from '@/lib/storage';
 import { getGateway } from '@/lib/paymentGateways';
 import { ShoppingCart, Plus, Minus, Store, User, LogOut, MapPin, Phone, Star, X, ChevronUp, ChevronDown, GripVertical } from 'lucide-react';
-import FutureTemplate from '@/components/templates/FutureTemplate';
-import NeoTemplate from '@/components/templates/NeoTemplate';
-import PremiumTemplate from '@/components/templates/PremiumTemplate';
-import ModernTemplate from '@/components/templates/ModernTemplate';
-import ClassicTemplate from '@/components/templates/ClassicTemplate';
-import MinimalTemplate from '@/components/templates/MinimalTemplate';
-import VibrantTemplate from '@/components/templates/VibrantTemplate';
+import BasicTemplate from '@/components/templates/BasicTemplate';
 import VendorLogo from '@/components/VendorLogo';
 import MenuItemModal from '@/components/MenuItemModal';
 import CheckoutModal from '@/components/CheckoutModal';
@@ -168,7 +162,7 @@ const Storefront = () => {
     ];
     
     // Load section configuration from vendor settings
-    const template = previewTemplate || vendor.storefront?.template || 'future';
+    const template = previewTemplate || vendor.storefront?.template || 'basic';
     const templateConfig = vendor.storefront?.templateConfigs?.[template];
     
     // Use stored config if valid (array), otherwise use defaults
@@ -642,120 +636,27 @@ const Storefront = () => {
     </Dialog>
   );
 
+  // Render the template
+  const renderTemplate = () => {
+    const templateProps = {
+      vendor,
+      menuItems,
+      categories: displayCategories,
+      selectedCategory,
+      onCategoryChange: setSelectedCategory,
+      onAddToCart: addToCart,
+      cartItemCount,
+      cartComponent,
+      headerComponent,
+      sections: sectionConfig,
+    };
+
+    return <BasicTemplate {...templateProps} />;
+  };
+
   return (
     <>
-      {/* Render the appropriate template */}
-      {(() => {
-        const template = previewTemplate || vendor.storefront?.template || 'future';
-        
-        switch (template) {
-          case 'neo':
-            return (
-              <NeoTemplate
-                vendor={vendor}
-                menuItems={filteredMenuItems}
-                categories={displayCategories}
-                selectedCategory={selectedCategory}
-                onCategoryChange={setSelectedCategory}
-                onAddToCart={addToCart}
-                cartItemCount={cartItemCount}
-                cartComponent={cartComponent}
-                headerComponent={headerComponent}
-                sections={sectionConfig}
-              />
-            );
-          case 'premium':
-            return (
-              <PremiumTemplate
-                vendor={vendor}
-                menuItems={filteredMenuItems}
-                categories={displayCategories}
-                selectedCategory={selectedCategory}
-                onCategoryChange={setSelectedCategory}
-                onAddToCart={addToCart}
-                cartItemCount={cartItemCount}
-                cartComponent={cartComponent}
-                headerComponent={headerComponent}
-                sections={sectionConfig}
-              />
-            );
-          case 'modern':
-            return (
-              <ModernTemplate
-                vendor={vendor}
-                menuItems={filteredMenuItems}
-                categories={displayCategories}
-                selectedCategory={selectedCategory}
-                onCategoryChange={setSelectedCategory}
-                onAddToCart={addToCart}
-                cartItemCount={cartItemCount}
-                cartComponent={cartComponent}
-                headerComponent={headerComponent}
-                sections={sectionConfig}
-              />
-            );
-          case 'classic':
-            return (
-              <ClassicTemplate
-                vendor={vendor}
-                menuItems={filteredMenuItems}
-                categories={displayCategories}
-                selectedCategory={selectedCategory}
-                onCategoryChange={setSelectedCategory}
-                onAddToCart={addToCart}
-                cartItemCount={cartItemCount}
-                cartComponent={cartComponent}
-                headerComponent={headerComponent}
-                sections={sectionConfig}
-              />
-            );
-          case 'minimal':
-            return (
-              <MinimalTemplate
-                vendor={vendor}
-                menuItems={filteredMenuItems}
-                categories={displayCategories}
-                selectedCategory={selectedCategory}
-                onCategoryChange={setSelectedCategory}
-                onAddToCart={addToCart}
-                cartItemCount={cartItemCount}
-                cartComponent={cartComponent}
-                headerComponent={headerComponent}
-                sections={sectionConfig}
-              />
-            );
-          case 'vibrant':
-            return (
-              <VibrantTemplate
-                vendor={vendor}
-                menuItems={filteredMenuItems}
-                categories={displayCategories}
-                selectedCategory={selectedCategory}
-                onCategoryChange={setSelectedCategory}
-                onAddToCart={addToCart}
-                cartItemCount={cartItemCount}
-                cartComponent={cartComponent}
-                headerComponent={headerComponent}
-                sections={sectionConfig}
-              />
-            );
-          default:
-            return (
-              <FutureTemplate
-                vendor={vendor}
-                menuItems={filteredMenuItems}
-                categories={displayCategories}
-                selectedCategory={selectedCategory}
-                onCategoryChange={setSelectedCategory}
-                onAddToCart={addToCart}
-                cartItemCount={cartItemCount}
-                cartComponent={cartComponent}
-                headerComponent={headerComponent}
-                sections={sectionConfig}
-              />
-            );
-        }
-      })()}
+      {renderTemplate()}
 
       {/* Checkout Modal */}
       <CheckoutModal

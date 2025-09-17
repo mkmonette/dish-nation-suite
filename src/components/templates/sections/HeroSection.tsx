@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/enhanced-button';
 
 interface HeroSectionProps {
   vendor: Vendor;
-  template: 'future' | 'neo' | 'premium' | 'modern' | 'classic' | 'minimal' | 'vibrant';
+  template: 'basic' | 'future' | 'neo' | 'premium' | 'modern' | 'classic' | 'minimal' | 'vibrant';
 }
 
 const HeroSection: React.FC<HeroSectionProps> = ({ vendor, template }) => {

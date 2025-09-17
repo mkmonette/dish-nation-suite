@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/enhanced-button';
 interface FooterSectionProps {
   vendor: Vendor;
   cartComponent: React.ReactNode;
-  template: 'future' | 'neo' | 'premium' | 'modern' | 'classic' | 'minimal' | 'vibrant';
+  template: 'basic' | 'future' | 'neo' | 'premium' | 'modern' | 'classic' | 'minimal' | 'vibrant';
 }
 
 const FooterSection: React.FC<FooterSectionProps> = ({ vendor, cartComponent, template }) => {

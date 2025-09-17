@@ -2,7 +2,7 @@ import React from 'react';
 
 interface HeaderSectionProps {
   headerComponent: React.ReactNode;
-  template?: 'future' | 'neo' | 'premium' | 'modern' | 'classic' | 'minimal' | 'vibrant';
+  template?: 'basic' | 'future' | 'neo' | 'premium' | 'modern' | 'classic' | 'minimal' | 'vibrant';
 }
 
 const HeaderSection: React.FC<HeaderSectionProps> = ({ headerComponent, template }) => {

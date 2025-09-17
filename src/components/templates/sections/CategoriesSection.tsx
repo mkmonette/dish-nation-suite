@@ -9,7 +9,7 @@ interface CategoriesSectionProps {
   categories: MenuCategory[];
   selectedCategory: string;
   onCategoryChange: (category: string) => void;
-  template: 'future' | 'neo' | 'premium' | 'modern' | 'classic' | 'minimal' | 'vibrant';
+  template: 'basic' | 'future' | 'neo' | 'premium' | 'modern' | 'classic' | 'minimal' | 'vibrant';
 }
 
 const CategoriesSection: React.FC<CategoriesSectionProps> = ({
