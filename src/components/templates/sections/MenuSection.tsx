@@ -1,9 +1,10 @@
 import React from 'react';
 import { Button } from '@/components/ui/enhanced-button';
 import { MenuItem, Vendor, MenuCategory } from '@/lib/storage';
-import { Plus, Search, Filter } from 'lucide-react';
+import { Plus, Search, Filter, ShoppingCart, Clock } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { getDefaultPlaceholder } from '@/utils/imageUtils';
+import EmptySection from './EmptySection';
 
 interface MenuSectionProps {
   vendor: Vendor;
@@ -35,34 +36,38 @@ const MenuSection: React.FC<MenuSectionProps> = ({
   });
 
   if (template === 'modern-glass') {
+    if (menuItems.length === 0) {
+      return <EmptySection sectionName="Full Menu" message="Add menu items to display your complete catalog" />;
+    }
     return (
-      <section className="py-20 relative">
+      <section className="py-16 relative">
         <div className="container mx-auto px-4">
           {/* Section header */}
-          <div className="text-center mb-16">
-            <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-8 inline-block shadow-xl">
-              <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-                <span className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
-                  Our Menu
-                </span>
-              </h2>
-              <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-                Explore our carefully crafted dishes made with the finest ingredients
-              </p>
-            </div>
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-5xl font-bold mb-4">
+              <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+                Complete Menu
+              </span>
+            </h2>
+            <p className="text-lg text-gray-400 max-w-2xl mx-auto">
+              Explore our carefully crafted dishes made with the finest ingredients
+            </p>
           </div>
 
-          {/* Search and filter */}
+          {/* Modern search bar */}
           <div className="mb-12">
-            <div className="max-w-md mx-auto">
+            <div className="max-w-lg mx-auto">
               <div className="relative">
-                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <Search className="absolute left-5 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                 <Input
-                  placeholder="Search menu items..."
+                  placeholder="Search delicious dishes..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-12 bg-white/10 backdrop-blur-xl border-white/20 rounded-2xl h-14 text-gray-900 placeholder-gray-500 focus:bg-white/20 transition-all duration-300"
+                  className="pl-14 pr-5 bg-white/5 backdrop-blur-xl border-white/20 rounded-2xl h-16 text-white placeholder-gray-400 focus:bg-white/10 focus:border-white/30 transition-all duration-300 text-lg"
                 />
+                <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
+                  <Filter className="w-5 h-5 text-gray-400" />
+                </div>
               </div>
             </div>
           </div>
