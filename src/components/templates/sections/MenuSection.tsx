@@ -25,22 +25,9 @@ const MenuSection: React.FC<MenuSectionProps> = ({
   onAddToCart,
   template,
 }) => {
-  console.log('[MenuSection] Received props:', {
-    vendorId: vendor.id,
-    menuItemsCount: menuItems.length,
-    categoriesCount: categories.length,
-    selectedCategory,
-    template
-  });
-  
-  console.log('[MenuSection] Menu items:', menuItems);
-  console.log('[MenuSection] Categories:', categories);
-
   const filteredItems = selectedCategory === 'all' 
     ? menuItems 
     : menuItems.filter(item => item.category === selectedCategory);
-
-  console.log('[MenuSection] Filtered items:', filteredItems);
 
   const categorizedItems = filteredItems.reduce((acc, item) => {
     if (!acc[item.category]) {
@@ -49,8 +36,6 @@ const MenuSection: React.FC<MenuSectionProps> = ({
     acc[item.category].push(item);
     return acc;
   }, {} as Record<string, MenuItem[]>);
-  
-  console.log('[MenuSection] Categorized items:', categorizedItems);
 
   if (template === 'modern') {
     return (
@@ -95,15 +80,15 @@ const MenuSection: React.FC<MenuSectionProps> = ({
         {/* Menu items in clean grid layout */}
         <div className="max-w-6xl mx-auto">
           {selectedCategory === 'all' ? (
-            Object.entries(categorizedItems).map(([categoryId, items]) => {
-              const category = categories.find(c => c.id === categoryId);
-              if (!category || items.length === 0) return null;
+            Object.entries(categorizedItems).map(([categoryName, items]) => {
+              const category = categories.find(c => c.name === categoryName);
+              if (items.length === 0) return null;
               
               return (
-                <section key={categoryId} className="mb-20 last:mb-0">
+                <section key={categoryName} className="mb-20 last:mb-0">
                   <div className="flex items-center gap-4 mb-12">
                     <h3 className="text-xl font-medium text-foreground tracking-wide">
-                      {category.name}
+                      {category?.name || categoryName}
                     </h3>
                     <div className="flex-1 h-px bg-gradient-to-r from-muted/30 to-transparent"></div>
                   </div>
@@ -508,14 +493,14 @@ const MenuSection: React.FC<MenuSectionProps> = ({
       </div>
 
       {selectedCategory === 'all' ? (
-        Object.entries(categorizedItems).map(([categoryId, items]) => {
-          const category = categories.find(c => c.id === categoryId);
-          if (!category || items.length === 0) return null;
+        Object.entries(categorizedItems).map(([categoryName, items]) => {
+          const category = categories.find(c => c.name === categoryName);
+          if (items.length === 0) return null;
           
           return (
-            <section key={categoryId} className="mb-24">
+            <section key={categoryName} className="mb-24">
               <h3 className="text-xl font-light text-foreground mb-12 tracking-wider text-center">
-                {category.name}
+                {category?.name || categoryName}
               </h3>
               
               <div className="space-y-8">
