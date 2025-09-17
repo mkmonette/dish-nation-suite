@@ -28,7 +28,7 @@ interface StorefrontCustomizerProps {
 }
 
 interface TemplateConfig {
-  template: 'future' | 'neo' | 'premium' | 'modern' | 'classic' | 'minimal' | 'vibrant';
+  template: 'basic';
   sections: SectionConfig[];
 }
 
@@ -49,7 +49,7 @@ const StorefrontCustomizer: React.FC<StorefrontCustomizerProps> = ({ vendor, onU
   ];
 
   const [settings, setSettings] = useState({
-    template: 'future' as 'future' | 'neo' | 'premium' | 'modern' | 'classic' | 'minimal' | 'vibrant',
+    template: 'basic' as 'basic',
     colors: {
       primary: '#3b82f6',
       secondary: '#10b981',
@@ -66,7 +66,7 @@ const StorefrontCustomizer: React.FC<StorefrontCustomizerProps> = ({ vendor, onU
   // Initialize template configs properly, avoiding circular references
   const initializeTemplateConfigs = () => {
     const configs: Record<string, SectionConfig[]> = {};
-    const templates = ['future', 'neo', 'premium', 'modern', 'classic', 'minimal', 'vibrant'] as const;
+    const templates = ['basic'] as const;
     
     templates.forEach(template => {
       const storedConfig = vendor.storefront?.templateConfigs?.[template];
@@ -87,45 +87,9 @@ const StorefrontCustomizer: React.FC<StorefrontCustomizerProps> = ({ vendor, onU
 
   const templates = [
     { 
-      value: 'future', 
-      label: 'Future', 
-      description: 'Cutting-edge design with innovative elements and animations',
-      preview: '/api/placeholder/300/200'
-    },
-    { 
-      value: 'neo', 
-      label: 'Neo', 
-      description: 'Modern aesthetic with bold colors and dynamic layouts',
-      preview: '/api/placeholder/300/200'
-    },
-    { 
-      value: 'premium', 
-      label: 'Premium', 
-      description: 'Elegant and sophisticated design for luxury brands',
-      preview: '/api/placeholder/300/200'
-    },
-    { 
-      value: 'modern', 
-      label: 'Modern', 
-      description: 'Clean and contemporary design with elegant typography and spacing',
-      preview: '/api/placeholder/300/200'
-    },
-    { 
-      value: 'classic', 
-      label: 'Classic', 
-      description: 'Timeless vintage design with traditional elements and warm colors',
-      preview: '/api/placeholder/300/200'
-    },
-    { 
-      value: 'minimal', 
-      label: 'Minimal', 
-      description: 'Ultra-clean minimalist design with maximum white space and focus',
-      preview: '/api/placeholder/300/200'
-    },
-    { 
-      value: 'vibrant', 
-      label: 'Vibrant', 
-      description: 'Bold and colorful design with energetic gradients and animations',
+      value: 'basic', 
+      label: 'Basic', 
+      description: 'Clean and simple design with all essential features',
       preview: '/api/placeholder/300/200'
     },
   ];
@@ -151,7 +115,7 @@ const StorefrontCustomizer: React.FC<StorefrontCustomizerProps> = ({ vendor, onU
     setIsLoading(false);
   };
 
-  const handleTemplateChange = (template: 'future' | 'neo' | 'premium' | 'modern' | 'classic' | 'minimal' | 'vibrant') => {
+  const handleTemplateChange = (template: 'basic') => {
     setSettings(prev => ({ ...prev, template }));
     
     // Auto-save template change
@@ -163,7 +127,7 @@ const StorefrontCustomizer: React.FC<StorefrontCustomizerProps> = ({ vendor, onU
     window.dispatchEvent(new CustomEvent('vendorUpdated'));
   };
 
-  const handleApplyTemplate = (template: 'future' | 'neo' | 'premium' | 'modern' | 'classic' | 'minimal' | 'vibrant') => {
+  const handleApplyTemplate = (template: 'basic') => {
     handleTemplateChange(template);
     toast({
       title: 'Template Applied!',
@@ -371,7 +335,7 @@ const StorefrontCustomizer: React.FC<StorefrontCustomizerProps> = ({ vendor, onU
                         <Button 
                           variant={settings.template === template.value ? "secondary" : "default"}
                           size="sm"
-                          onClick={() => handleApplyTemplate(template.value as 'future' | 'neo' | 'premium' | 'modern' | 'classic' | 'minimal' | 'vibrant')}
+                          onClick={() => handleApplyTemplate(template.value as 'basic')}
                           className="flex-1"
                           disabled={settings.template === template.value}
                         >

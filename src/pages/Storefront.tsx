@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { migrateVendorTemplates } from '@/utils/templateMigration';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { useCustomer } from '@/contexts/CustomerContext';
 import { useTenant } from '@/contexts/TenantContext';
@@ -92,7 +93,7 @@ const Storefront = () => {
       let needsCleanup = false;
       
       // Check for circular references or invalid configs
-      ['future', 'neo', 'premium'].forEach(template => {
+      ['basic'].forEach(template => {
         const config = configs[template];
         if (!Array.isArray(config) || (config as any).message) {
           needsCleanup = true;
@@ -114,9 +115,7 @@ const Storefront = () => {
         
         // Clean up corrupted template configs
         const cleanConfigs = {
-          future: [...defaultSections],
-          neo: [...defaultSections], 
-          premium: [...defaultSections]
+          basic: [...defaultSections]
         };
         
         vendorStorage.update(vendor.id, {
@@ -132,6 +131,9 @@ const Storefront = () => {
   }, [vendor]);
 
   useEffect(() => {
+    // Run template migration on first load
+    migrateVendorTemplates();
+    
     if (!vendor) {
       navigate('/');
       return;
