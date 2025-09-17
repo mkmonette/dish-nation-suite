@@ -12,12 +12,164 @@ interface FeaturedProductsSectionProps {
   template: 'future' | 'neo' | 'premium' | 'modern' | 'classic' | 'minimal' | 'vibrant';
 }
 
-const FeaturedProductsSection: React.FC<FeaturedProductsSectionProps> = ({
-  vendor,
-  menuItems,
-  onAddToCart,
-  template,
+const FeaturedProductsSection: React.FC<FeaturedProductsSectionProps> = ({ 
+  vendor, 
+  menuItems, 
+  onAddToCart, 
+  template 
 }) => {
+  // Template 1: Minimalist Grid (future)
+  if (template === 'future') {
+    return (
+      <section className="py-20 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-16">
+            <h2 className="text-2xl md:text-3xl font-light text-gray-900 mb-2">
+              Featured Items
+            </h2>
+            <div className="w-12 h-px bg-gray-400 mx-auto"></div>
+          </div>
+          
+          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            {menuItems.slice(0, 3).map((item) => (
+              <div key={item.id} className="group">
+                <div className="aspect-square bg-gray-50 mb-4 flex items-center justify-center">
+                  <span className="text-3xl opacity-30">🍽️</span>
+                </div>
+                <div className="text-center space-y-3">
+                  <h3 className="font-light text-lg text-gray-900">
+                    {item.name}
+                  </h3>
+                  <p className="text-sm text-gray-600 leading-relaxed">
+                    {item.description}
+                  </p>
+                  <div className="flex items-center justify-center space-x-4">
+                    <span className="font-light text-gray-900">
+                      ${item.price.toFixed(2)}
+                    </span>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => onAddToCart(item)}
+                      className="border-gray-900 text-gray-900 hover:bg-gray-900 hover:text-white"
+                    >
+                      Add
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // Template 2: Visual Showcase (neo)
+  if (template === 'neo') {
+    return (
+      <section className="py-20 bg-gradient-to-b from-slate-50 to-white">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+              Signature Showcase
+            </h2>
+            <p className="text-gray-600 max-w-2xl mx-auto text-lg">
+              Our most celebrated dishes, crafted to perfection
+            </p>
+          </div>
+          
+          {/* Horizontal Carousel Layout */}
+          <div className="overflow-x-auto pb-4">
+            <div className="flex space-x-6 min-w-max">
+              {menuItems.map((item) => (
+                <Card key={item.id} className="w-80 flex-shrink-0 group hover:shadow-xl transition-all duration-300">
+                  <div className="aspect-[4/3] bg-gradient-to-br from-blue-100 to-purple-100 rounded-t-lg flex items-center justify-center relative overflow-hidden">
+                    <span className="text-5xl opacity-40">🍽️</span>
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                  </div>
+                  <CardContent className="p-6">
+                    <div className="space-y-4">
+                      <div>
+                        <h3 className="font-bold text-xl text-gray-900 group-hover:text-blue-600 transition-colors">
+                          {item.name}
+                        </h3>
+                        <p className="text-gray-600 mt-2 leading-relaxed">
+                          {item.description}
+                        </p>
+                      </div>
+                      <div className="flex items-center justify-between pt-2">
+                        <span className="font-bold text-xl text-blue-600">
+                          ${item.price.toFixed(2)}
+                        </span>
+                        <Button
+                          onClick={() => onAddToCart(item)}
+                          className="bg-blue-600 hover:bg-blue-700 text-white px-6"
+                        >
+                          Add to Cart
+                        </Button>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // Template 3: Storytelling Layout (premium)
+  if (template === 'premium') {
+    return (
+      <section className="py-20 bg-gradient-to-b from-slate-900 to-slate-800 text-white">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-16">
+            <div className="inline-block p-4 border-2 border-amber-400/30 rounded-lg mb-8">
+              <h2 className="text-3xl md:text-4xl font-serif font-bold text-amber-400">
+                Signature Collection
+              </h2>
+            </div>
+            <p className="text-gray-300 max-w-3xl mx-auto text-lg leading-relaxed">
+              Each dish represents our culinary heritage, crafted with passion and served with pride
+            </p>
+          </div>
+          
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            {menuItems.slice(0, 6).map((item) => (
+              <div key={item.id} className="bg-slate-800/50 border border-amber-400/20 rounded-lg p-6 hover:border-amber-400/40 transition-colors group">
+                <div className="aspect-video bg-gradient-to-br from-amber-100/10 to-amber-200/5 rounded-lg mb-4 flex items-center justify-center">
+                  <span className="text-4xl opacity-40">🍽️</span>
+                </div>
+                <div className="space-y-4">
+                  <h3 className="font-serif font-semibold text-xl text-white group-hover:text-amber-400 transition-colors">
+                    {item.name}
+                  </h3>
+                  <p className="text-gray-300 text-sm leading-relaxed">
+                    {item.description}
+                  </p>
+                  <div className="flex items-center justify-between pt-2">
+                    <span className="font-bold text-xl text-amber-400">
+                      ${item.price.toFixed(2)}
+                    </span>
+                    <Button
+                      onClick={() => onAddToCart(item)}
+                      className="bg-amber-500 hover:bg-amber-600 text-slate-900 font-semibold"
+                    >
+                      Add to Order
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // Return all other templates unchanged for now
   if (menuItems.length === 0) {
     if (template === 'future') {
       return (
@@ -220,6 +372,132 @@ const FeaturedProductsSection: React.FC<FeaturedProductsSectionProps> = ({
       </section>
     );
   }
+
+  if (template === 'neo') {
+    return (
+      <section className="py-20 bg-muted/30">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-black mb-6 text-foreground">FEATURED ITEMS</h2>
+            <div className="flex justify-center">
+              <div className="w-32 h-1 bg-gradient-primary"></div>
+            </div>
+            <p className="text-lg text-muted-foreground mt-4 font-bold">BOLD FLAVORS. MODERN STYLE.</p>
+          </div>
+          
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            {featuredItems.map((item) => (
+              <Card key={item.id} className="group overflow-hidden hover:scale-105 transition-all duration-300 border-2 border-primary/30 hover:border-primary shadow-lg hover:shadow-primary/25">
+                <div className="aspect-[4/3] bg-gradient-to-br from-primary/10 to-secondary/10 relative overflow-hidden">
+                  {item.image ? (
+                    <img 
+                      src={item.image} 
+                      alt={item.name}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/20 to-secondary/20">
+                      <ImageIcon className="h-12 w-12 text-primary/40" />
+                    </div>
+                  )}
+                  <Badge className="absolute top-3 left-3 bg-secondary text-secondary-foreground font-black">
+                    FEATURED
+                  </Badge>
+                </div>
+                
+                <CardHeader className="pb-4">
+                  <CardTitle className="text-lg group-hover:text-primary transition-colors font-black uppercase tracking-wider">
+                    {item.name}
+                  </CardTitle>
+                </CardHeader>
+                
+                <CardContent className="pt-0">
+                  <div className="flex items-center justify-between">
+                    <span className="text-2xl font-black text-primary">
+                      ${item.price.toFixed(2)}
+                    </span>
+                    <Button 
+                      variant="hero"
+                      size="sm"
+                      onClick={() => onAddToCart(item)}
+                      disabled={!item.available}
+                      className="font-black uppercase tracking-wider"
+                    >
+                      <Plus className="h-4 w-4 mr-1" />
+                      ADD
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // Premium template
+  return (
+    <section className="py-24 border-y border-primary/10">
+      <div className="container mx-auto px-8">
+        <div className="text-center mb-20">
+          <h2 className="text-2xl font-light text-foreground tracking-wider mb-8">Featured Selections</h2>
+          <div className="w-24 h-px bg-gradient-to-r from-transparent via-primary to-transparent mx-auto mb-6"></div>
+          <p className="text-muted-foreground font-light max-w-md mx-auto">Meticulously curated for the discerning palate</p>
+        </div>
+        
+        <div className="max-w-5xl mx-auto space-y-12">
+          {featuredItems.map((item) => (
+            <div key={item.id} className="group">
+              <div className="flex items-center justify-between py-8 border-b border-primary/10 hover:border-primary/20 transition-all duration-700">
+                <div className="flex items-center space-x-8">
+                  <div className="w-20 h-20 relative overflow-hidden rounded-lg border border-primary/10">
+                    {item.image ? (
+                      <img 
+                        src={item.image} 
+                        alt={item.name}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-muted flex items-center justify-center">
+                        <Crown className="h-6 w-6 text-primary/40" />
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex-1 space-y-2">
+                    <div className="flex items-center gap-3">
+                      <h4 className="text-xl font-light text-foreground group-hover:text-primary transition-colors tracking-wide">
+                        {item.name}
+                      </h4>
+                      <Badge variant="outline" className="text-xs border-primary/30 font-light">
+                        Featured
+                      </Badge>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex items-center space-x-8">
+                  <span className="text-2xl font-light text-foreground tracking-wide">
+                    ${item.price.toFixed(2)}
+                  </span>
+                  <Button 
+                    variant="outline"
+                    size="sm"
+                    onClick={() => onAddToCart(item)}
+                    disabled={!item.available}
+                    className="border-primary/30 hover:bg-primary hover:text-primary-foreground transition-all duration-300 font-light tracking-wider px-8"
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add
+                  </Button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+};
 
   if (template === 'neo') {
     return (

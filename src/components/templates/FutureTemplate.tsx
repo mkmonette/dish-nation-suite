@@ -35,16 +35,23 @@ const FutureTemplate: React.FC<FutureTemplateProps> = ({
 
   return (
     <div 
-      className="min-h-screen bg-gradient-to-br from-background via-muted/10 to-background relative overflow-hidden"
+      className="min-h-screen bg-white relative"
       style={customStyle}
     >
-      {/* Futuristic Background Elements */}
-      <div className="fixed inset-0 bg-gradient-to-br from-primary/5 via-transparent to-secondary/5 pointer-events-none" />
-      <div className="fixed top-0 right-0 w-96 h-96 bg-gradient-to-br from-primary/10 to-transparent rounded-full blur-3xl pointer-events-none" />
-      <div className="fixed bottom-0 left-0 w-96 h-96 bg-gradient-to-tr from-secondary/10 to-transparent rounded-full blur-3xl pointer-events-none" />
+      {/* Minimalist grid overlay */}
+      <div 
+        className="fixed inset-0 opacity-[0.015] pointer-events-none"
+        style={{
+          backgroundImage: `
+            linear-gradient(to right, #000000 1px, transparent 1px),
+            linear-gradient(to bottom, #000000 1px, transparent 1px)
+          `,
+          backgroundSize: '120px 120px'
+        }}
+      />
       
-      {/* Glass morphism overlay */}
-      <div className="relative z-10 backdrop-blur-sm">
+      {/* Clean content area */}
+      <div className="relative z-10">
         <SectionRenderer
           sections={sections}
           vendor={vendor}

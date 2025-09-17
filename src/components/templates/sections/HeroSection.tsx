@@ -9,120 +9,248 @@ interface HeroSectionProps {
 }
 
 const HeroSection: React.FC<HeroSectionProps> = ({ vendor, template }) => {
-  const customStyle = {
-    '--primary-color': vendor.storefront?.colors?.primary || '#3b82f6',
-    '--secondary-color': vendor.storefront?.colors?.secondary || '#10b981',
-    '--accent-color': vendor.storefront?.colors?.accent || '#f59e0b',
-  } as React.CSSProperties;
-
+  // Template 1: Minimalist Grid (future)
   if (template === 'future') {
     return (
-      <section className="relative min-h-screen flex items-center overflow-hidden" style={customStyle}>
-        {/* Holographic grid background */}
-        <div className="absolute inset-0 opacity-20">
-          <div className="absolute inset-0" style={{
-            backgroundImage: `
-              linear-gradient(rgba(59, 130, 246, 0.3) 1px, transparent 1px),
-              linear-gradient(90deg, rgba(59, 130, 246, 0.3) 1px, transparent 1px)
-            `,
-            backgroundSize: '50px 50px',
-            animation: 'pulse 4s ease-in-out infinite'
-          }}></div>
-        </div>
-
-        {/* Dynamic animated background */}
-        {vendor.storefront?.banner && (
-          <div className="absolute inset-0">
-            <img 
-              src={vendor.storefront.banner} 
-              alt="Store banner"
-              className="w-full h-full object-cover opacity-20"
-            />
-            <div className="absolute inset-0 bg-gradient-to-br from-primary/40 via-transparent to-secondary/40"></div>
-          </div>
-        )}
-        
-        {/* Floating holographic elements */}
-        <div className="absolute top-1/4 right-1/4 w-64 h-64 bg-gradient-to-br from-primary/30 to-transparent rounded-full blur-3xl animate-bounce" style={{ animationDuration: '6s' }}></div>
-        <div className="absolute bottom-1/4 left-1/4 w-48 h-48 bg-gradient-to-br from-secondary/30 to-transparent rounded-full blur-2xl animate-bounce" style={{ animationDuration: '8s', animationDelay: '2s' }}></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-br from-accent/20 to-transparent rounded-full blur-3xl animate-pulse" style={{ animationDuration: '5s' }}></div>
-        
-        <div className="relative container mx-auto px-4 py-24 grid lg:grid-cols-2 gap-12 items-center">
-          {/* Left side - Logo and branding */}
-          <div className="space-y-8">
-            <div className="relative">
-              <div className="absolute -inset-4 bg-gradient-to-r from-primary via-secondary to-primary rounded-full blur-xl opacity-30 animate-pulse"></div>
-              <VendorLogo 
-                vendor={vendor}
-                size="2xl"
-                showFallback={true}
-                variant="rounded"
-                className="relative z-10 backdrop-blur-sm bg-card/40 p-6 rounded-3xl border border-primary/30 shadow-2xl mx-auto lg:mx-0"
-              />
-            </div>
-            
-            <div className="text-center lg:text-left">
-              <h1 className="text-4xl md:text-6xl lg:text-7xl font-black mb-6 bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent animate-in slide-in-from-left-8 duration-1000 leading-tight">
-                {vendor.storefront?.heroText || `${vendor.storeName}`}
-              </h1>
-              <p className="text-lg md:text-xl text-muted-foreground mb-8 animate-in slide-in-from-left-8 duration-1000 delay-300 max-w-lg">
-                {vendor.storefront?.heroSubtext || vendor.description || 'Step into the future of culinary excellence'}
-              </p>
-            </div>
-          </div>
-
-          {/* Right side - Feature highlights in holographic cards */}
-          <div className="space-y-6 animate-in slide-in-from-right-8 duration-1000 delay-500">
-            <div className="relative group">
-              <div className="absolute -inset-1 bg-gradient-to-r from-primary to-secondary rounded-2xl blur opacity-60 group-hover:opacity-100 transition duration-1000"></div>
-              <div className="relative backdrop-blur-lg bg-card/30 p-6 rounded-2xl border border-primary/20">
-                <div className="flex items-center gap-4 mb-3">
-                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-primary/50 flex items-center justify-center">
-                    <Zap className="h-6 w-6 text-white" />
-                  </div>
-                  <h3 className="text-xl font-bold text-foreground">Quantum Speed</h3>
-                </div>
-                <p className="text-muted-foreground">Experience instant ordering with our advanced tech</p>
-              </div>
-            </div>
-
-            <div className="relative group">
-              <div className="absolute -inset-1 bg-gradient-to-r from-secondary to-accent rounded-2xl blur opacity-60 group-hover:opacity-100 transition duration-1000"></div>
-              <div className="relative backdrop-blur-lg bg-card/30 p-6 rounded-2xl border border-secondary/20">
-                <div className="flex items-center gap-4 mb-3">
-                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-secondary to-secondary/50 flex items-center justify-center">
-                    <Sparkles className="h-6 w-6 text-white" />
-                  </div>
-                  <h3 className="text-xl font-bold text-foreground">Premium Quality</h3>
-                </div>
-                <p className="text-muted-foreground">Crafted with precision and future ingredients</p>
-              </div>
-            </div>
-
-            <div className="relative group">
-              <div className="absolute -inset-1 bg-gradient-to-r from-accent to-primary rounded-2xl blur opacity-60 group-hover:opacity-100 transition duration-1000"></div>
-              <div className="relative backdrop-blur-lg bg-card/30 p-6 rounded-2xl border border-accent/20">
-                <div className="flex items-center gap-4 mb-3">
-                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-accent to-accent/50 flex items-center justify-center">
-                    <Cpu className="h-6 w-6 text-white" />
-                  </div>
-                  <h3 className="text-xl font-bold text-foreground">AI Powered</h3>
-                </div>
-                <p className="text-muted-foreground">Smart recommendations tailored just for you</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Animated scroll indicator */}
-        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
-          <div className="w-6 h-10 border-2 border-primary/50 rounded-full flex justify-center">
-            <div className="w-1 h-3 bg-primary rounded-full mt-2 animate-pulse"></div>
+      <section className="relative min-h-[50vh] bg-white py-16">
+        <div className="container mx-auto px-4">
+          <div className="text-center space-y-6 max-w-3xl mx-auto">
+            <h1 className="text-3xl md:text-4xl font-light text-gray-900 tracking-wide">
+              {vendor.name}
+            </h1>
+            <div className="w-12 h-px bg-gray-400 mx-auto"></div>
+            <p className="text-gray-600 text-base md:text-lg font-light leading-relaxed">
+              {vendor.description || "Crafted with precision, served with care"}
+            </p>
+            <Button variant="outline" className="border-gray-900 text-gray-900 hover:bg-gray-900 hover:text-white px-8 py-3">
+              View Menu
+            </Button>
           </div>
         </div>
       </section>
     );
   }
+
+  // Template 2: Visual Showcase (neo)
+  if (template === 'neo') {
+    return (
+      <section className="relative min-h-[80vh] bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 overflow-hidden">
+        <div className="absolute inset-0 bg-black/30" />
+        <div className="container mx-auto px-4 h-full flex items-center relative z-10">
+          <div className="grid md:grid-cols-2 gap-12 items-center w-full">
+            <div className="text-white space-y-8">
+              <h1 className="text-4xl md:text-6xl font-bold leading-tight">
+                {vendor.name}
+              </h1>
+              <p className="text-xl md:text-2xl font-medium opacity-90">
+                {vendor.description || "Visual excellence meets culinary mastery"}
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4">
+                <Button size="lg" className="bg-white text-purple-600 hover:bg-gray-100 font-semibold">
+                  Order Now
+                </Button>
+                <Button variant="outline" size="lg" className="border-white text-white hover:bg-white/10">
+                  Explore Menu
+                </Button>
+              </div>
+            </div>
+            <div className="relative">
+              <div className="aspect-square bg-gradient-to-br from-white/10 to-white/5 rounded-2xl backdrop-blur-sm border border-white/20 p-8 flex items-center justify-center">
+                <div className="text-center text-white">
+                  <div className="w-24 h-24 bg-white/20 rounded-full mx-auto mb-4 flex items-center justify-center">
+                    <span className="text-2xl">🍽️</span>
+                  </div>
+                  <p className="text-lg font-medium">Featured Cuisine</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // Template 3: Storytelling Layout (premium)
+  if (template === 'premium') {
+    return (
+      <section className="relative min-h-[70vh] bg-gradient-to-b from-slate-900 to-slate-800">
+        <div className="absolute inset-0 bg-gradient-to-r from-amber-500/10 to-transparent" />
+        <div className="container mx-auto px-4 py-20 relative z-10">
+          <div className="max-w-4xl mx-auto text-center text-white space-y-8">
+            <div className="inline-block p-4 border-2 border-amber-400/30 rounded-lg">
+              <h1 className="text-4xl md:text-5xl font-serif font-bold text-amber-400">
+                {vendor.name}
+              </h1>
+            </div>
+            <p className="text-lg md:text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
+              {vendor.description || "Where tradition meets innovation, creating unforgettable dining experiences"}
+            </p>
+            <div className="flex items-center justify-center space-x-4 pt-6">
+              <div className="w-8 h-px bg-amber-400"></div>
+              <span className="text-amber-400 text-2xl">✦</span>
+              <div className="w-8 h-px bg-amber-400"></div>
+            </div>
+            <Button size="lg" className="bg-amber-500 hover:bg-amber-600 text-slate-900 font-semibold px-8">
+              Discover Our Story
+            </Button>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // Template 4: Contemporary (modern)
+  if (template === 'modern') {
+    return (
+      <section className="relative min-h-[75vh] bg-gradient-to-br from-emerald-50 to-teal-50 overflow-hidden">
+        <div className="absolute top-0 right-0 w-1/3 h-full bg-gradient-to-l from-emerald-100/50 to-transparent" />
+        <div className="container mx-auto px-4 py-20">
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            <div className="space-y-8">
+              <div className="space-y-4">
+                <div className="inline-block px-4 py-2 bg-emerald-100 text-emerald-800 rounded-full text-sm font-medium">
+                  Fresh • Local • Sustainable
+                </div>
+                <h1 className="text-4xl md:text-6xl font-bold text-gray-900">
+                  {vendor.name}
+                </h1>
+              </div>
+              <p className="text-lg text-gray-700 leading-relaxed">
+                {vendor.description || "Modern cuisine with a contemporary twist, crafted for today's discerning palate"}
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4">
+                <Button size="lg" className="bg-emerald-600 hover:bg-emerald-700 text-white">
+                  Start Ordering
+                </Button>
+                <Button variant="outline" size="lg" className="border-emerald-600 text-emerald-600 hover:bg-emerald-50">
+                  Browse Menu
+                </Button>
+              </div>
+            </div>
+            <div className="relative">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-4">
+                  <div className="aspect-square bg-emerald-200 rounded-xl"></div>
+                  <div className="aspect-video bg-emerald-100 rounded-xl"></div>
+                </div>
+                <div className="space-y-4 pt-8">
+                  <div className="aspect-video bg-emerald-300 rounded-xl"></div>
+                  <div className="aspect-square bg-emerald-150 rounded-xl"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // Template 5: Traditional (classic)
+  if (template === 'classic') {
+    return (
+      <section className="relative min-h-[70vh] bg-gradient-to-b from-amber-50 to-orange-50">
+        <div className="absolute inset-0" style={{
+          backgroundImage: `radial-gradient(circle at 20% 80%, rgba(120, 53, 15, 0.03) 0%, transparent 50%),
+                           radial-gradient(circle at 80% 20%, rgba(217, 119, 6, 0.03) 0%, transparent 50%)`
+        }} />
+        <div className="container mx-auto px-4 py-20 relative z-10">
+          <div className="text-center space-y-8 max-w-4xl mx-auto">
+            <div className="space-y-4">
+              <div className="flex items-center justify-center space-x-4">
+                <div className="w-16 h-px bg-amber-600"></div>
+                <span className="text-amber-600 text-3xl">❦</span>
+                <div className="w-16 h-px bg-amber-600"></div>
+              </div>
+              <h1 className="text-4xl md:text-6xl font-serif font-bold text-amber-900">
+                {vendor.name}
+              </h1>
+            </div>
+            <p className="text-lg md:text-xl text-amber-800 leading-relaxed font-serif italic">
+              {vendor.description || "Preserving culinary traditions with authentic flavors and time-honored recipes"}
+            </p>
+            <div className="space-y-4">
+              <Button size="lg" className="bg-amber-700 hover:bg-amber-800 text-white font-serif px-8">
+                Explore Our Heritage
+              </Button>
+              <p className="text-sm text-amber-700">Est. Since Generations</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // Template 6: Ultra Clean (minimal)
+  if (template === 'minimal') {
+    return (
+      <section className="relative min-h-[60vh] bg-white py-24">
+        <div className="container mx-auto px-4">
+          <div className="text-center space-y-12 max-w-2xl mx-auto">
+            <div className="space-y-6">
+              <h1 className="text-3xl md:text-5xl font-extralight text-black tracking-wider">
+                {vendor.name}
+              </h1>
+              <div className="flex items-center justify-center space-x-6">
+                <div className="w-8 h-px bg-black"></div>
+                <div className="w-2 h-2 border border-black rotate-45"></div>
+                <div className="w-8 h-px bg-black"></div>
+              </div>
+            </div>
+            <p className="text-gray-600 text-base font-light leading-relaxed tracking-wide">
+              {vendor.description || "Simplicity in form. Complexity in flavor."}
+            </p>
+            <div className="pt-8">
+              <Button variant="ghost" className="border-b-2 border-black rounded-none hover:bg-transparent hover:border-gray-600 px-0 py-2 font-light tracking-wider">
+                ENTER
+              </Button>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // Template 7: Colorful & Dynamic (vibrant)
+  if (template === 'vibrant') {
+    return (
+      <section className="relative min-h-[85vh] bg-gradient-to-br from-pink-400 via-purple-500 to-indigo-600 overflow-hidden">
+        <div className="absolute inset-0">
+          <div className="absolute top-10 left-10 w-32 h-32 bg-yellow-400 rounded-full blur-xl opacity-60 animate-pulse"></div>
+          <div className="absolute bottom-20 right-20 w-40 h-40 bg-green-400 rounded-full blur-xl opacity-50 animate-pulse" style={{animationDelay: '1s'}}></div>
+          <div className="absolute top-1/2 left-1/4 w-20 h-20 bg-orange-400 rounded-full blur-lg opacity-70 animate-pulse" style={{animationDelay: '2s'}}></div>
+        </div>
+        <div className="container mx-auto px-4 py-20 relative z-10">
+          <div className="text-center text-white space-y-10">
+            <div className="space-y-6">
+              <h1 className="text-5xl md:text-8xl font-black tracking-tight">
+                <span className="inline-block animate-bounce" style={{animationDelay: '0s'}}>{vendor.name.charAt(0)}</span>
+                <span className="inline-block animate-bounce" style={{animationDelay: '0.1s'}}>{vendor.name.slice(1)}</span>
+              </h1>
+              <div className="flex items-center justify-center space-x-4">
+                <div className="w-4 h-4 bg-yellow-400 rounded-full animate-ping"></div>
+                <div className="w-4 h-4 bg-green-400 rounded-full animate-ping" style={{animationDelay: '0.5s'}}></div>
+                <div className="w-4 h-4 bg-orange-400 rounded-full animate-ping" style={{animationDelay: '1s'}}></div>
+              </div>
+            </div>
+            <p className="text-xl md:text-3xl font-bold max-w-4xl mx-auto leading-relaxed">
+              {vendor.description || "EXPLOSIVE FLAVORS! VIBRANT EXPERIENCES! UNFORGETTABLE MOMENTS!"}
+            </p>
+            <div className="flex flex-col sm:flex-row gap-6 justify-center items-center pt-8">
+              <Button size="lg" className="bg-yellow-400 hover:bg-yellow-500 text-black font-black text-lg px-8 py-4 rounded-full shadow-lg transform hover:scale-105 transition-all">
+                🚀 BLAST OFF!
+              </Button>
+              <Button variant="outline" size="lg" className="border-2 border-white text-white hover:bg-white hover:text-purple-600 font-bold px-8 py-4 rounded-full">
+                🌈 EXPLORE MENU
+              </Button>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // Default fallback
+  return null;
 
   if (template === 'neo') {
     return (
