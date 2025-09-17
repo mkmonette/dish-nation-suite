@@ -41,7 +41,7 @@ const SectionRenderer: React.FC<SectionRendererProps> = ({
 
     switch (section.id) {
       case 'header':
-        return <HeaderSection key={section.id} headerComponent={headerComponent} />;
+        return <HeaderSection key={section.id} headerComponent={headerComponent} template={template} />;
       case 'hero':
         return <HeroSection key={section.id} vendor={vendor} template={template} />;
       case 'featured':
