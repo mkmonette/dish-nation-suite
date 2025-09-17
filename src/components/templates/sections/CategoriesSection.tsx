@@ -1,15 +1,12 @@
 import React from 'react';
 import { Button } from '@/components/ui/enhanced-button';
-import { Card, CardContent } from '@/components/ui/card';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { MenuCategory } from '@/lib/storage';
-import { Utensils, Sparkles, Zap, Crown } from 'lucide-react';
 
 interface CategoriesSectionProps {
   categories: MenuCategory[];
   selectedCategory: string;
   onCategoryChange: (category: string) => void;
-  template: 'basic' | 'future' | 'neo' | 'premium' | 'modern' | 'classic' | 'minimal' | 'vibrant';
+  template: 'modern-glass';
 }
 
 const CategoriesSection: React.FC<CategoriesSectionProps> = ({
@@ -18,155 +15,99 @@ const CategoriesSection: React.FC<CategoriesSectionProps> = ({
   onCategoryChange,
   template,
 }) => {
-  if (categories.length === 0) return null;
-
-  if (template === 'future') {
+  if (template === 'modern-glass') {
     return (
-      <section className="py-20 relative">
-        <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-secondary/5"></div>
-        <div className="container mx-auto px-4 relative">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-              Categories
-            </h2>
-            <div className="w-16 h-1 bg-gradient-primary mx-auto mb-6"></div>
-            <p className="text-muted-foreground">Explore our futuristic menu</p>
-          </div>
-          
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6">
-            <Card 
-              className={`cursor-pointer transition-all duration-500 hover:scale-105 backdrop-blur-sm border ${
-                selectedCategory === 'all' 
-                  ? 'ring-2 ring-primary bg-gradient-to-br from-primary/10 to-secondary/10 border-primary/50' 
-                  : 'bg-card/50 border-primary/20 hover:bg-card/70 hover:border-primary/40'
-              }`}
-              onClick={() => onCategoryChange('all')}
-            >
-              <CardContent className="p-6 text-center">
-                <div className="w-14 h-14 mx-auto mb-4 bg-gradient-to-br from-primary to-secondary rounded-2xl flex items-center justify-center shadow-glow">
-                  <Sparkles className="h-7 w-7 text-white" />
-                </div>
-                <h3 className="font-bold text-sm">All Items</h3>
-              </CardContent>
-            </Card>
-            {categories.map((category) => (
-              <Card 
-                key={category.id}
-                className={`cursor-pointer transition-all duration-500 hover:scale-105 backdrop-blur-sm border ${
-                  selectedCategory === category.name 
-                    ? 'ring-2 ring-primary bg-gradient-to-br from-primary/10 to-secondary/10 border-primary/50' 
-                    : 'bg-card/50 border-primary/20 hover:bg-card/70 hover:border-primary/40'
-                }`}
-                onClick={() => onCategoryChange(category.name)}
-              >
-                <CardContent className="p-6 text-center">
-                  <div className="w-14 h-14 mx-auto mb-4 bg-gradient-to-br from-primary to-secondary rounded-2xl flex items-center justify-center shadow-glow">
-                    <Utensils className="h-7 w-7 text-white" />
-                  </div>
-                  <h3 className="font-bold text-sm">{category.name}</h3>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-    );
-  }
-
-  if (template === 'neo') {
-    return (
-      <section className="py-20 bg-muted/30">
+      <section className="py-16 relative">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-black mb-6 text-foreground">MENU CATEGORIES</h2>
-            <div className="flex justify-center">
-              <div className="w-32 h-1 bg-gradient-primary"></div>
+          {/* Section header */}
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+              <span className="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                Browse Categories
+              </span>
+            </h2>
+            <p className="text-lg text-gray-600">Find exactly what you're craving</p>
+          </div>
+
+          {/* Categories carousel/grid */}
+          <div className="relative">
+            {/* Mobile scroll container */}
+            <div className="flex gap-4 overflow-x-auto pb-4 md:hidden scrollbar-hide">
+              {categories.map((category) => (
+                <button
+                  key={category.id}
+                  onClick={() => onCategoryChange(category.name)}
+                  className={`flex-shrink-0 min-w-[120px] h-16 rounded-2xl border transition-all duration-300 ${
+                    selectedCategory === category.name
+                      ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white border-transparent shadow-lg scale-105'
+                      : 'bg-white/10 backdrop-blur-xl border-white/20 text-gray-700 hover:bg-white/20 hover:scale-105'
+                  }`}
+                >
+                  <span className="font-semibold">{category.name}</span>
+                </button>
+              ))}
+            </div>
+
+            {/* Desktop grid */}
+            <div className="hidden md:grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 gap-4">
+              {categories.map((category, index) => (
+                <button
+                  key={category.id}
+                  onClick={() => onCategoryChange(category.name)}
+                  className={`group relative h-20 rounded-2xl border transition-all duration-500 hover:scale-105 ${
+                    selectedCategory === category.name
+                      ? 'bg-gradient-to-br from-indigo-500 to-purple-600 text-white border-transparent shadow-xl scale-105'
+                      : 'bg-white/10 backdrop-blur-xl border-white/20 text-gray-700 hover:bg-white/20 hover:shadow-lg'
+                  }`}
+                  style={{ animationDelay: `${index * 50}ms` }}
+                >
+                  {/* Background decoration */}
+                  <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  
+                  {/* Content */}
+                  <div className="relative z-10 flex items-center justify-center h-full">
+                    <span className="font-semibold text-center px-3">
+                      {category.name}
+                    </span>
+                  </div>
+
+                  {/* Floating indicator */}
+                  {selectedCategory === category.name && (
+                    <div className="absolute -top-1 -right-1 w-3 h-3 bg-yellow-400 rounded-full animate-pulse"></div>
+                  )}
+                </button>
+              ))}
             </div>
           </div>
-          
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-8">
-            <Card 
-              className={`cursor-pointer transition-all duration-300 hover:scale-105 border-2 shadow-lg ${
-                selectedCategory === 'all' 
-                  ? 'border-primary bg-gradient-to-br from-primary/20 to-secondary/20 shadow-primary/25' 
-                  : 'border-primary/30 hover:border-primary shadow-md hover:shadow-lg'
-              }`}
-              onClick={() => onCategoryChange('all')}
-            >
-              <CardContent className="p-8 text-center">
-                <div className="w-16 h-16 mx-auto mb-6 bg-gradient-to-br from-primary to-secondary rounded-xl flex items-center justify-center shadow-lg">
-                  <Zap className="h-8 w-8 text-white" />
-                </div>
-                <h3 className="font-black text-base text-foreground">ALL ITEMS</h3>
-              </CardContent>
-            </Card>
-            {categories.map((category) => (
-              <Card 
-                key={category.id}
-                className={`cursor-pointer transition-all duration-300 hover:scale-105 border-2 shadow-lg ${
-                  selectedCategory === category.name 
-                    ? 'border-primary bg-gradient-to-br from-primary/20 to-secondary/20 shadow-primary/25' 
-                    : 'border-primary/30 hover:border-primary shadow-md hover:shadow-lg'
-                }`}
-                onClick={() => onCategoryChange(category.name)}
-              >
-                <CardContent className="p-8 text-center">
-                  <div className="w-16 h-16 mx-auto mb-6 bg-gradient-to-br from-primary to-secondary rounded-xl flex items-center justify-center shadow-lg">
-                    <Utensils className="h-8 w-8 text-white" />
-                  </div>
-                  <h3 className="font-black text-base text-foreground uppercase">{category.name}</h3>
-                </CardContent>
-              </Card>
-            ))}
+
+          {/* Active category indicator */}
+          <div className="text-center mt-8">
+            <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-xl border border-white/20 rounded-full px-6 py-3 shadow-lg">
+              <div className="w-2 h-2 bg-indigo-500 rounded-full animate-pulse"></div>
+              <span className="text-gray-700 font-medium">
+                Showing: {categories.find(c => c.name === selectedCategory)?.name || 'All Items'}
+              </span>
+            </div>
           </div>
         </div>
       </section>
     );
   }
 
-  // Premium template
+  // Default fallback
   return (
-    <section className="py-24 border-y border-primary/10">
-      <div className="container mx-auto px-8">
-        <div className="text-center mb-20">
-          <h2 className="text-2xl font-light text-foreground tracking-wider mb-8">Our Collections</h2>
-          <div className="w-24 h-px bg-gradient-to-r from-transparent via-primary to-transparent mx-auto mb-6"></div>
-          <p className="text-muted-foreground font-light max-w-md mx-auto">Carefully curated selections for the discerning palate</p>
-        </div>
-        
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-8 max-w-6xl mx-auto">
-          <Card 
-            className={`cursor-pointer transition-all duration-700 hover:shadow-warm group ${
-              selectedCategory === 'all' 
-                ? 'border-2 border-primary/30 bg-primary/5 shadow-warm' 
-                : 'border border-primary/10 hover:border-primary/20 hover:shadow-lg'
-            }`}
-            onClick={() => onCategoryChange('all')}
-          >
-            <CardContent className="p-8 text-center">
-              <div className="w-12 h-12 mx-auto mb-6 border border-primary/20 rounded-full flex items-center justify-center group-hover:border-primary/40 transition-colors">
-                <Crown className="h-6 w-6 text-primary" />
-              </div>
-              <h3 className="font-light tracking-wider text-sm text-foreground">All Collections</h3>
-            </CardContent>
-          </Card>
+    <section className="py-12 bg-white">
+      <div className="container mx-auto px-4">
+        <h2 className="text-2xl font-bold text-center mb-8 text-gray-900">Categories</h2>
+        <div className="flex flex-wrap justify-center gap-4">
           {categories.map((category) => (
-            <Card 
+            <Button
               key={category.id}
-              className={`cursor-pointer transition-all duration-700 hover:shadow-warm group ${
-                selectedCategory === category.name 
-                  ? 'border-2 border-primary/30 bg-primary/5 shadow-warm' 
-                  : 'border border-primary/10 hover:border-primary/20 hover:shadow-lg'
-              }`}
+              variant={selectedCategory === category.name ? "default" : "outline"}
               onClick={() => onCategoryChange(category.name)}
             >
-              <CardContent className="p-8 text-center">
-                <div className="w-12 h-12 mx-auto mb-6 border border-primary/20 rounded-full flex items-center justify-center group-hover:border-primary/40 transition-colors">
-                  <Utensils className="h-6 w-6 text-primary" />
-                </div>
-                <h3 className="font-light tracking-wider text-sm text-foreground">{category.name}</h3>
-              </CardContent>
-            </Card>
+              {category.name}
+            </Button>
           ))}
         </div>
       </div>

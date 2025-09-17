@@ -1,134 +1,120 @@
 import React from 'react';
-import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/enhanced-button';
 import { Vendor } from '@/lib/storage';
-import HugeIcon from '@/components/ui/huge-icon';
+import { Tag, Gift } from 'lucide-react';
 
 interface PromoBannersSectionProps {
   vendor: Vendor;
-  template: 'basic' | 'future' | 'neo' | 'premium' | 'modern' | 'classic' | 'minimal' | 'vibrant';
+  template: 'modern-glass';
 }
 
 const PromoBannersSection: React.FC<PromoBannersSectionProps> = ({ vendor, template }) => {
-  // Sample promotions - in a real app this would come from vendor data
-  const promotions = [
-    {
-      id: '1',
-      icon: vendor.storefront?.icons?.promotions?.speed || 'plus',
-      title: 'Lightning Fast Delivery',
-      description: 'Get your order in 30 minutes or less'
-    },
-    {
-      id: '2',
-      icon: vendor.storefront?.icons?.promotions?.offers || 'star-outline',
-      title: 'Special Offers',
-      description: 'Exclusive deals for our valued customers'
-    },
-    {
-      id: '3',
-      icon: vendor.storefront?.icons?.promotions?.availability || 'bell',
-      title: '24/7 Service',
-      description: 'Order anytime, we\'re always here for you'
-    }
-  ];
-
-  if (template === 'future') {
+  if (template === 'modern-glass') {
     return (
-      <section className="py-20 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-secondary/10"></div>
-        {/* Floating elements */}
-        <div className="absolute top-10 right-20 w-32 h-32 bg-gradient-to-br from-primary/20 to-transparent rounded-full blur-2xl animate-pulse"></div>
-        <div className="absolute bottom-10 left-20 w-40 h-40 bg-gradient-to-br from-secondary/20 to-transparent rounded-full blur-3xl animate-pulse delay-1000"></div>
-        
-        <div className="container mx-auto px-4 relative">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-              Why Choose Us
-            </h2>
-            <div className="w-16 h-1 bg-gradient-primary mx-auto mb-6"></div>
-            <p className="text-lg text-muted-foreground">Experience the future of food delivery</p>
-          </div>
-          
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
-            {promotions.map((promo) => (
-              <Card key={promo.id} className="group p-8 text-center backdrop-blur-sm bg-card/60 border border-primary/20 hover:border-primary/40 transition-all duration-500 hover:scale-105 shadow-glow">
-                <CardContent className="p-0">
-                  <div className="w-16 h-16 mx-auto mb-6 bg-gradient-to-br from-primary to-secondary rounded-2xl flex items-center justify-center shadow-glow group-hover:shadow-glow transition-all duration-500">
-                    <HugeIcon name={promo.icon} size={32} color="white" />
-                  </div>
-                  <h3 className="text-xl font-bold mb-4 text-foreground group-hover:text-primary transition-colors">
-                    {promo.title}
-                  </h3>
-                  <p className="text-muted-foreground leading-relaxed">
-                    {promo.description}
-                  </p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-    );
-  }
-
-  if (template === 'neo') {
-    return (
-      <section className="py-20 bg-background relative">
+      <section className="py-16 relative">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-black mb-6 text-foreground">WHY CHOOSE US</h2>
-            <div className="flex justify-center">
-              <div className="w-32 h-1 bg-gradient-primary"></div>
+          {/* Main promotional banner */}
+          <div className="relative mb-12 overflow-hidden rounded-3xl">
+            <div className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 p-12 md:p-16">
+              <div className="absolute inset-0 bg-black/10"></div>
+              <div className="relative z-10 text-center text-white">
+                <div className="mb-6">
+                  <Gift className="w-16 h-16 mx-auto mb-4 animate-bounce" />
+                </div>
+                <h2 className="text-4xl md:text-6xl font-bold mb-6">
+                  <span className="bg-gradient-to-r from-white via-yellow-200 to-white bg-clip-text text-transparent">
+                    Special Offers
+                  </span>
+                </h2>
+                <p className="text-xl md:text-2xl text-white/90 mb-8 max-w-2xl mx-auto">
+                  Don't miss out on our amazing deals and limited-time offers
+                </p>
+                <Button 
+                  size="xl"
+                  className="bg-white/20 hover:bg-white/30 text-white border border-white/30 backdrop-blur-sm transition-all duration-300 hover:scale-105 shadow-xl"
+                >
+                  <Tag className="w-5 h-5 mr-2" />
+                  View All Offers
+                </Button>
+              </div>
             </div>
-            <p className="text-lg text-muted-foreground mt-4 font-bold uppercase tracking-wider">BOLD. FAST. RELIABLE.</p>
           </div>
-          
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
-            {promotions.map((promo) => (
-              <Card key={promo.id} className="group p-8 text-center border-2 border-primary/30 hover:border-primary transition-all duration-300 shadow-lg hover:shadow-primary/25 bg-background">
-                <CardContent className="p-0">
-                  <div className="w-16 h-16 mx-auto mb-6 bg-gradient-to-br from-primary to-secondary rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                    <HugeIcon name={promo.icon} size={32} color="white" />
-                  </div>
-                  <h3 className="text-xl font-black mb-4 text-foreground group-hover:text-primary transition-colors uppercase tracking-wider">
-                    {promo.title}
-                  </h3>
-                  <p className="text-muted-foreground leading-relaxed font-medium">
-                    {promo.description}
-                  </p>
-                </CardContent>
-              </Card>
-            ))}
+
+          {/* Promotional cards grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {/* Promo Card 1 */}
+            <div className="group bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-8 shadow-xl hover:shadow-2xl transition-all duration-500 hover:scale-[1.02] hover:bg-white/15">
+              <div className="text-center">
+                <div className="w-16 h-16 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
+                  <span className="text-2xl font-bold text-white">20%</span>
+                </div>
+                <h3 className="text-2xl font-bold text-gray-900 mb-4">First Order Discount</h3>
+                <p className="text-gray-600 mb-6">Get 20% off your first order when you sign up today</p>
+                <Button 
+                  className="w-full bg-gradient-to-r from-yellow-500 to-orange-600 hover:from-yellow-600 hover:to-orange-700 text-white border-0 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+                >
+                  Claim Now
+                </Button>
+              </div>
+            </div>
+
+            {/* Promo Card 2 */}
+            <div className="group bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-8 shadow-xl hover:shadow-2xl transition-all duration-500 hover:scale-[1.02] hover:bg-white/15">
+              <div className="text-center">
+                <div className="w-16 h-16 bg-gradient-to-br from-green-400 to-emerald-500 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
+                  <span className="text-2xl">🚚</span>
+                </div>
+                <h3 className="text-2xl font-bold text-gray-900 mb-4">Free Delivery</h3>
+                <p className="text-gray-600 mb-6">Free delivery on orders over ₱500. No minimum spending required</p>
+                <Button 
+                  className="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white border-0 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+                >
+                  Order Now
+                </Button>
+              </div>
+            </div>
+
+            {/* Promo Card 3 */}
+            <div className="group bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-8 shadow-xl hover:shadow-2xl transition-all duration-500 hover:scale-[1.02] hover:bg-white/15 md:col-span-2 lg:col-span-1">
+              <div className="text-center">
+                <div className="w-16 h-16 bg-gradient-to-br from-purple-400 to-pink-500 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
+                  <span className="text-2xl">⭐</span>
+                </div>
+                <h3 className="text-2xl font-bold text-gray-900 mb-4">Loyalty Rewards</h3>
+                <p className="text-gray-600 mb-6">Earn points with every order and get exclusive rewards</p>
+                <Button 
+                  className="w-full bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 text-white border-0 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+                >
+                  Join Now
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          {/* Limited time offer banner */}
+          <div className="mt-12 text-center">
+            <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-6 inline-block shadow-xl">
+              <div className="flex items-center gap-4 text-gray-700">
+                <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
+                <span className="text-lg font-semibold">Limited Time: Offers valid until end of month!</span>
+                <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
     );
   }
 
-  // Premium template
+  // Default fallback
   return (
-    <section className="py-24 bg-muted/10">
-      <div className="container mx-auto px-8">
-        <div className="text-center mb-20">
-          <h2 className="text-2xl font-light text-foreground tracking-wider mb-8">Our Promise</h2>
-          <div className="w-24 h-px bg-gradient-to-r from-transparent via-primary to-transparent mx-auto mb-6"></div>
-          <p className="text-muted-foreground font-light max-w-md mx-auto">Excellence delivered with every order</p>
-        </div>
-        
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-12 max-w-5xl mx-auto">
-          {promotions.map((promo) => (
-            <div key={promo.id} className="group text-center">
-              <div className="w-12 h-12 mx-auto mb-6 border border-primary/20 rounded-full flex items-center justify-center group-hover:border-primary/40 transition-colors duration-700">
-                <HugeIcon name={promo.icon} size={24} className="text-primary" />
-              </div>
-              <h3 className="text-lg font-light mb-4 text-foreground group-hover:text-primary transition-colors tracking-wide">
-                {promo.title}
-              </h3>
-              <p className="text-muted-foreground leading-relaxed font-light">
-                {promo.description}
-              </p>
-            </div>
-          ))}
-        </div>
+    <section className="py-16 bg-gradient-to-r from-indigo-500 to-purple-600">
+      <div className="container mx-auto px-4 text-center text-white">
+        <h2 className="text-3xl font-bold mb-6">Special Offers</h2>
+        <p className="text-xl mb-8">Don't miss out on our amazing deals!</p>
+        <Button size="lg" className="bg-white text-indigo-600 hover:bg-gray-100">
+          View Offers
+        </Button>
       </div>
     </section>
   );

@@ -16,7 +16,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { vendorStorage, menuStorage, orderStorage, customerStorage, loyaltyStorage, categoryStorage, paymentStorage, MenuItem, MenuCategory, MenuVariation, MenuAddOn, SectionConfig } from '@/lib/storage';
 import { getGateway } from '@/lib/paymentGateways';
 import { ShoppingCart, Plus, Minus, Store, User, LogOut, MapPin, Phone, Star, X, ChevronUp, ChevronDown, GripVertical } from 'lucide-react';
-import BasicTemplate from '@/components/templates/BasicTemplate';
+import ModernGlassTemplate from '@/components/templates/ModernGlassTemplate';
 import VendorLogo from '@/components/VendorLogo';
 import MenuItemModal from '@/components/MenuItemModal';
 import CheckoutModal from '@/components/CheckoutModal';
@@ -92,7 +92,7 @@ const Storefront = () => {
       let needsCleanup = false;
       
       // Check for circular references or invalid configs
-      ['basic'].forEach(template => {
+      ['modern-glass'].forEach(template => {
         const config = configs[template];
         if (!Array.isArray(config) || (config as any).message) {
           needsCleanup = true;
@@ -114,7 +114,7 @@ const Storefront = () => {
         
         // Clean up corrupted template configs
         const cleanConfigs = {
-          basic: [...defaultSections]
+          'modern-glass': [...defaultSections]
         };
         
         vendorStorage.update(vendor.id, {
@@ -131,12 +131,12 @@ const Storefront = () => {
 
   useEffect(() => {
     // Migrate vendor template if needed
-    if (vendor && vendor.storefront?.template !== 'basic') {
-      console.log(`Migrating vendor template from ${vendor.storefront?.template} to basic`);
+    if (vendor && vendor.storefront?.template !== 'modern-glass') {
+      console.log(`Migrating vendor template from ${vendor.storefront?.template} to modern-glass`);
       vendorStorage.update(vendor.id, {
         storefront: {
           ...vendor.storefront,
-          template: 'basic'
+          template: 'modern-glass'
         }
       });
       // Trigger a re-render by updating vendor data state
@@ -173,7 +173,7 @@ const Storefront = () => {
     ];
     
     // Load section configuration from vendor settings
-    const template = previewTemplate || vendor.storefront?.template || 'basic';
+    const template = previewTemplate || vendor.storefront?.template || 'modern-glass';
     const templateConfig = vendor.storefront?.templateConfigs?.[template];
     
     // Use stored config if valid (array), otherwise use defaults
@@ -662,7 +662,7 @@ const Storefront = () => {
       sections: sectionConfig,
     };
 
-    return <BasicTemplate {...templateProps} />;
+    return <ModernGlassTemplate {...templateProps} />;
   };
 
   return (

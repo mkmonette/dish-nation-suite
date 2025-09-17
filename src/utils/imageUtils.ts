@@ -167,9 +167,9 @@ export const getBase64ImageSize = (base64: string): number => {
 };
 
 /**
- * Default placeholder images for logo and banner
+ * Default placeholder images for various types
  */
-export const getDefaultPlaceholder = (type: 'logo' | 'banner'): string => {
+export const getDefaultPlaceholder = (type: 'logo' | 'banner' | 'hero' | 'food' | 'profile'): string => {
   if (type === 'logo') {
     // Simple SVG logo placeholder
     return `data:image/svg+xml;base64,${btoa(`
@@ -180,8 +180,41 @@ export const getDefaultPlaceholder = (type: 'logo' | 'banner'): string => {
         <rect x="70" y="150" width="60" height="6" fill="#d1d5db" rx="3"/>
       </svg>
     `)}`;
+  } else if (type === 'food') {
+    // Food placeholder
+    return `data:image/svg+xml;base64,${btoa(`
+      <svg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300">
+        <rect width="400" height="300" fill="#f9fafb"/>
+        <circle cx="200" cy="150" r="80" fill="#e5e7eb"/>
+        <circle cx="200" cy="150" r="50" fill="#9ca3af"/>
+        <rect x="160" y="180" width="80" height="8" fill="#6b7280" rx="4"/>
+      </svg>
+    `)}`;
+  } else if (type === 'hero') {
+    // Hero background placeholder
+    return `data:image/svg+xml;base64,${btoa(`
+      <svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080">
+        <defs>
+          <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#6366f1;stop-opacity:1" />
+            <stop offset="50%" style="stop-color:#8b5cf6;stop-opacity:1" />
+            <stop offset="100%" style="stop-color:#ec4899;stop-opacity:1" />
+          </linearGradient>
+        </defs>
+        <rect width="1920" height="1080" fill="url(#grad)"/>
+      </svg>
+    `)}`;
+  } else if (type === 'profile') {
+    // Profile placeholder
+    return `data:image/svg+xml;base64,${btoa(`
+      <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100">
+        <rect width="100" height="100" fill="#f3f4f6" rx="50"/>
+        <circle cx="50" cy="35" r="15" fill="#9ca3af"/>
+        <path d="M25 75 Q25 60 50 60 Q75 60 75 75" fill="#9ca3af"/>
+      </svg>
+    `)}`;
   } else {
-    // Simple SVG banner placeholder
+    // Banner/default placeholder
     return `data:image/svg+xml;base64,${btoa(`
       <svg xmlns="http://www.w3.org/2000/svg" width="800" height="400" viewBox="0 0 800 400">
         <rect width="800" height="400" fill="#f9fafb"/>

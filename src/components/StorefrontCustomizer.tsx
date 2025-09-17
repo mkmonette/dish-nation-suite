@@ -28,7 +28,7 @@ interface StorefrontCustomizerProps {
 }
 
 interface TemplateConfig {
-  template: 'basic';
+  template: 'modern-glass';
   sections: SectionConfig[];
 }
 
@@ -49,7 +49,7 @@ const StorefrontCustomizer: React.FC<StorefrontCustomizerProps> = ({ vendor, onU
   ];
 
   const [settings, setSettings] = useState({
-    template: 'basic' as 'basic',
+    template: 'modern-glass' as 'modern-glass',
     colors: {
       primary: '#3b82f6',
       secondary: '#10b981',
@@ -66,7 +66,7 @@ const StorefrontCustomizer: React.FC<StorefrontCustomizerProps> = ({ vendor, onU
   // Initialize template configs properly, avoiding circular references
   const initializeTemplateConfigs = () => {
     const configs: Record<string, SectionConfig[]> = {};
-    const templates = ['basic'] as const;
+    const templates = ['modern-glass'] as const;
     
     templates.forEach(template => {
       const storedConfig = vendor.storefront?.templateConfigs?.[template];
@@ -87,9 +87,9 @@ const StorefrontCustomizer: React.FC<StorefrontCustomizerProps> = ({ vendor, onU
 
   const templates = [
     { 
-      value: 'basic', 
-      label: 'Basic', 
-      description: 'Clean and simple design with all essential features',
+      value: 'modern-glass', 
+      label: 'Modern Glass', 
+      description: 'Sleek glassmorphism design with modern layouts and responsive elements',
       preview: '/api/placeholder/300/200'
     },
   ];
@@ -115,7 +115,7 @@ const StorefrontCustomizer: React.FC<StorefrontCustomizerProps> = ({ vendor, onU
     setIsLoading(false);
   };
 
-  const handleTemplateChange = (template: 'basic') => {
+  const handleTemplateChange = (template: 'modern-glass') => {
     setSettings(prev => ({ ...prev, template }));
     
     // Auto-save template change
@@ -127,7 +127,7 @@ const StorefrontCustomizer: React.FC<StorefrontCustomizerProps> = ({ vendor, onU
     window.dispatchEvent(new CustomEvent('vendorUpdated'));
   };
 
-  const handleApplyTemplate = (template: 'basic') => {
+  const handleApplyTemplate = (template: 'modern-glass') => {
     handleTemplateChange(template);
     toast({
       title: 'Template Applied!',
@@ -335,7 +335,7 @@ const StorefrontCustomizer: React.FC<StorefrontCustomizerProps> = ({ vendor, onU
                         <Button 
                           variant={settings.template === template.value ? "secondary" : "default"}
                           size="sm"
-                          onClick={() => handleApplyTemplate(template.value as 'basic')}
+                          onClick={() => handleApplyTemplate(template.value as 'modern-glass')}
                           className="flex-1"
                           disabled={settings.template === template.value}
                         >

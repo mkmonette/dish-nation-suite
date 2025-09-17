@@ -8,7 +8,7 @@ export interface SectionConfig {
 }
 
 export interface StorefrontSettings {
-  template: 'basic' | 'future' | 'neo' | 'premium' | 'modern' | 'classic' | 'minimal' | 'vibrant'; // Temporarily allowing old templates for migration
+  template: 'modern-glass';
   colors: {
     primary: string;
     secondary: string;
@@ -294,7 +294,7 @@ export const vendorStorage = {
       id: Date.now().toString(),
       status: 'pending',
       storefront: {
-        template: 'basic',
+        template: 'modern-glass',
         colors: {
           primary: '#FF6B35',
           secondary: '#2ECC71',
