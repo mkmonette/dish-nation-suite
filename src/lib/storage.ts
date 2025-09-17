@@ -8,7 +8,7 @@ export interface SectionConfig {
 }
 
 export interface StorefrontSettings {
-  template: 'basic';
+  template: 'basic' | 'future' | 'neo' | 'premium' | 'modern' | 'classic' | 'minimal' | 'vibrant'; // Temporarily allowing old templates for migration
   colors: {
     primary: string;
     secondary: string;

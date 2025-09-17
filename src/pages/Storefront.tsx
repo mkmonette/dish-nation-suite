@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { migrateVendorTemplates } from '@/utils/templateMigration';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { useCustomer } from '@/contexts/CustomerContext';
 import { useTenant } from '@/contexts/TenantContext';
@@ -131,8 +130,18 @@ const Storefront = () => {
   }, [vendor]);
 
   useEffect(() => {
-    // Run template migration on first load
-    migrateVendorTemplates();
+    // Migrate vendor template if needed
+    if (vendor && vendor.storefront?.template !== 'basic') {
+      console.log(`Migrating vendor template from ${vendor.storefront?.template} to basic`);
+      vendorStorage.update(vendor.id, {
+        storefront: {
+          ...vendor.storefront,
+          template: 'basic'
+        }
+      });
+      // Trigger a re-render by updating vendor data state
+      setVendorData(Date.now());
+    }
     
     if (!vendor) {
       navigate('/');
