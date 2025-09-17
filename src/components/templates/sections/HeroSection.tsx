@@ -2,6 +2,7 @@ import React from 'react';
 import { Vendor } from '@/lib/storage';
 import { MapPin, Clock, Star, Sparkles, Zap, Cpu, Heart } from 'lucide-react';
 import VendorLogo from '@/components/VendorLogo';
+import { Button } from '@/components/ui/enhanced-button';
 
 interface HeroSectionProps {
   vendor: Vendor;
@@ -9,6 +10,11 @@ interface HeroSectionProps {
 }
 
 const HeroSection: React.FC<HeroSectionProps> = ({ vendor, template }) => {
+  const customStyle = {
+    '--primary-color': vendor.storefront?.colors?.primary || '#3b82f6',
+    '--secondary-color': vendor.storefront?.colors?.secondary || '#10b981',
+    '--accent-color': vendor.storefront?.colors?.accent || '#f59e0b',
+  } as React.CSSProperties;
   // Template 1: Minimalist Grid (future)
   if (template === 'future') {
     return (
