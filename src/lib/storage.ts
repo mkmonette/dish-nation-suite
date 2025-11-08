@@ -5,6 +5,25 @@ export interface SectionConfig {
   name: string;
   enabled: boolean;
   order: number;
+  settings?: {
+    variant?: string;
+    layout?: string;
+    backgroundColor?: string;
+    textColor?: string;
+    columns?: number;
+    showImages?: boolean;
+    autoplay?: boolean;
+    [key: string]: any;
+  };
+  content?: {
+    title?: string;
+    subtitle?: string;
+    description?: string;
+    images?: string[];
+    links?: Array<{ label: string; url: string }>;
+    items?: any[];
+    [key: string]: any;
+  };
 }
 
 export interface StorefrontSettings {

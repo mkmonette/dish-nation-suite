@@ -1,12 +1,13 @@
 import React from 'react';
 import { Button } from '@/components/ui/enhanced-button';
-import { MenuCategory } from '@/lib/storage';
+import { MenuCategory, SectionConfig } from '@/lib/storage';
 
 interface CategoriesSectionProps {
   categories: MenuCategory[];
   selectedCategory: string;
   onCategoryChange: (category: string) => void;
   template: 'modern-glass';
+  section?: SectionConfig;
 }
 
 const CategoriesSection: React.FC<CategoriesSectionProps> = ({
@@ -14,6 +15,7 @@ const CategoriesSection: React.FC<CategoriesSectionProps> = ({
   selectedCategory,
   onCategoryChange,
   template,
+  section,
 }) => {
   if (template === 'modern-glass') {
     return (

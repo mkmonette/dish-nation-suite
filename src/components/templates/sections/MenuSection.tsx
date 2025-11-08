@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button } from '@/components/ui/enhanced-button';
-import { MenuItem, Vendor, MenuCategory } from '@/lib/storage';
+import { MenuItem, Vendor, MenuCategory, SectionConfig } from '@/lib/storage';
 import { Plus, Search, Filter } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { getDefaultPlaceholder } from '@/utils/imageUtils';
@@ -13,6 +13,7 @@ interface MenuSectionProps {
   onCategoryChange: (category: string) => void;
   onAddToCart: (item: MenuItem, quantity?: number, selectedVariation?: any, selectedAddOns?: any[]) => void;
   template: 'modern-glass';
+  section?: SectionConfig;
 }
 
 const MenuSection: React.FC<MenuSectionProps> = ({
@@ -23,6 +24,7 @@ const MenuSection: React.FC<MenuSectionProps> = ({
   onCategoryChange,
   onAddToCart,
   template,
+  section,
 }) => {
   const [searchTerm, setSearchTerm] = React.useState('');
 

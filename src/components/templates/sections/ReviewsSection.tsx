@@ -1,14 +1,15 @@
 import React from 'react';
 import { Star, Quote } from 'lucide-react';
-import { Vendor } from '@/lib/storage';
+import { Vendor, SectionConfig } from '@/lib/storage';
 import { getDefaultPlaceholder } from '@/utils/imageUtils';
 
 interface ReviewsSectionProps {
   vendor: Vendor;
   template: 'modern-glass';
+  section?: SectionConfig;
 }
 
-const ReviewsSection: React.FC<ReviewsSectionProps> = ({ vendor, template }) => {
+const ReviewsSection: React.FC<ReviewsSectionProps> = ({ vendor, template, section }) => {
   // Sample reviews data
   const reviews = [
     {

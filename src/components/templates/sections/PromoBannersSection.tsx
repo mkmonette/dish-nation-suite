@@ -1,14 +1,15 @@
 import React from 'react';
 import { Button } from '@/components/ui/enhanced-button';
-import { Vendor } from '@/lib/storage';
+import { Vendor, SectionConfig } from '@/lib/storage';
 import { Tag, Gift } from 'lucide-react';
 
 interface PromoBannersSectionProps {
   vendor: Vendor;
   template: 'modern-glass';
+  section?: SectionConfig;
 }
 
-const PromoBannersSection: React.FC<PromoBannersSectionProps> = ({ vendor, template }) => {
+const PromoBannersSection: React.FC<PromoBannersSectionProps> = ({ vendor, template, section }) => {
   if (template === 'modern-glass') {
     return (
       <section className="py-16 relative">

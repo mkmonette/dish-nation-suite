@@ -1,15 +1,16 @@
 import React from 'react';
 import { Button } from '@/components/ui/enhanced-button';
-import { Vendor } from '@/lib/storage';
+import { Vendor, SectionConfig } from '@/lib/storage';
 import { Facebook, Instagram, Twitter, Heart, MapPin, Phone } from 'lucide-react';
 
 interface FooterSectionProps {
   vendor: Vendor;
   cartComponent: React.ReactNode;
   template: 'modern-glass';
+  section?: SectionConfig;
 }
 
-const FooterSection: React.FC<FooterSectionProps> = ({ vendor, cartComponent, template }) => {
+const FooterSection: React.FC<FooterSectionProps> = ({ vendor, cartComponent, template, section }) => {
   const currentYear = new Date().getFullYear();
 
   if (template === 'modern-glass') {

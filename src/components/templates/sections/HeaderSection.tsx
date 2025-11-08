@@ -1,11 +1,13 @@
 import React from 'react';
+import { SectionConfig } from '@/lib/storage';
 
 interface HeaderSectionProps {
   headerComponent: React.ReactNode;
   template?: 'modern-glass';
+  section?: SectionConfig;
 }
 
-const HeaderSection: React.FC<HeaderSectionProps> = ({ headerComponent, template }) => {
+const HeaderSection: React.FC<HeaderSectionProps> = ({ headerComponent, template, section }) => {
   // Modern Glass template - floating glassmorphism header
   if (template === 'modern-glass') {
     return (

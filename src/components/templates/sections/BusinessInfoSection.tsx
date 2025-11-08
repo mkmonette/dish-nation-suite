@@ -1,13 +1,14 @@
 import React from 'react';
-import { Vendor } from '@/lib/storage';
+import { Vendor, SectionConfig } from '@/lib/storage';
 import { MapPin, Phone, Clock, Mail } from 'lucide-react';
 
 interface BusinessInfoSectionProps {
   vendor: Vendor;
   template: 'modern-glass';
+  section?: SectionConfig;
 }
 
-const BusinessInfoSection: React.FC<BusinessInfoSectionProps> = ({ vendor, template }) => {
+const BusinessInfoSection: React.FC<BusinessInfoSectionProps> = ({ vendor, template, section }) => {
   if (template === 'modern-glass') {
     return (
       <section className="py-20 relative">

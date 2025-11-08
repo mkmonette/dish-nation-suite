@@ -1,14 +1,15 @@
 import React from 'react';
 import { Button } from '@/components/ui/enhanced-button';
-import { Vendor } from '@/lib/storage';
+import { Vendor, SectionConfig } from '@/lib/storage';
 import { getDefaultPlaceholder } from '@/utils/imageUtils';
 
 interface HeroSectionProps {
   vendor: Vendor;
   template: 'modern-glass';
+  section?: SectionConfig;
 }
 
-const HeroSection: React.FC<HeroSectionProps> = ({ vendor, template }) => {
+const HeroSection: React.FC<HeroSectionProps> = ({ vendor, template, section }) => {
   const heroText = vendor.storefront?.heroText || `Welcome to ${vendor.storeName}`;
   const heroSubtext = vendor.storefront?.heroSubtext || 'Experience exceptional food and service';
   const heroBanner = vendor.storefront?.banner;

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button } from '@/components/ui/enhanced-button';
 import { Badge } from '@/components/ui/badge';
-import { MenuItem, Vendor } from '@/lib/storage';
+import { MenuItem, Vendor, SectionConfig } from '@/lib/storage';
 import { Plus, Star } from 'lucide-react';
 import { getDefaultPlaceholder } from '@/utils/imageUtils';
 
@@ -10,6 +10,7 @@ interface FeaturedProductsSectionProps {
   menuItems: MenuItem[];
   onAddToCart: (item: MenuItem, quantity?: number, selectedVariation?: any, selectedAddOns?: any[]) => void;
   template: 'modern-glass';
+  section?: SectionConfig;
 }
 
 const FeaturedProductsSection: React.FC<FeaturedProductsSectionProps> = ({
@@ -17,6 +18,7 @@ const FeaturedProductsSection: React.FC<FeaturedProductsSectionProps> = ({
   menuItems,
   onAddToCart,
   template,
+  section,
 }) => {
   const featuredItems = menuItems.slice(0, 6);
 

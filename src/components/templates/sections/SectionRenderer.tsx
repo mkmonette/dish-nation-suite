@@ -9,6 +9,19 @@ import MenuSection from './MenuSection';
 import ReviewsSection from './ReviewsSection';
 import BusinessInfoSection from './BusinessInfoSection';
 import FooterSection from './FooterSection';
+import ServicesSection from './ServicesSection';
+import HowItWorksSection from './HowItWorksSection';
+import GallerySection from './GallerySection';
+import CTASection from './CTASection';
+import NewsletterSection from './NewsletterSection';
+import FAQSection from './FAQSection';
+import TeamSection from './TeamSection';
+import ContactSection from './ContactSection';
+import StatsSection from './StatsSection';
+import OffersSection from './OffersSection';
+import DeliverySection from './DeliverySection';
+import PaymentMethodsSection from './PaymentMethodsSection';
+import PartnersSection from './PartnersSection';
 
 interface SectionRendererProps {
   sections: SectionConfig[];
@@ -37,21 +50,34 @@ const SectionRenderer: React.FC<SectionRendererProps> = ({
   template,
 }) => {
   const renderSection = (section: SectionConfig) => {
-    if (!section.enabled) return null;
+    // Show disabled message for disabled sections
+    if (!section.enabled) {
+      return (
+        <div key={section.id} className="py-8 px-4 bg-muted/30 border border-dashed border-muted-foreground/20">
+          <div className="container mx-auto text-center">
+            <p className="text-muted-foreground italic">
+              This section is disabled in configuration. Enable it in Storefront Customizer to see it here.
+            </p>
+            <p className="text-xs text-muted-foreground/60 mt-2">Section: {section.name}</p>
+          </div>
+        </div>
+      );
+    }
 
     switch (section.id) {
       case 'header':
-        return <HeaderSection key={section.id} headerComponent={headerComponent} template={template} />;
+        return <HeaderSection key={section.id} headerComponent={headerComponent} template={template} section={section} />;
       case 'hero':
-        return <HeroSection key={section.id} vendor={vendor} template={template} />;
+        return <HeroSection key={section.id} vendor={vendor} template={template} section={section} />;
       case 'featured':
         return (
           <FeaturedProductsSection
             key={section.id}
             vendor={vendor}
-            menuItems={menuItems.slice(0, 6)} // Show first 6 items as featured
+            menuItems={menuItems.slice(0, 6)}
             onAddToCart={onAddToCart}
             template={template}
+            section={section}
           />
         );
       case 'categories':
@@ -62,10 +88,11 @@ const SectionRenderer: React.FC<SectionRendererProps> = ({
             selectedCategory={selectedCategory}
             onCategoryChange={onCategoryChange}
             template={template}
+            section={section}
           />
         );
       case 'promos':
-        return <PromoBannersSection key={section.id} vendor={vendor} template={template} />;
+        return <PromoBannersSection key={section.id} vendor={vendor} template={template} section={section} />;
       case 'menu':
         return (
           <MenuSection
@@ -77,14 +104,41 @@ const SectionRenderer: React.FC<SectionRendererProps> = ({
             onCategoryChange={onCategoryChange}
             onAddToCart={onAddToCart}
             template={template}
+            section={section}
           />
         );
+      case 'about':
+        return <BusinessInfoSection key={section.id} vendor={vendor} template={template} section={section} />;
+      case 'services':
+        return <ServicesSection key={section.id} vendor={vendor} template={template} section={section} />;
+      case 'howItWorks':
+        return <HowItWorksSection key={section.id} vendor={vendor} template={template} section={section} />;
       case 'reviews':
-        return <ReviewsSection key={section.id} vendor={vendor} template={template} />;
-      case 'business':
-        return <BusinessInfoSection key={section.id} vendor={vendor} template={template} />;
+        return <ReviewsSection key={section.id} vendor={vendor} template={template} section={section} />;
+      case 'gallery':
+        return <GallerySection key={section.id} vendor={vendor} template={template} section={section} />;
+      case 'cta':
+        return <CTASection key={section.id} vendor={vendor} template={template} section={section} />;
+      case 'newsletter':
+        return <NewsletterSection key={section.id} vendor={vendor} template={template} section={section} />;
+      case 'faq':
+        return <FAQSection key={section.id} vendor={vendor} template={template} section={section} />;
+      case 'team':
+        return <TeamSection key={section.id} vendor={vendor} template={template} section={section} />;
+      case 'contact':
+        return <ContactSection key={section.id} vendor={vendor} template={template} section={section} />;
+      case 'stats':
+        return <StatsSection key={section.id} vendor={vendor} template={template} section={section} />;
+      case 'offers':
+        return <OffersSection key={section.id} vendor={vendor} template={template} section={section} />;
+      case 'delivery':
+        return <DeliverySection key={section.id} vendor={vendor} template={template} section={section} />;
+      case 'payment':
+        return <PaymentMethodsSection key={section.id} vendor={vendor} template={template} section={section} />;
+      case 'partners':
+        return <PartnersSection key={section.id} vendor={vendor} template={template} section={section} />;
       case 'footer':
-        return <FooterSection key={section.id} vendor={vendor} cartComponent={cartComponent} template={template} />;
+        return <FooterSection key={section.id} vendor={vendor} cartComponent={cartComponent} template={template} section={section} />;
       default:
         return null;
     }

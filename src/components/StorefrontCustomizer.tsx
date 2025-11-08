@@ -37,15 +37,28 @@ const StorefrontCustomizer: React.FC<StorefrontCustomizerProps> = ({ vendor, onU
   const [activeSection, setActiveSection] = useState('template');
   
   const defaultSections: SectionConfig[] = [
-    { id: 'header', name: 'Header', enabled: true, order: 0 },
-    { id: 'hero', name: 'Hero Banner', enabled: true, order: 1 },
-    { id: 'featured', name: 'Featured Products', enabled: true, order: 2 },
-    { id: 'categories', name: 'Categories', enabled: true, order: 3 },
-    { id: 'promos', name: 'Promo Banners', enabled: true, order: 4 },
-    { id: 'menu', name: 'Full Menu', enabled: true, order: 5 },
-    { id: 'reviews', name: 'Customer Reviews', enabled: true, order: 6 },
-    { id: 'business', name: 'Business Info', enabled: true, order: 7 },
-    { id: 'footer', name: 'Footer', enabled: true, order: 8 },
+    { id: 'header', name: 'Header/Navigation', enabled: true, order: 0, settings: { variant: 'sticky' }, content: {} },
+    { id: 'hero', name: 'Hero Banner', enabled: true, order: 1, settings: { layout: 'fullscreen' }, content: {} },
+    { id: 'featured', name: 'Featured Products', enabled: true, order: 2, settings: { columns: 3 }, content: {} },
+    { id: 'categories', name: 'Categories Grid', enabled: true, order: 3, settings: { layout: 'grid' }, content: {} },
+    { id: 'promos', name: 'Promo Banners', enabled: true, order: 4, settings: { autoplay: true }, content: {} },
+    { id: 'menu', name: 'Full Menu', enabled: true, order: 5, settings: { layout: 'list' }, content: {} },
+    { id: 'about', name: 'About/Story', enabled: false, order: 6, settings: {}, content: {} },
+    { id: 'services', name: 'Services/Features', enabled: false, order: 7, settings: { columns: 3 }, content: {} },
+    { id: 'howItWorks', name: 'How It Works', enabled: false, order: 8, settings: { layout: 'steps' }, content: {} },
+    { id: 'reviews', name: 'Customer Reviews', enabled: true, order: 9, settings: { layout: 'carousel' }, content: {} },
+    { id: 'gallery', name: 'Gallery/Media', enabled: false, order: 10, settings: { columns: 4 }, content: {} },
+    { id: 'cta', name: 'Call to Action', enabled: false, order: 11, settings: { variant: 'banner' }, content: {} },
+    { id: 'newsletter', name: 'Newsletter Signup', enabled: false, order: 12, settings: {}, content: {} },
+    { id: 'faq', name: 'FAQ Section', enabled: false, order: 13, settings: {}, content: {} },
+    { id: 'team', name: 'Team Section', enabled: false, order: 14, settings: { columns: 4 }, content: {} },
+    { id: 'contact', name: 'Contact Info', enabled: false, order: 15, settings: {}, content: {} },
+    { id: 'stats', name: 'Social Proof/Stats', enabled: false, order: 16, settings: { layout: 'inline' }, content: {} },
+    { id: 'offers', name: 'Special Offers', enabled: false, order: 17, settings: {}, content: {} },
+    { id: 'delivery', name: 'Delivery/Shipping Info', enabled: false, order: 18, settings: {}, content: {} },
+    { id: 'payment', name: 'Payment Methods', enabled: false, order: 19, settings: {}, content: {} },
+    { id: 'partners', name: 'Partners/Brands', enabled: false, order: 20, settings: { layout: 'logos' }, content: {} },
+    { id: 'footer', name: 'Footer', enabled: true, order: 21, settings: { variant: 'detailed' }, content: {} },
   ];
 
   const [settings, setSettings] = useState({
