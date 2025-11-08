@@ -65,8 +65,8 @@ const StorefrontCustomizer: React.FC<StorefrontCustomizerProps> = ({ vendor, onU
     template: 'modern-glass' as 'modern-glass',
     colors: {
       primary: '#3b82f6',
-      secondary: '#10b981',
-      accent: '#f59e0b',
+      secondary: '#8b5cf6',
+      accent: '#06b6d4',
     },
     heroText: '',
     heroSubtext: '',
@@ -98,12 +98,23 @@ const StorefrontCustomizer: React.FC<StorefrontCustomizerProps> = ({ vendor, onU
   
   const [isLoading, setIsLoading] = useState(false);
 
+  const templateDefaults = {
+    'modern-glass': {
+      colors: {
+        primary: '#3b82f6',
+        secondary: '#8b5cf6',
+        accent: '#06b6d4',
+      }
+    }
+  };
+
   const templates = [
     { 
       value: 'modern-glass', 
       label: 'Modern Glass', 
       description: 'Sleek glassmorphism design with modern layouts and responsive elements',
-      preview: '/api/placeholder/300/200'
+      preview: '/api/placeholder/300/200',
+      defaultColors: templateDefaults['modern-glass'].colors
     },
   ];
 
@@ -224,6 +235,29 @@ const StorefrontCustomizer: React.FC<StorefrontCustomizerProps> = ({ vendor, onU
     
     // Notify other windows/tabs that vendor data has changed
     window.dispatchEvent(new CustomEvent('vendorUpdated'));
+  };
+
+  const handleResetColors = () => {
+    const currentTemplate = templates.find(t => t.value === settings.template);
+    if (!currentTemplate) return;
+
+    const newSettings = {
+      ...settings,
+      colors: { ...currentTemplate.defaultColors }
+    };
+    setSettings(newSettings);
+    
+    // Auto-save for instant updates
+    vendorStorage.update(vendor.id, { storefront: newSettings });
+    onUpdate({ ...vendor, storefront: newSettings });
+    
+    // Notify other windows/tabs that vendor data has changed
+    window.dispatchEvent(new CustomEvent('vendorUpdated'));
+    
+    toast({
+      title: 'Colors Reset',
+      description: 'Brand colors have been reset to template defaults.'
+    });
   };
 
   const handleImageChange = (type: 'logo' | 'banner', imageData: string | null) => {
@@ -429,11 +463,24 @@ const StorefrontCustomizer: React.FC<StorefrontCustomizerProps> = ({ vendor, onU
         return (
           <Card>
             <CardHeader>
-              <CardTitle>Brand Colors</CardTitle>
-              <CardDescription>Changes apply instantly across your storefront</CardDescription>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle>Brand Colors</CardTitle>
+                  <CardDescription>Changes apply instantly across your storefront</CardDescription>
+                </div>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={handleResetColors}
+                  className="flex items-center gap-2"
+                >
+                  <Palette className="h-4 w-4" />
+                  Reset to Default
+                </Button>
+              </div>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <div className="space-y-2">
                   <Label htmlFor="primary-color">Primary Color</Label>
                   <div className="flex items-center space-x-2">
@@ -451,6 +498,27 @@ const StorefrontCustomizer: React.FC<StorefrontCustomizerProps> = ({ vendor, onU
                       className="flex-1"
                     />
                   </div>
+                  <p className="text-xs text-muted-foreground">Main brand color for buttons and highlights</p>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="secondary-color">Secondary Color</Label>
+                  <div className="flex items-center space-x-2">
+                    <Input
+                      id="secondary-color"
+                      type="color"
+                      value={settings.colors.secondary}
+                      onChange={(e) => handleColorChange('secondary', e.target.value)}
+                      className="w-12 h-10 p-1 border-2"
+                    />
+                    <Input
+                      value={settings.colors.secondary}
+                      onChange={(e) => handleColorChange('secondary', e.target.value)}
+                      placeholder="#8b5cf6"
+                      className="flex-1"
+                    />
+                  </div>
+                  <p className="text-xs text-muted-foreground">Supporting color for accents and sections</p>
                 </div>
                 
                 <div className="space-y-2">
@@ -466,9 +534,41 @@ const StorefrontCustomizer: React.FC<StorefrontCustomizerProps> = ({ vendor, onU
                     <Input
                       value={settings.colors.accent}
                       onChange={(e) => handleColorChange('accent', e.target.value)}
-                      placeholder="#f59e0b"
+                      placeholder="#06b6d4"
                       className="flex-1"
                     />
+                  </div>
+                  <p className="text-xs text-muted-foreground">Complementary color for CTAs and badges</p>
+                </div>
+              </div>
+
+              {/* Color Preview */}
+              <div className="mt-6 p-6 rounded-lg border bg-muted/30">
+                <h4 className="text-sm font-semibold mb-4">Color Preview</h4>
+                <div className="flex gap-4">
+                  <div className="flex-1 space-y-2">
+                    <div 
+                      className="h-20 rounded-lg shadow-sm flex items-center justify-center text-white font-medium"
+                      style={{ backgroundColor: settings.colors.primary }}
+                    >
+                      Primary
+                    </div>
+                  </div>
+                  <div className="flex-1 space-y-2">
+                    <div 
+                      className="h-20 rounded-lg shadow-sm flex items-center justify-center text-white font-medium"
+                      style={{ backgroundColor: settings.colors.secondary }}
+                    >
+                      Secondary
+                    </div>
+                  </div>
+                  <div className="flex-1 space-y-2">
+                    <div 
+                      className="h-20 rounded-lg shadow-sm flex items-center justify-center text-white font-medium"
+                      style={{ backgroundColor: settings.colors.accent }}
+                    >
+                      Accent
+                    </div>
                   </div>
                 </div>
               </div>
