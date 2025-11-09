@@ -151,10 +151,19 @@ const Storefront = () => {
     // Migrate vendor template if needed
     if (vendor && vendor.storefront?.template !== 'modern-glass') {
       console.log(`Migrating vendor template from ${vendor.storefront?.template} to modern-glass`);
+      
+      // Migrate templateConfigs to new template key
+      const oldTemplate = vendor.storefront.template;
+      const oldConfigs = vendor.storefront.templateConfigs?.[oldTemplate];
+      
       vendorStorage.update(vendor.id, {
         storefront: {
           ...vendor.storefront,
-          template: 'modern-glass'
+          template: 'modern-glass',
+          templateConfigs: {
+            ...vendor.storefront.templateConfigs,
+            'modern-glass': oldConfigs || vendor.storefront.templateConfigs?.['modern-glass']
+          }
         }
       });
       // Trigger a re-render by updating vendor data state
