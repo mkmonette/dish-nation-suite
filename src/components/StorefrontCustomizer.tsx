@@ -160,10 +160,14 @@ const StorefrontCustomizer: React.FC<StorefrontCustomizerProps> = ({ vendor, onU
   };
 
   const handleSectionToggle = (sectionId: string, enabled: boolean) => {
+    console.log('Toggling section:', sectionId, 'to enabled:', enabled);
+    
     const currentTemplate = settings.template;
     const updatedSections = templateConfigs[currentTemplate].map(section =>
       section.id === sectionId ? { ...section, enabled } : section
     );
+    
+    console.log('Updated sections:', updatedSections.map(s => ({ id: s.id, enabled: s.enabled })));
     
     const newTemplateConfigs = {
       ...templateConfigs,
@@ -173,15 +177,20 @@ const StorefrontCustomizer: React.FC<StorefrontCustomizerProps> = ({ vendor, onU
     setTemplateConfigs(newTemplateConfigs);
     
     // Auto-save section changes
-    vendorStorage.update(vendor.id, { 
+    const updatedVendor = vendorStorage.update(vendor.id, { 
       storefront: { ...settings, templateConfigs: newTemplateConfigs } 
     });
+    
+    console.log('Vendor updated in storage:', updatedVendor?.storeName);
+    console.log('Storage now has templateConfigs:', updatedVendor?.storefront?.templateConfigs?.[currentTemplate]?.map(s => ({ id: s.id, enabled: s.enabled })));
+    
     onUpdate({ 
       ...vendor, 
       storefront: { ...settings, templateConfigs: newTemplateConfigs } 
     });
     
     // Notify other windows/tabs that vendor data has changed
+    console.log('Dispatching vendorUpdated event');
     window.dispatchEvent(new CustomEvent('vendorUpdated'));
   };
 

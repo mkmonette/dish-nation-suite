@@ -55,15 +55,19 @@ const Storefront = () => {
       console.log('No vendor slug provided');
       return null;
     }
-    console.log('Looking for vendor with slug:', vendorSlug);
+    console.log('Fetching vendor with slug:', vendorSlug, 'at timestamp:', vendorData);
     const foundVendor = vendorStorage.getBySlug(vendorSlug);
-    console.log('Found vendor:', foundVendor);
+    console.log('Found vendor:', foundVendor?.storeName);
+    if (foundVendor?.storefront?.templateConfigs) {
+      console.log('Vendor has templateConfigs:', Object.keys(foundVendor.storefront.templateConfigs));
+    }
     return foundVendor;
   }, [vendorSlug, vendorData]); // Add vendorData dependency
 
   // Listen for vendor data changes
   useEffect(() => {
     const handleStorageChange = () => {
+      console.log('Storage changed, refreshing vendor data');
       setVendorData(Date.now()); // Trigger vendor reload
     };
 
@@ -71,6 +75,7 @@ const Storefront = () => {
     
     // Also listen for custom events from the same window
     const handleVendorUpdate = () => {
+      console.log('Vendor updated event received, refreshing vendor data');
       setVendorData(Date.now());
     };
     
@@ -202,6 +207,9 @@ const Storefront = () => {
     const template = previewTemplate || vendor.storefront?.template || 'modern-glass';
     const templateConfig = vendor.storefront?.templateConfigs?.[template];
     
+    console.log('Loading sections for template:', template);
+    console.log('Template config from storage:', templateConfig);
+    
     // Use stored config if valid (array), otherwise use defaults
     let storedSections = defaultSections;
     if (Array.isArray(templateConfig) && templateConfig.length > 0) {
@@ -211,16 +219,25 @@ const Storefront = () => {
       );
       if (validSections) {
         storedSections = templateConfig;
+        console.log('Using stored template config with', templateConfig.length, 'sections');
+      } else {
+        console.log('Invalid template config, using defaults');
       }
+    } else {
+      console.log('No template config found, using defaults');
     }
     
-    // Process sections: ensure proper order and filter enabled ones
+    // Process sections: ensure proper order, keep ALL sections (enabled and disabled)
     const processedSections = storedSections
       .map((section, index) => ({
         ...section,
-        order: section.order !== undefined ? section.order : index
+        order: section.order !== undefined ? section.order : index,
+        // Ensure enabled flag exists
+        enabled: section.enabled !== undefined ? section.enabled : true
       }))
       .sort((a, b) => a.order - b.order);
+    
+    console.log('Processed sections:', processedSections.map(s => ({ id: s.id, enabled: s.enabled, order: s.order })));
     
     setSectionConfig(processedSections);
     

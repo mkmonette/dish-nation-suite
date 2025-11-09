@@ -50,8 +50,11 @@ const SectionRenderer: React.FC<SectionRendererProps> = ({
   template,
 }) => {
   const renderSection = (section: SectionConfig) => {
+    console.log('Rendering section:', section.id, 'enabled:', section.enabled);
+    
     // Skip disabled sections completely (they won't render at all)
     if (!section.enabled) {
+      console.log('Skipping disabled section:', section.id);
       return null;
     }
 
