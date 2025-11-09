@@ -61,19 +61,24 @@ const StorefrontCustomizer: React.FC<StorefrontCustomizerProps> = ({ vendor, onU
     { id: 'footer', name: 'Footer', enabled: true, order: 21, settings: { variant: 'detailed' }, content: {} },
   ];
 
-  const [settings, setSettings] = useState({
-    template: 'modern-glass' as 'modern-glass',
-    colors: {
-      primary: '#3b82f6',
-      secondary: '#8b5cf6',
-      accent: '#06b6d4',
-    },
-    heroText: '',
-    heroSubtext: '',
-    logo: '',
-    banner: '',
-    aboutUs: '',
-    ...vendor.storefront,
+  const [settings, setSettings] = useState(() => {
+    // Ensure template is always modern-glass after migration
+    const storefront = vendor.storefront || {};
+    const { template, ...restStorefront } = storefront as any;
+    return {
+      template: 'modern-glass' as 'modern-glass',
+      colors: {
+        primary: '#3b82f6',
+        secondary: '#8b5cf6',
+        accent: '#06b6d4',
+      },
+      heroText: '',
+      heroSubtext: '',
+      logo: '',
+      banner: '',
+      aboutUs: '',
+      ...restStorefront, // Spread everything except template
+    };
   });
   
   // Initialize template configs properly, avoiding circular references

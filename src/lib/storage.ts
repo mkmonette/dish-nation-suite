@@ -284,6 +284,55 @@ const CURRENT_ADMIN_KEY = 'foodapp_current_admin';
 const DISCOUNT_CODES_KEY = 'foodapp_discount_codes';
 const NOTIFICATION_TEMPLATES_KEY = 'foodapp_notification_templates';
 
+// Migration utility to ensure all vendors use modern-glass template
+const migrateVendorTemplates = (): void => {
+  const vendors = localStorage.getItem(VENDORS_KEY);
+  if (!vendors) return;
+  
+  const vendorList: Vendor[] = JSON.parse(vendors);
+  let hasChanges = false;
+  
+  const migratedVendors = vendorList.map(vendor => {
+    if (!vendor.storefront) {
+      vendor.storefront = {
+        template: 'modern-glass',
+        colors: {
+          primary: '#3b82f6',
+          secondary: '#8b5cf6',
+          accent: '#06b6d4',
+        }
+      };
+      hasChanges = true;
+      return vendor;
+    }
+    
+    if (vendor.storefront.template !== 'modern-glass') {
+      const oldTemplate = vendor.storefront.template;
+      const oldConfigs = vendor.storefront.templateConfigs?.[oldTemplate];
+      
+      vendor.storefront = {
+        ...vendor.storefront,
+        template: 'modern-glass',
+        templateConfigs: {
+          ...vendor.storefront.templateConfigs,
+          'modern-glass': oldConfigs || vendor.storefront.templateConfigs?.['modern-glass']
+        }
+      };
+      hasChanges = true;
+    }
+    
+    return vendor;
+  });
+  
+  if (hasChanges) {
+    localStorage.setItem(VENDORS_KEY, JSON.stringify(migratedVendors));
+    console.log('Migrated vendors to modern-glass template');
+  }
+};
+
+// Run migration on module load
+migrateVendorTemplates();
+
 // Vendor operations
 export const vendorStorage = {
   getAll(): Vendor[] {

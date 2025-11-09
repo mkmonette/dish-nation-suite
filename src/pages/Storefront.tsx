@@ -148,26 +148,14 @@ const Storefront = () => {
   }, [vendor]);
 
   useEffect(() => {
-    // Migrate vendor template if needed
+    // Template migration is now handled by storage.ts module on load
+    // Just ensure we reload vendor data if template was migrated
     if (vendor && vendor.storefront?.template !== 'modern-glass') {
-      console.log(`Migrating vendor template from ${vendor.storefront?.template} to modern-glass`);
-      
-      // Migrate templateConfigs to new template key
-      const oldTemplate = vendor.storefront.template;
-      const oldConfigs = vendor.storefront.templateConfigs?.[oldTemplate];
-      
-      vendorStorage.update(vendor.id, {
-        storefront: {
-          ...vendor.storefront,
-          template: 'modern-glass',
-          templateConfigs: {
-            ...vendor.storefront.templateConfigs,
-            'modern-glass': oldConfigs || vendor.storefront.templateConfigs?.['modern-glass']
-          }
-        }
-      });
-      // Trigger a re-render by updating vendor data state
-      setVendorData(Date.now());
+      console.log('Detecting template migration, reloading vendor data');
+      const freshVendor = vendorStorage.getBySlug(vendorSlug!);
+      if (freshVendor) {
+        setVendorData(Date.now());
+      }
     }
     
     if (!vendor) {
