@@ -50,18 +50,9 @@ const SectionRenderer: React.FC<SectionRendererProps> = ({
   template,
 }) => {
   const renderSection = (section: SectionConfig) => {
-    // Show disabled message for disabled sections
+    // Skip disabled sections completely (they won't render at all)
     if (!section.enabled) {
-      return (
-        <div key={section.id} className="py-8 px-4 bg-muted/30 border border-dashed border-muted-foreground/20">
-          <div className="container mx-auto text-center">
-            <p className="text-muted-foreground italic">
-              This section is disabled in configuration. Enable it in Storefront Customizer to see it here.
-            </p>
-            <p className="text-xs text-muted-foreground/60 mt-2">Section: {section.name}</p>
-          </div>
-        </div>
-      );
+      return null;
     }
 
     switch (section.id) {
