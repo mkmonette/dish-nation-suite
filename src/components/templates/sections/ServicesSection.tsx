@@ -4,7 +4,7 @@ import { Truck, Award, Clock } from 'lucide-react';
 
 interface ServicesSectionProps {
   vendor: Vendor;
-  template: 'modern-glass';
+  template: 'modern-glass' | 'sleek-minimal';
   section: SectionConfig;
 }
 

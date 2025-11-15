@@ -6,7 +6,7 @@ import { Tag, Percent, Gift } from 'lucide-react';
 
 interface OffersSectionProps {
   vendor: Vendor;
-  template: 'modern-glass';
+  template: 'modern-glass' | 'sleek-minimal';
   section: SectionConfig;
 }
 

@@ -3,7 +3,7 @@ import { SectionConfig } from '@/lib/storage';
 
 interface HeaderSectionProps {
   headerComponent: React.ReactNode;
-  template?: 'modern-glass';
+  template?: 'modern-glass' | 'sleek-minimal';
   section?: SectionConfig;
 }
 

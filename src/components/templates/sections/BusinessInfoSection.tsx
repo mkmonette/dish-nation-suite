@@ -4,7 +4,7 @@ import { MapPin, Phone, Clock, Mail } from 'lucide-react';
 
 interface BusinessInfoSectionProps {
   vendor: Vendor;
-  template: 'modern-glass';
+  template: 'modern-glass' | 'sleek-minimal';
   section?: SectionConfig;
 }
 

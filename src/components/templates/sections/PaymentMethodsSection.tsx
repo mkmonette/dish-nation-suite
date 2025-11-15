@@ -4,7 +4,7 @@ import { CreditCard, Smartphone, Wallet, Banknote } from 'lucide-react';
 
 interface PaymentMethodsSectionProps {
   vendor: Vendor;
-  template: 'modern-glass';
+  template: 'modern-glass' | 'sleek-minimal';
   section: SectionConfig;
 }
 

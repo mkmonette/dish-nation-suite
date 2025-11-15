@@ -34,7 +34,7 @@ interface SectionRendererProps {
   cartItemCount: number;
   cartComponent: React.ReactNode;
   headerComponent: React.ReactNode;
-  template: 'modern-glass';
+  template: 'modern-glass' | 'sleek-minimal';
 }
 
 const SectionRenderer: React.FC<SectionRendererProps> = ({

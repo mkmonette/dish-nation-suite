@@ -4,7 +4,7 @@ import { Truck, Clock, MapPin, Shield } from 'lucide-react';
 
 interface DeliverySectionProps {
   vendor: Vendor;
-  template: 'modern-glass';
+  template: 'modern-glass' | 'sleek-minimal';
   section: SectionConfig;
 }
 
