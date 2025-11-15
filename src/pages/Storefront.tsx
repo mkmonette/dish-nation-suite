@@ -112,21 +112,21 @@ const Storefront = () => {
           { id: 'categories', name: 'Categories Grid', enabled: true, order: 3, settings: { layout: 'grid' }, content: {} },
           { id: 'promos', name: 'Promo Banners', enabled: true, order: 4, settings: { autoplay: true }, content: {} },
           { id: 'menu', name: 'Full Menu', enabled: true, order: 5, settings: { layout: 'list' }, content: {} },
-          { id: 'about', name: 'About/Story', enabled: false, order: 6, settings: {}, content: {} },
-          { id: 'services', name: 'Services/Features', enabled: false, order: 7, settings: { columns: 3 }, content: {} },
-          { id: 'howItWorks', name: 'How It Works', enabled: false, order: 8, settings: { layout: 'steps' }, content: {} },
+          { id: 'about', name: 'About/Story', enabled: true, order: 6, settings: {}, content: {} },
+          { id: 'services', name: 'Services/Features', enabled: true, order: 7, settings: { columns: 3 }, content: {} },
+          { id: 'howItWorks', name: 'How It Works', enabled: true, order: 8, settings: { layout: 'steps' }, content: {} },
           { id: 'reviews', name: 'Customer Reviews', enabled: true, order: 9, settings: { layout: 'carousel' }, content: {} },
-          { id: 'gallery', name: 'Gallery/Media', enabled: false, order: 10, settings: { columns: 4 }, content: {} },
-          { id: 'cta', name: 'Call to Action', enabled: false, order: 11, settings: { variant: 'banner' }, content: {} },
-          { id: 'newsletter', name: 'Newsletter Signup', enabled: false, order: 12, settings: {}, content: {} },
-          { id: 'faq', name: 'FAQ Section', enabled: false, order: 13, settings: {}, content: {} },
-          { id: 'team', name: 'Team Section', enabled: false, order: 14, settings: { columns: 4 }, content: {} },
-          { id: 'contact', name: 'Contact Info', enabled: false, order: 15, settings: {}, content: {} },
-          { id: 'stats', name: 'Social Proof/Stats', enabled: false, order: 16, settings: { layout: 'inline' }, content: {} },
-          { id: 'offers', name: 'Special Offers', enabled: false, order: 17, settings: {}, content: {} },
-          { id: 'delivery', name: 'Delivery/Shipping Info', enabled: false, order: 18, settings: {}, content: {} },
-          { id: 'payment', name: 'Payment Methods', enabled: false, order: 19, settings: {}, content: {} },
-          { id: 'partners', name: 'Partners/Brands', enabled: false, order: 20, settings: { layout: 'logos' }, content: {} },
+          { id: 'gallery', name: 'Gallery/Media', enabled: true, order: 10, settings: { columns: 4 }, content: {} },
+          { id: 'cta', name: 'Call to Action', enabled: true, order: 11, settings: { variant: 'banner' }, content: {} },
+          { id: 'newsletter', name: 'Newsletter Signup', enabled: true, order: 12, settings: {}, content: {} },
+          { id: 'faq', name: 'FAQ Section', enabled: true, order: 13, settings: {}, content: {} },
+          { id: 'team', name: 'Team Section', enabled: true, order: 14, settings: { columns: 4 }, content: {} },
+          { id: 'contact', name: 'Contact Info', enabled: true, order: 15, settings: {}, content: {} },
+          { id: 'stats', name: 'Social Proof/Stats', enabled: true, order: 16, settings: { layout: 'inline' }, content: {} },
+          { id: 'offers', name: 'Special Offers', enabled: true, order: 17, settings: {}, content: {} },
+          { id: 'delivery', name: 'Delivery/Shipping Info', enabled: true, order: 18, settings: {}, content: {} },
+          { id: 'payment', name: 'Payment Methods', enabled: true, order: 19, settings: {}, content: {} },
+          { id: 'partners', name: 'Partners/Brands', enabled: true, order: 20, settings: { layout: 'logos' }, content: {} },
           { id: 'footer', name: 'Footer', enabled: true, order: 21, settings: { variant: 'detailed' }, content: {} },
         ];
         
@@ -158,23 +158,8 @@ const Storefront = () => {
       }
     }
     
-    if (!vendor) {
-      navigate('/');
-      return;
-    }
-
-    if (!currentTenant || currentTenant.id !== vendor.id) {
-      setTenant(vendor.slug);
-    }
-
-    // Load menu items and categories
-    const loadedMenuItems = menuStorage.getAll(vendor.id);
-    const loadedCategories = categoryStorage.getAll(vendor.id);
+    if (!vendor) return;
     
-    setMenuItems(loadedMenuItems);
-    setCategories(loadedCategories);
-    
-    // Default sections with fallback handling (all 22 sections)
     const defaultSections: SectionConfig[] = [
       { id: 'header', name: 'Header/Navigation', enabled: true, order: 0, settings: { variant: 'sticky' }, content: {} },
       { id: 'hero', name: 'Hero Banner', enabled: true, order: 1, settings: { layout: 'fullscreen' }, content: {} },
@@ -182,21 +167,21 @@ const Storefront = () => {
       { id: 'categories', name: 'Categories Grid', enabled: true, order: 3, settings: { layout: 'grid' }, content: {} },
       { id: 'promos', name: 'Promo Banners', enabled: true, order: 4, settings: { autoplay: true }, content: {} },
       { id: 'menu', name: 'Full Menu', enabled: true, order: 5, settings: { layout: 'list' }, content: {} },
-      { id: 'about', name: 'About/Story', enabled: false, order: 6, settings: {}, content: {} },
-      { id: 'services', name: 'Services/Features', enabled: false, order: 7, settings: { columns: 3 }, content: {} },
-      { id: 'howItWorks', name: 'How It Works', enabled: false, order: 8, settings: { layout: 'steps' }, content: {} },
+      { id: 'about', name: 'About/Story', enabled: true, order: 6, settings: {}, content: {} },
+      { id: 'services', name: 'Services/Features', enabled: true, order: 7, settings: { columns: 3 }, content: {} },
+      { id: 'howItWorks', name: 'How It Works', enabled: true, order: 8, settings: { layout: 'steps' }, content: {} },
       { id: 'reviews', name: 'Customer Reviews', enabled: true, order: 9, settings: { layout: 'carousel' }, content: {} },
-      { id: 'gallery', name: 'Gallery/Media', enabled: false, order: 10, settings: { columns: 4 }, content: {} },
-      { id: 'cta', name: 'Call to Action', enabled: false, order: 11, settings: { variant: 'banner' }, content: {} },
-      { id: 'newsletter', name: 'Newsletter Signup', enabled: false, order: 12, settings: {}, content: {} },
-      { id: 'faq', name: 'FAQ Section', enabled: false, order: 13, settings: {}, content: {} },
-      { id: 'team', name: 'Team Section', enabled: false, order: 14, settings: { columns: 4 }, content: {} },
-      { id: 'contact', name: 'Contact Info', enabled: false, order: 15, settings: {}, content: {} },
-      { id: 'stats', name: 'Social Proof/Stats', enabled: false, order: 16, settings: { layout: 'inline' }, content: {} },
-      { id: 'offers', name: 'Special Offers', enabled: false, order: 17, settings: {}, content: {} },
-      { id: 'delivery', name: 'Delivery/Shipping Info', enabled: false, order: 18, settings: {}, content: {} },
-      { id: 'payment', name: 'Payment Methods', enabled: false, order: 19, settings: {}, content: {} },
-      { id: 'partners', name: 'Partners/Brands', enabled: false, order: 20, settings: { layout: 'logos' }, content: {} },
+      { id: 'gallery', name: 'Gallery/Media', enabled: true, order: 10, settings: { columns: 4 }, content: {} },
+      { id: 'cta', name: 'Call to Action', enabled: true, order: 11, settings: { variant: 'banner' }, content: {} },
+      { id: 'newsletter', name: 'Newsletter Signup', enabled: true, order: 12, settings: {}, content: {} },
+      { id: 'faq', name: 'FAQ Section', enabled: true, order: 13, settings: {}, content: {} },
+      { id: 'team', name: 'Team Section', enabled: true, order: 14, settings: { columns: 4 }, content: {} },
+      { id: 'contact', name: 'Contact Info', enabled: true, order: 15, settings: {}, content: {} },
+      { id: 'stats', name: 'Social Proof/Stats', enabled: true, order: 16, settings: { layout: 'inline' }, content: {} },
+      { id: 'offers', name: 'Special Offers', enabled: true, order: 17, settings: {}, content: {} },
+      { id: 'delivery', name: 'Delivery/Shipping Info', enabled: true, order: 18, settings: {}, content: {} },
+      { id: 'payment', name: 'Payment Methods', enabled: true, order: 19, settings: {}, content: {} },
+      { id: 'partners', name: 'Partners/Brands', enabled: true, order: 20, settings: { layout: 'logos' }, content: {} },
       { id: 'footer', name: 'Footer', enabled: true, order: 21, settings: { variant: 'detailed' }, content: {} },
     ];
     
@@ -720,6 +705,19 @@ const Storefront = () => {
 
   return (
     <>
+      {/* Exit Preview Button */}
+      {previewTemplate && (
+        <Button
+          onClick={() => navigate(-1)}
+          className="fixed top-4 right-4 z-50 bg-background/95 backdrop-blur-sm border shadow-lg"
+          variant="outline"
+          size="sm"
+        >
+          <X className="h-4 w-4 mr-2" />
+          Exit Preview
+        </Button>
+      )}
+      
       {renderTemplate()}
 
       {/* Checkout Modal */}
