@@ -5,7 +5,7 @@ import { Tag, Gift } from 'lucide-react';
 
 interface PromoBannersSectionProps {
   vendor: Vendor;
-  template: 'modern-glass';
+  template: 'modern-glass' | 'sleek-minimal';
   section?: SectionConfig;
 }
 

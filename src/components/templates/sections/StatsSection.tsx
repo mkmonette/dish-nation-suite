@@ -4,7 +4,7 @@ import { Users, ShoppingBag, Star, Award } from 'lucide-react';
 
 interface StatsSectionProps {
   vendor: Vendor;
-  template: 'modern-glass';
+  template: 'modern-glass' | 'sleek-minimal';
   section: SectionConfig;
 }
 

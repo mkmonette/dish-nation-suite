@@ -4,7 +4,7 @@ import { Search, ShoppingCart, Truck, CheckCircle } from 'lucide-react';
 
 interface HowItWorksSectionProps {
   vendor: Vendor;
-  template: 'modern-glass';
+  template: 'modern-glass' | 'sleek-minimal';
   section: SectionConfig;
 }
 

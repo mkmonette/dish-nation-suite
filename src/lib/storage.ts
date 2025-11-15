@@ -27,7 +27,7 @@ export interface SectionConfig {
 }
 
 export interface StorefrontSettings {
-  template: 'modern-glass';
+  template: 'modern-glass' | 'sleek-minimal';
   colors: {
     primary: string;
     secondary: string;
@@ -284,13 +284,14 @@ const CURRENT_ADMIN_KEY = 'foodapp_current_admin';
 const DISCOUNT_CODES_KEY = 'foodapp_discount_codes';
 const NOTIFICATION_TEMPLATES_KEY = 'foodapp_notification_templates';
 
-// Migration utility to ensure all vendors use modern-glass template
+// Migration utility to ensure all vendors have valid templates
 const migrateVendorTemplates = (): void => {
   const vendors = localStorage.getItem(VENDORS_KEY);
   if (!vendors) return;
   
   const vendorList: Vendor[] = JSON.parse(vendors);
   let hasChanges = false;
+  const validTemplates = ['modern-glass', 'sleek-minimal'];
   
   const migratedVendors = vendorList.map(vendor => {
     if (!vendor.storefront) {
@@ -306,7 +307,8 @@ const migrateVendorTemplates = (): void => {
       return vendor;
     }
     
-    if (vendor.storefront.template !== 'modern-glass') {
+    // Migrate old templates to modern-glass, but preserve modern-glass and sleek-minimal
+    if (!validTemplates.includes(vendor.storefront.template as any)) {
       const oldTemplate = vendor.storefront.template;
       const oldConfigs = vendor.storefront.templateConfigs?.[oldTemplate];
       
@@ -326,7 +328,7 @@ const migrateVendorTemplates = (): void => {
   
   if (hasChanges) {
     localStorage.setItem(VENDORS_KEY, JSON.stringify(migratedVendors));
-    console.log('Migrated vendors to modern-glass template');
+    console.log('Migrated vendors to valid templates');
   }
 };
 

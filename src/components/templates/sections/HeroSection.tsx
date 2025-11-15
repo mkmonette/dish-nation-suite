@@ -5,7 +5,7 @@ import { getDefaultPlaceholder } from '@/utils/imageUtils';
 
 interface HeroSectionProps {
   vendor: Vendor;
-  template: 'modern-glass';
+  template: 'modern-glass' | 'sleek-minimal';
   section?: SectionConfig;
 }
 

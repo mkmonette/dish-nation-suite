@@ -689,6 +689,8 @@ const Storefront = () => {
 
   // Render the template
   const renderTemplate = () => {
+    const template = previewTemplate || vendor.storefront?.template || 'modern-glass';
+    
     const templateProps = {
       vendor,
       menuItems,
@@ -702,6 +704,17 @@ const Storefront = () => {
       sections: sectionConfig,
     };
 
+    // Render the appropriate template
+    if (template === 'sleek-minimal') {
+      const SleekMinimalTemplate = React.lazy(() => import('@/components/templates/SleekMinimalTemplate'));
+      return (
+        <React.Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
+          <SleekMinimalTemplate {...templateProps} />
+        </React.Suspense>
+      );
+    }
+    
+    // Default to modern-glass template
     return <ModernGlassTemplate {...templateProps} />;
   };
 

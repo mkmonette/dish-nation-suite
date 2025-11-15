@@ -7,7 +7,7 @@ import { toast } from '@/hooks/use-toast';
 
 interface NewsletterSectionProps {
   vendor: Vendor;
-  template: 'modern-glass';
+  template: 'modern-glass' | 'sleek-minimal';
   section: SectionConfig;
 }
 

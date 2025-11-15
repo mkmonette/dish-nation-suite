@@ -4,7 +4,7 @@ import { getDefaultPlaceholder } from '@/utils/imageUtils';
 
 interface GallerySectionProps {
   vendor: Vendor;
-  template: 'modern-glass';
+  template: 'modern-glass' | 'sleek-minimal';
   section: SectionConfig;
 }
 

@@ -28,7 +28,7 @@ interface StorefrontCustomizerProps {
 }
 
 interface TemplateConfig {
-  template: 'modern-glass';
+  template: 'modern-glass' | 'sleek-minimal';
   sections: SectionConfig[];
 }
 
@@ -62,11 +62,15 @@ const StorefrontCustomizer: React.FC<StorefrontCustomizerProps> = ({ vendor, onU
   ];
 
   const [settings, setSettings] = useState(() => {
-    // Ensure template is always modern-glass after migration
-    const storefront = vendor.storefront || {};
-    const { template, ...restStorefront } = storefront as any;
+    // Use stored template or default to modern-glass
+    const storefront = vendor.storefront || {} as any;
+    const template = (storefront.template === 'sleek-minimal' || storefront.template === 'modern-glass') 
+      ? storefront.template 
+      : 'modern-glass' as const;
+    
+    const { template: _, ...restStorefront } = storefront;
     return {
-      template: 'modern-glass' as 'modern-glass',
+      template,
       colors: {
         primary: '#3b82f6',
         secondary: '#8b5cf6',
@@ -77,14 +81,14 @@ const StorefrontCustomizer: React.FC<StorefrontCustomizerProps> = ({ vendor, onU
       logo: '',
       banner: '',
       aboutUs: '',
-      ...restStorefront, // Spread everything except template
+      ...restStorefront, // Spread everything except template (already handled above)
     };
   });
   
   // Initialize template configs properly, avoiding circular references
   const initializeTemplateConfigs = () => {
     const configs: Record<string, SectionConfig[]> = {};
-    const templates = ['modern-glass'] as const;
+    const templates = ['modern-glass', 'sleek-minimal'] as const;
     
     templates.forEach(template => {
       const storedConfig = vendor.storefront?.templateConfigs?.[template];
@@ -103,23 +107,37 @@ const StorefrontCustomizer: React.FC<StorefrontCustomizerProps> = ({ vendor, onU
   
   const [isLoading, setIsLoading] = useState(false);
 
-  const templateDefaults = {
+  const templateDefaults: Record<string, { colors: { primary: string; secondary: string; accent: string } }> = {
     'modern-glass': {
       colors: {
         primary: '#3b82f6',
         secondary: '#8b5cf6',
         accent: '#06b6d4',
       }
+    },
+    'sleek-minimal': {
+      colors: {
+        primary: '#0f172a',
+        secondary: '#475569',
+        accent: '#f59e0b',
+      }
     }
   };
 
   const templates = [
     { 
-      value: 'modern-glass', 
+      value: 'modern-glass' as const, 
       label: 'Modern Glass', 
       description: 'Sleek glassmorphism design with modern layouts and responsive elements',
       preview: '/api/placeholder/300/200',
       defaultColors: templateDefaults['modern-glass'].colors
+    },
+    { 
+      value: 'sleek-minimal' as const, 
+      label: 'Sleek Minimal', 
+      description: 'Clean card-based design with elegant typography and minimal aesthetics',
+      preview: '/api/placeholder/300/200',
+      defaultColors: templateDefaults['sleek-minimal'].colors
     },
   ];
 
@@ -144,7 +162,7 @@ const StorefrontCustomizer: React.FC<StorefrontCustomizerProps> = ({ vendor, onU
     setIsLoading(false);
   };
 
-  const handleTemplateChange = (template: 'modern-glass') => {
+  const handleTemplateChange = (template: 'modern-glass' | 'sleek-minimal') => {
     setSettings(prev => ({ ...prev, template }));
     
     // Auto-save template change
@@ -156,7 +174,7 @@ const StorefrontCustomizer: React.FC<StorefrontCustomizerProps> = ({ vendor, onU
     window.dispatchEvent(new CustomEvent('vendorUpdated'));
   };
 
-  const handleApplyTemplate = (template: 'modern-glass') => {
+  const handleApplyTemplate = (template: 'modern-glass' | 'sleek-minimal') => {
     handleTemplateChange(template);
     toast({
       title: 'Template Applied!',

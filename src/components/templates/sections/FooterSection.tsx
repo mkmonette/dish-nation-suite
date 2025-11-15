@@ -6,7 +6,7 @@ import { Facebook, Instagram, Twitter, Heart, MapPin, Phone } from 'lucide-react
 interface FooterSectionProps {
   vendor: Vendor;
   cartComponent: React.ReactNode;
-  template: 'modern-glass';
+  template: 'modern-glass' | 'sleek-minimal';
   section?: SectionConfig;
 }
 

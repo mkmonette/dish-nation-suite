@@ -5,7 +5,7 @@ import { getDefaultPlaceholder } from '@/utils/imageUtils';
 
 interface ReviewsSectionProps {
   vendor: Vendor;
-  template: 'modern-glass';
+  template: 'modern-glass' | 'sleek-minimal';
   section?: SectionConfig;
 }
 

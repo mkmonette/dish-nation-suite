@@ -6,7 +6,7 @@ interface CategoriesSectionProps {
   categories: MenuCategory[];
   selectedCategory: string;
   onCategoryChange: (category: string) => void;
-  template: 'modern-glass';
+  template: 'modern-glass' | 'sleek-minimal';
   section?: SectionConfig;
 }
 

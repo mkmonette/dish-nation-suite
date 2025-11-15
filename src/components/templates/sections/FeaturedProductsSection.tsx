@@ -9,7 +9,7 @@ interface FeaturedProductsSectionProps {
   vendor: Vendor;
   menuItems: MenuItem[];
   onAddToCart: (item: MenuItem, quantity?: number, selectedVariation?: any, selectedAddOns?: any[]) => void;
-  template: 'modern-glass';
+  template: 'modern-glass' | 'sleek-minimal';
   section?: SectionConfig;
 }
 

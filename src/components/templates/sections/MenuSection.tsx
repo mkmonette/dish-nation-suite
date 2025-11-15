@@ -12,7 +12,7 @@ interface MenuSectionProps {
   selectedCategory: string;
   onCategoryChange: (category: string) => void;
   onAddToCart: (item: MenuItem, quantity?: number, selectedVariation?: any, selectedAddOns?: any[]) => void;
-  template: 'modern-glass';
+  template: 'modern-glass' | 'sleek-minimal';
   section?: SectionConfig;
 }
 

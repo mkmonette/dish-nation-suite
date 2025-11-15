@@ -5,7 +5,7 @@ import { ArrowRight } from 'lucide-react';
 
 interface CTASectionProps {
   vendor: Vendor;
-  template: 'modern-glass';
+  template: 'modern-glass' | 'sleek-minimal';
   section: SectionConfig;
 }
 
