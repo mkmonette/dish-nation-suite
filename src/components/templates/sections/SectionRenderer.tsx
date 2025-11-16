@@ -49,6 +49,10 @@ const SectionRenderer: React.FC<SectionRendererProps> = ({
   headerComponent,
   template,
 }) => {
+  // Log all sections being processed
+  console.log(`[SectionRenderer] Processing ${sections.length} sections for template: ${template}`);
+  console.log('[SectionRenderer] All sections:', sections.map(s => `${s.id} (${s.enabled ? 'enabled' : 'disabled'})`).join(', '));
+  
   const renderSection = (section: SectionConfig) => {
     console.log('Rendering section:', section.id, 'enabled:', section.enabled);
     
@@ -134,9 +138,19 @@ const SectionRenderer: React.FC<SectionRendererProps> = ({
       case 'footer':
         return <FooterSection key={section.id} vendor={vendor} cartComponent={cartComponent} template={template} section={section} />;
       default:
-        return null;
+        console.warn(`[SectionRenderer] Unknown section ID: ${section.id} - rendering placeholder`);
+        return (
+          <div key={section.id} className="py-8 px-4 bg-muted/30 border border-dashed border-muted-foreground/20 rounded-lg">
+            <p className="text-center text-muted-foreground">
+              Section "{section.id}" ({section.name}) - Coming Soon
+            </p>
+          </div>
+        );
     }
   };
+
+  const enabledCount = sections.filter(s => s.enabled).length;
+  console.log(`[SectionRenderer] Rendering ${enabledCount} enabled sections out of ${sections.length} total`);
 
   return (
     <>
