@@ -111,9 +111,9 @@ const Storefront = () => {
       { id: 'footer', name: 'Footer', enabled: true, order: 21, settings: { variant: 'detailed' }, content: {} },
     ];
     
-    // Get current template
-    const currentTemplate = vendor.storefront?.template || 'modern-glass';
-    console.log('Current template:', currentTemplate);
+    // Get current template - use preview template if available, otherwise vendor's template
+    const currentTemplate = (previewTemplate as 'modern-glass' | 'sleek-minimal' | null) || vendor.storefront?.template || 'modern-glass';
+    console.log('Current template:', currentTemplate, previewTemplate ? '(preview mode)' : '(active template)');
     
     // Get template-specific configuration
     const templateConfig = vendor.storefront?.templateConfigs?.[currentTemplate];
