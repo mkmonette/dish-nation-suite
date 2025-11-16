@@ -92,11 +92,29 @@ const StorefrontCustomizer: React.FC<StorefrontCustomizerProps> = ({ vendor, onU
     
     templates.forEach(template => {
       const storedConfig = vendor.storefront?.templateConfigs?.[template];
+      
       // Check if stored config is valid (array) and not a circular reference
       if (Array.isArray(storedConfig) && storedConfig.length > 0) {
-        configs[template] = storedConfig;
+        // Merge stored config with defaults to ensure all 22 sections exist
+        const storedMap = new Map(storedConfig.map(s => [s.id, s]));
+        
+        // Start with all default sections and override with stored values
+        configs[template] = defaultSections.map(defaultSection => {
+          const storedSection = storedMap.get(defaultSection.id);
+          if (storedSection) {
+            // Preserve stored section settings
+            return {
+              ...defaultSection,
+              ...storedSection,
+              enabled: storedSection.enabled !== undefined ? storedSection.enabled : true,
+            };
+          }
+          // Section not in storage, use default (enabled by default)
+          return { ...defaultSection };
+        });
       } else {
-        configs[template] = [...defaultSections]; // Deep copy to avoid reference issues
+        // No valid stored config, use defaults with all sections enabled
+        configs[template] = defaultSections.map(s => ({ ...s, enabled: true }));
       }
     });
     

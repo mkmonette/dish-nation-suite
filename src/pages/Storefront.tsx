@@ -116,25 +116,49 @@ const Storefront = () => {
     console.log('Current template:', currentTemplate);
     
     // Get template-specific configuration
-    let storedSections = defaultSections;
     const templateConfig = vendor.storefront?.templateConfigs?.[currentTemplate];
     
-    if (templateConfig && Array.isArray(templateConfig)) {
+    // MERGE stored config with defaults to ensure ALL 22 sections are always present
+    let mergedSections: SectionConfig[];
+    
+    if (templateConfig && Array.isArray(templateConfig) && templateConfig.length > 0) {
       const validSections = templateConfig.every((section: any) => 
         section && typeof section.id === 'string' && typeof section.enabled === 'boolean'
       );
+      
       if (validSections) {
-        storedSections = templateConfig;
-        console.log('Using stored template config with', templateConfig.length, 'sections');
+        console.log('Merging stored template config with', templateConfig.length, 'sections');
+        
+        // Create a map of stored sections by ID
+        const storedMap = new Map(templateConfig.map(s => [s.id, s]));
+        
+        // Merge: use stored section if exists, otherwise use default
+        mergedSections = defaultSections.map(defaultSection => {
+          const storedSection = storedMap.get(defaultSection.id);
+          if (storedSection) {
+            // Use stored section but ensure all required properties exist
+            return {
+              ...defaultSection,
+              ...storedSection,
+              enabled: storedSection.enabled !== undefined ? storedSection.enabled : true,
+            };
+          }
+          // Section missing from storage, use default (enabled by default)
+          return defaultSection;
+        });
+        
+        console.log('Merged sections - all 22 sections present');
       } else {
         console.log('Invalid template config, using defaults');
+        mergedSections = defaultSections;
       }
     } else {
       console.log('No template config found, using defaults');
+      mergedSections = defaultSections;
     }
     
-    // Process sections: ensure proper order, keep ALL sections (enabled and disabled)
-    const processedSections = storedSections
+    // Process sections: ensure proper order
+    const processedSections = mergedSections
       .map((section, index) => ({
         ...section,
         order: section.order !== undefined ? section.order : index,
@@ -142,7 +166,7 @@ const Storefront = () => {
       }))
       .sort((a, b) => a.order - b.order);
     
-    console.log('Processed sections:', processedSections.map(s => ({ id: s.id, enabled: s.enabled, order: s.order })));
+    console.log('Processed sections (all 22):', processedSections.map(s => ({ id: s.id, enabled: s.enabled, order: s.order })));
     
     setSectionConfig(processedSections);
     
