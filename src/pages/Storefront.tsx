@@ -55,25 +55,17 @@ const Storefront = () => {
       console.log('No vendor slug provided');
       return null;
     }
-    console.log('Fetching vendor with slug:', vendorSlug, 'at timestamp:', vendorData);
+    console.log('Fetching vendor with slug:', vendorSlug);
     const foundVendor = vendorStorage.getBySlug(vendorSlug);
     console.log('Found vendor:', foundVendor?.storeName);
     if (foundVendor?.storefront?.templateConfigs) {
       console.log('Vendor has templateConfigs:', Object.keys(foundVendor.storefront.templateConfigs));
     }
     return foundVendor;
-  }, [vendorSlug, vendorData]); // Add vendorData dependency
+  }, [vendorSlug, vendorData]);
 
-  // Listen for vendor data changes
+  // Listen for vendor data changes from other windows/tabs or customizer updates
   useEffect(() => {
-    const handleStorageChange = () => {
-      console.log('Storage changed, refreshing vendor data');
-      setVendorData(Date.now()); // Trigger vendor reload
-    };
-
-    window.addEventListener('storage', handleStorageChange);
-    
-    // Also listen for custom events from the same window
     const handleVendorUpdate = () => {
       console.log('Vendor updated event received, refreshing vendor data');
       setVendorData(Date.now());
@@ -82,83 +74,17 @@ const Storefront = () => {
     window.addEventListener('vendorUpdated', handleVendorUpdate);
     
     return () => {
-      window.removeEventListener('storage', handleStorageChange);
       window.removeEventListener('vendorUpdated', handleVendorUpdate);
     };
   }, []);
 
-  // Clean up corrupted template configs on mount
-  useEffect(() => {
-    if (!vendor) return;
-    
-    const storedSettings = vendor;
-    if (storedSettings?.storefront?.templateConfigs) {
-      const configs = storedSettings.storefront.templateConfigs;
-      let needsCleanup = false;
-      
-      // Check for circular references or invalid configs
-      ['modern-glass'].forEach(template => {
-        const config = configs[template];
-        if (!Array.isArray(config) || (config as any).message) {
-          needsCleanup = true;
-        }
-      });
-      
-      if (needsCleanup) {
-        const defaultSections = [
-          { id: 'header', name: 'Header/Navigation', enabled: true, order: 0, settings: { variant: 'sticky' }, content: {} },
-          { id: 'hero', name: 'Hero Banner', enabled: true, order: 1, settings: { layout: 'fullscreen' }, content: {} },
-          { id: 'featured', name: 'Featured Products', enabled: true, order: 2, settings: { columns: 3 }, content: {} },
-          { id: 'categories', name: 'Categories Grid', enabled: true, order: 3, settings: { layout: 'grid' }, content: {} },
-          { id: 'promos', name: 'Promo Banners', enabled: true, order: 4, settings: { autoplay: true }, content: {} },
-          { id: 'menu', name: 'Full Menu', enabled: true, order: 5, settings: { layout: 'list' }, content: {} },
-          { id: 'about', name: 'About/Story', enabled: true, order: 6, settings: {}, content: {} },
-          { id: 'services', name: 'Services/Features', enabled: true, order: 7, settings: { columns: 3 }, content: {} },
-          { id: 'howItWorks', name: 'How It Works', enabled: true, order: 8, settings: { layout: 'steps' }, content: {} },
-          { id: 'reviews', name: 'Customer Reviews', enabled: true, order: 9, settings: { layout: 'carousel' }, content: {} },
-          { id: 'gallery', name: 'Gallery/Media', enabled: true, order: 10, settings: { columns: 4 }, content: {} },
-          { id: 'cta', name: 'Call to Action', enabled: true, order: 11, settings: { variant: 'banner' }, content: {} },
-          { id: 'newsletter', name: 'Newsletter Signup', enabled: true, order: 12, settings: {}, content: {} },
-          { id: 'faq', name: 'FAQ Section', enabled: true, order: 13, settings: {}, content: {} },
-          { id: 'team', name: 'Team Section', enabled: true, order: 14, settings: { columns: 4 }, content: {} },
-          { id: 'contact', name: 'Contact Info', enabled: true, order: 15, settings: {}, content: {} },
-          { id: 'stats', name: 'Social Proof/Stats', enabled: true, order: 16, settings: { layout: 'inline' }, content: {} },
-          { id: 'offers', name: 'Special Offers', enabled: true, order: 17, settings: {}, content: {} },
-          { id: 'delivery', name: 'Delivery/Shipping Info', enabled: true, order: 18, settings: {}, content: {} },
-          { id: 'payment', name: 'Payment Methods', enabled: true, order: 19, settings: {}, content: {} },
-          { id: 'partners', name: 'Partners/Brands', enabled: true, order: 20, settings: { layout: 'logos' }, content: {} },
-          { id: 'footer', name: 'Footer', enabled: true, order: 21, settings: { variant: 'detailed' }, content: {} },
-        ];
-        
-        // Clean up corrupted template configs
-        const cleanConfigs = {
-          'modern-glass': [...defaultSections]
-        };
-        
-        vendorStorage.update(vendor.id, {
-          storefront: {
-            ...vendor.storefront,
-            templateConfigs: cleanConfigs
-          }
-        });
-        
-        console.log('Cleaned up corrupted template configurations');
-      }
-    }
-  }, [vendor]);
 
+  // Load section configuration and cart once when vendor loads
   useEffect(() => {
-    // Template migration is now handled by storage.ts module on load
-    // Just ensure we reload vendor data if template was migrated
-    if (vendor && vendor.storefront?.template !== 'modern-glass') {
-      console.log('Detecting template migration, reloading vendor data');
-      const freshVendor = vendorStorage.getBySlug(vendorSlug!);
-      if (freshVendor) {
-        setVendorData(Date.now());
-      }
-    }
-    
     if (!vendor) return;
+    
+    // Skip if already loaded for this vendor
+    if (sectionConfig.length > 0) return;
     
     const defaultSections: SectionConfig[] = [
       { id: 'header', name: 'Header/Navigation', enabled: true, order: 0, settings: { variant: 'sticky' }, content: {} },
@@ -185,18 +111,16 @@ const Storefront = () => {
       { id: 'footer', name: 'Footer', enabled: true, order: 21, settings: { variant: 'detailed' }, content: {} },
     ];
     
-    // Load section configuration from vendor settings
-    const template = previewTemplate || vendor.storefront?.template || 'modern-glass';
-    const templateConfig = vendor.storefront?.templateConfigs?.[template];
+    // Get current template
+    const currentTemplate = vendor.storefront?.template || 'modern-glass';
+    console.log('Current template:', currentTemplate);
     
-    console.log('Loading sections for template:', template);
-    console.log('Template config from storage:', templateConfig);
-    
-    // Use stored config if valid (array), otherwise use defaults
+    // Get template-specific configuration
     let storedSections = defaultSections;
-    if (Array.isArray(templateConfig) && templateConfig.length > 0) {
-      // Validate that stored sections have required properties
-      const validSections = templateConfig.every(section => 
+    const templateConfig = vendor.storefront?.templateConfigs?.[currentTemplate];
+    
+    if (templateConfig && Array.isArray(templateConfig)) {
+      const validSections = templateConfig.every((section: any) => 
         section && typeof section.id === 'string' && typeof section.enabled === 'boolean'
       );
       if (validSections) {
@@ -214,7 +138,6 @@ const Storefront = () => {
       .map((section, index) => ({
         ...section,
         order: section.order !== undefined ? section.order : index,
-        // Ensure enabled flag exists
         enabled: section.enabled !== undefined ? section.enabled : true
       }))
       .sort((a, b) => a.order - b.order);
@@ -228,7 +151,12 @@ const Storefront = () => {
     if (savedCart) {
       setCart(JSON.parse(savedCart));
     }
-  }, [vendor, navigate, currentTenant, setTenant]);
+    
+    // Set tenant
+    if (!currentTenant || currentTenant.id !== vendor.id) {
+      setTenant(vendor.slug);
+    }
+  }, [vendor?.id]); // Only run when vendor ID changes
 
   // Save cart to localStorage whenever it changes
   useEffect(() => {
@@ -672,8 +600,20 @@ const Storefront = () => {
     </Dialog>
   );
 
+  // Lazy load sleek minimal template
+  const SleekMinimalTemplate = React.lazy(() => import('@/components/templates/SleekMinimalTemplate'));
+
   // Render the template
   const renderTemplate = () => {
+    // Don't render until section config is loaded
+    if (sectionConfig.length === 0) {
+      return (
+        <div className="min-h-screen bg-background flex items-center justify-center">
+          <LoadingSpinner />
+        </div>
+      );
+    }
+
     const template = previewTemplate || vendor.storefront?.template || 'modern-glass';
     
     const templateProps = {
@@ -691,9 +631,12 @@ const Storefront = () => {
 
     // Render the appropriate template
     if (template === 'sleek-minimal') {
-      const SleekMinimalTemplate = React.lazy(() => import('@/components/templates/SleekMinimalTemplate'));
       return (
-        <React.Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
+        <React.Suspense fallback={
+          <div className="min-h-screen bg-background flex items-center justify-center">
+            <LoadingSpinner />
+          </div>
+        }>
           <SleekMinimalTemplate {...templateProps} />
         </React.Suspense>
       );
@@ -707,15 +650,12 @@ const Storefront = () => {
     <>
       {/* Exit Preview Button */}
       {previewTemplate && (
-        <Button
+        <button
           onClick={() => navigate(-1)}
-          className="fixed top-4 right-4 z-50 bg-background/95 backdrop-blur-sm border shadow-lg"
-          variant="outline"
-          size="sm"
+          className="fixed top-4 right-4 z-50 bg-black/70 hover:bg-black/80 text-white px-4 py-2 rounded-lg shadow-lg transition-colors"
         >
-          <X className="h-4 w-4 mr-2" />
           Exit Preview
-        </Button>
+        </button>
       )}
       
       {renderTemplate()}
