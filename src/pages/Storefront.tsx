@@ -56,8 +56,15 @@ const Storefront = () => {
       return null;
     }
     console.log('Fetching vendor with slug:', vendorSlug);
+    
+    // Debug: Check all vendors in storage
+    const allVendors = vendorStorage.getAll();
+    console.log('Total vendors in storage:', allVendors.length);
+    console.log('Available vendor slugs:', allVendors.map(v => v.slug));
+    
     const foundVendor = vendorStorage.getBySlug(vendorSlug);
-    console.log('Found vendor:', foundVendor?.storeName);
+    console.log('Found vendor:', foundVendor ? foundVendor.storeName : 'undefined');
+    
     if (foundVendor?.storefront?.templateConfigs) {
       console.log('Vendor has templateConfigs:', Object.keys(foundVendor.storefront.templateConfigs));
     }
