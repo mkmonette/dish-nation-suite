@@ -98,6 +98,23 @@ export interface ManualPaymentMethod {
   enabled: boolean;
 }
 
+export interface BusinessHours {
+  day: string;
+  open: string;
+  close: string;
+  isClosed: boolean;
+}
+
+export interface ContactDetails {
+  phone?: string;
+  email?: string;
+  address?: string;
+  city?: string;
+  state?: string;
+  zipCode?: string;
+  country?: string;
+}
+
 export interface Vendor {
   id: string;
   email: string;
@@ -111,6 +128,8 @@ export interface Vendor {
   storefront: StorefrontSettings;
   manualPaymentMethods?: ManualPaymentMethod[];
   manualPaymentEnabled?: boolean;
+  contactDetails?: ContactDetails;
+  businessHours?: BusinessHours[];
   createdAt: string;
 }
 
