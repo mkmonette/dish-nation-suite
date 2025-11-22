@@ -70,10 +70,12 @@ const Storefront = () => {
         const vendors = [sessionVendor];
         localStorage.setItem('foodapp_vendors', JSON.stringify(vendors));
         allVendors = vendors;
+        console.log('Vendor storage repaired, now has:', allVendors.length, 'vendors');
       }
     }
     
-    const foundVendor = vendorStorage.getBySlug(vendorSlug);
+    // Find vendor from the repaired list
+    const foundVendor = allVendors.find(v => v.slug === vendorSlug) || null;
     console.log('Found vendor:', foundVendor ? foundVendor.storeName : 'undefined');
     
     if (foundVendor?.storefront?.templateConfigs) {
