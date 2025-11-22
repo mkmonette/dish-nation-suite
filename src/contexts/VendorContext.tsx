@@ -43,9 +43,29 @@ export const VendorProvider: React.FC<VendorProviderProps> = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Check for existing session on mount
+    // Check for existing session on mount and verify data consistency
     const currentVendor = sessionStorage.getCurrentVendor();
     if (currentVendor) {
+      // Verify vendor exists in main storage
+      const vendorInStorage = vendorStorage.getById(currentVendor.id);
+      
+      if (!vendorInStorage) {
+        console.warn('Data sync issue detected: Vendor in session but not in main storage. Repairing...');
+        // Repair: Add vendor to main storage
+        const allVendors = JSON.parse(localStorage.getItem('foodapp_vendors') || '[]');
+        allVendors.push(currentVendor);
+        localStorage.setItem('foodapp_vendors', JSON.stringify(allVendors));
+        console.log('✓ Data sync repaired: Vendor added to main storage');
+      } else if (JSON.stringify(vendorInStorage) !== JSON.stringify(currentVendor)) {
+        console.warn('Data sync issue detected: Session and storage data mismatch. Syncing...');
+        // Sync: Update session with latest data from storage
+        sessionStorage.setCurrentVendor(vendorInStorage);
+        setVendor(vendorInStorage);
+        console.log('✓ Data synced: Session updated with latest storage data');
+        setIsLoading(false);
+        return;
+      }
+      
       setVendor(currentVendor);
     }
     setIsLoading(false);
@@ -63,8 +83,19 @@ export const VendorProvider: React.FC<VendorProviderProps> = ({ children }) => {
         return false;
       }
 
+      // Data sync verification: Ensure vendor exists in main storage
+      const vendorById = vendorStorage.getById(existingVendor.id);
+      if (!vendorById) {
+        console.warn('Data sync issue on login: Vendor not found by ID. Repairing...');
+        const allVendors = JSON.parse(localStorage.getItem('foodapp_vendors') || '[]');
+        allVendors.push(existingVendor);
+        localStorage.setItem('foodapp_vendors', JSON.stringify(allVendors));
+        console.log('✓ Login data sync repaired');
+      }
+
       setVendor(existingVendor);
       sessionStorage.setCurrentVendor(existingVendor);
+      console.log('✓ Login successful with data sync verification');
       return true;
     } catch (error) {
       console.error('Login error:', error);
@@ -108,8 +139,16 @@ export const VendorProvider: React.FC<VendorProviderProps> = ({ children }) => {
         slug,
       });
 
+      // Data sync verification: Ensure vendor was properly created
+      const verifyVendor = vendorStorage.getById(newVendor.id);
+      if (!verifyVendor) {
+        console.error('Registration data sync failed: Vendor not found after creation');
+        return false;
+      }
+
       setVendor(newVendor);
       sessionStorage.setCurrentVendor(newVendor);
+      console.log('✓ Registration successful with data sync verification');
       return true;
     } catch (error) {
       console.error('Registration error:', error);
@@ -129,8 +168,19 @@ export const VendorProvider: React.FC<VendorProviderProps> = ({ children }) => {
       const updatedVendor = vendorStorage.update(vendor.id, updates);
       if (!updatedVendor) return false;
 
+      // Data sync verification: Ensure update was successful
+      const verifyUpdate = vendorStorage.getById(vendor.id);
+      if (!verifyUpdate) {
+        console.error('Update data sync failed: Vendor not found after update');
+        return false;
+      }
+
       setVendor(updatedVendor);
       sessionStorage.setCurrentVendor(updatedVendor);
+      
+      // Dispatch event to notify other components
+      window.dispatchEvent(new Event('vendorUpdated'));
+      console.log('✓ Vendor updated with data sync verification');
       return true;
     } catch (error) {
       console.error('Update vendor error:', error);
