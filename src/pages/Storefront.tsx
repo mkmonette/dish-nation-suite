@@ -58,9 +58,20 @@ const Storefront = () => {
     console.log('Fetching vendor with slug:', vendorSlug);
     
     // Debug: Check all vendors in storage
-    const allVendors = vendorStorage.getAll();
+    let allVendors = vendorStorage.getAll();
     console.log('Total vendors in storage:', allVendors.length);
     console.log('Available vendor slugs:', allVendors.map(v => v.slug));
+    
+    // REPAIR: If no vendors exist but there's a current vendor in session, repair the data
+    if (allVendors.length === 0) {
+      const sessionVendor = JSON.parse(localStorage.getItem('foodapp_current_vendor') || 'null');
+      if (sessionVendor) {
+        console.log('Repairing vendor storage - found session vendor:', sessionVendor.storeName);
+        const vendors = [sessionVendor];
+        localStorage.setItem('foodapp_vendors', JSON.stringify(vendors));
+        allVendors = vendors;
+      }
+    }
     
     const foundVendor = vendorStorage.getBySlug(vendorSlug);
     console.log('Found vendor:', foundVendor ? foundVendor.storeName : 'undefined');
