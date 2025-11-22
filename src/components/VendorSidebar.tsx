@@ -12,7 +12,8 @@ import {
   Users, 
   Star, 
   CreditCard,
-  Settings 
+  Settings,
+  User
 } from 'lucide-react';
 import {
   Sidebar,
@@ -60,6 +61,7 @@ const VendorSidebar: React.FC<VendorSidebarProps> = ({
     {
       group: 'Settings',
       items: [
+        { id: 'profile', label: 'Profile', icon: User },
         { id: 'storefront', label: 'Storefront', icon: Palette },
         { id: 'subscription', label: 'Subscription', icon: CreditCard },
         { id: 'settings', label: 'Settings', icon: Settings },

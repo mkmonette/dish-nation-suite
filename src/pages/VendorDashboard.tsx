@@ -24,6 +24,7 @@ import VendorSubscriptionManager from '@/components/VendorSubscriptionManager';
 import VendorLogo from '@/components/VendorLogo';
 import ManualPaymentSettings from '@/components/ManualPaymentSettings';
 import OrdersSection from '@/components/OrdersSection';
+import VendorProfile from '@/components/VendorProfile';
 
 const VendorDashboard = () => {
   const { vendor: contextVendor, logout } = useVendor();
@@ -317,6 +318,17 @@ const VendorDashboard = () => {
               <p className="text-muted-foreground">Manage your subscription plan</p>
             </div>
             <VendorSubscriptionManager />
+          </div>
+        );
+
+      case 'profile':
+        return (
+          <div className="space-y-6">
+            <div>
+              <h1 className="text-3xl font-bold">Store Profile</h1>
+              <p className="text-muted-foreground">Manage your store information, contact details, and business hours</p>
+            </div>
+            <VendorProfile />
           </div>
         );
 
